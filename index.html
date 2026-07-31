@@ -1691,9 +1691,23 @@
     <!-- 🎬 老师分解视频跟跳 -->
     <div class="card" style="background:linear-gradient(135deg, #faf5ff, #ede9fe);">
       <div class="card-header"><span class="card-title">🎬 老师分解视频 · 跟跳练习</span><span class="card-badge purple">新!</span></div>
-      <div id="dance-video-area">
-        <!-- 视频播放器 -->
-        <div id="dance-player-wrap" style="display:none; margin-bottom:12px;">
+        <div id="dance-video-area">
+          <!-- 锁定：孙老师爵士舞【零基础】 -->
+          <div style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;">
+            <div style="font-size:14px;font-weight:800;margin-bottom:6px;">🎯 已为你锁定：孙老师爵士舞【零基础】</div>
+            <div style="font-size:12.5px;opacity:.95;line-height:1.6;">
+              认准这几点，别认错重名孙老师：<br>
+              · 账号全名 <b>孙老师爵士舞【零基础】</b>（也叫孙小琪舞蹈）· IP属地湖北<br>
+              · <b>119.8万</b>粉丝 · <b>1361</b>个教学视频 · 获赞482万<br>
+              · 特点是 <b>镜面教学 + 口令版</b>，讲解最细，最适合零基础/记动作慢
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center;">
+              <a href="https://www.douyin.com/search/%E5%AD%99%E8%80%81%E5%B8%88%E7%88%B5%E5%A3%AB%E8%88%9E%E3%80%90%E9%9B%B6%E5%9F%BA%E7%A1%80%E3%80%91" target="_blank" style="background:#fff;color:#7c3aed;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;">🔍 去抖音搜这个全名</a>
+              <span style="font-size:11px;opacity:.9;">进她主页关注 → 选「慢速口令版 / 1080P」视频跟练，画质最清晰</span>
+            </div>
+          </div>
+          <!-- 视频播放器 -->
+          <div id="dance-player-wrap" style="display:none; margin-bottom:12px;">
           <video id="dance-player" controls playsinline style="width:100%;max-height:60vh;border-radius:10px;background:#000;" 
             loop></video>
           <!-- 跟跳控制栏 -->
@@ -1785,13 +1799,13 @@
       <div class="card-header"><span class="card-title">🔥 抖音跟练 · 爵士基本功推荐账号</span><span class="card-badge" style="background:#ff0050;">今晚跟练</span></div>
       <div class="dy-account-grid">
         <!-- 孙老师 -->
-        <div class="dy-account-card" onclick="window.open('https://www.douyin.com/search/%E5%AD%99%E8%80%81%E5%B8%88%E7%88%B5%E5%A3%AB%E8%88%9E+%E5%9F%BA%E6%9C%AC%E5%8A%9F','_blank')">
+        <div class="dy-account-card" onclick="window.open('https://www.douyin.com/search/%E5%AD%99%E8%80%81%E5%B8%88%E7%88%B5%E5%A3%AB%E8%88%9E%E3%80%90%E9%9B%B6%E5%9F%BA%E7%A1%80%E3%80%91','_blank')">
           <div class="dy-avatar">👩‍🏫</div>
           <div class="dy-info">
-            <div class="dy-name">孙老师爵士舞【零基础】</div>
-            <div class="dy-desc">镜面教学+口令版 · 119.8万粉丝 · 1361个视频</div>
-            <div class="dy-tags"><span class="dy-tag">手臂力量</span><span class="dy-tag">慢速口令</span><span class="dy-tag">国风爵士</span></div>
-            <div class="dy-fans">💡 入门首选，讲解超细致</div>
+            <div class="dy-name">孙老师爵士舞【零基础】<span style="font-size:11px;color:#7c3aed;font-weight:700;">· 已锁定</span></div>
+            <div class="dy-desc">镜面教学+口令版 · 119.8万粉丝 · 1361个视频 · 获赞482万 · IP属地湖北</div>
+            <div class="dy-tags"><span class="dy-tag">手臂力量</span><span class="dy-tag">慢速口令</span><span class="dy-tag">国风爵士</span><span class="dy-tag">认准全名</span></div>
+            <div class="dy-fans">💡 入门首选，讲解最细；也叫"孙小琪舞蹈"，别认错重名</div>
           </div>
         </div>
         <!-- 大浪舞蹈 -->
@@ -6966,7 +6980,8 @@
     // 今日跟学（自动按 Day 序号显示老师 + 抖音直达）
     if (followEl) {
       const d = DANCE_SCHED[dayIdx - 1];
-      const href = danceTeacherHref(d.kw);
+      const kwFull = (d.t.indexOf('孙老师') >= 0) ? ('孙老师爵士舞【零基础】 ' + d.kw.replace(/^孙老师\s*/, '')) : d.kw;
+      const href = danceTeacherHref(kwFull);
       followEl.innerHTML =
         '<div style="font-size:12px;opacity:.85;margin-bottom:3px;">📺 今日跟学 · Day ' + dayIdx + '/30 · ' + DANCE_WKNAME[d.w] + '</div>' +
         '<div style="font-size:19px;font-weight:800;margin-bottom:6px;">👉 ' + escapeHtml(d.t) + '</div>' +
