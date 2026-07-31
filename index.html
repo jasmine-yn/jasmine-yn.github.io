@@ -694,6 +694,84 @@
   }
   .kb-chapter-input:focus { border-color:var(--accent); outline:none; background:#fff; }
 
+  /* ====== 首页知识点轮播卡片 ====== */
+  .kb-carousel {
+    position:relative;
+    overflow:hidden;
+    border-radius:14px;
+  }
+  .kb-carousel-track {
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    padding:4px 2px 8px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .kb-carousel-track::-webkit-scrollbar { display:none; }
+  .kb-carousel-track.auto { /* JS 驱动自动滚动 */ }
+  .kb-flashcard {
+    flex:0 0 260px;
+    scroll-snap-align:center;
+    background:linear-gradient(145deg, var(--card), var(--accent-light));
+    border:1.5px solid var(--border);
+    border-radius:14px;
+    padding:16px 18px;
+    box-shadow:0 3px 12px var(--shadow);
+    transition:all .3s;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+  }
+  .kb-flashcard:active { transform:scale(0.97); }
+  .kb-flashcard::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--accent), var(--sidebar-end));
+    border-radius:14px 14px 0 0;
+  }
+  .kb-flashcard-subj {
+    display:inline-block;
+    font-size:11px; font-weight:700;
+    padding:3px 10px; border-radius:10px;
+    background:var(--accent); color:#fff;
+    margin-bottom:10px;
+  }
+  .kb-flashcard-point {
+    font-size:15px; font-weight:600; line-height:1.5;
+    color:var(--text); margin-bottom:8px;
+  }
+  .kb-flashcard-detail {
+    font-size:12px; color:var(--text-light); line-height:1.6;
+    max-height:0; overflow:hidden; transition:max-height .4s ease;
+  }
+  .kb-flashcard.expanded .kb-flashcard-detail { max-height:200px; }
+  .kb-flashcard-hint {
+    font-size:10px; color:var(--text-light); margin-top:8px; opacity:0.7;
+  }
+  .kb-flashcard.expanded .kb-flashcard-hint { display:none; }
+  .kb-carousel-nav {
+    display:flex; justify-content:center; gap:16px; margin-top:10px;
+  }
+  .kb-nav-btn {
+    width:32px; height:32px; border-radius:50%;
+    border:1.5px solid var(--border); background:var(--card);
+    color:var(--text-light); font-size:14px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s;
+  }
+  .kb-nav-btn:hover { border-color:var(--accent); color:var(--accent); }
+  .kb-carousel-dots {
+    display:flex; justify-content:center; gap:6px; margin-top:8px;
+  }
+  .kb-dot {
+    width:7px; height:7px; border-radius:50%; background:var(--border);
+    transition:all .3s; cursor:pointer;
+  }
+  .kb-dot.active { background:var(--accent); width:20px; border-radius:4px; }
+
   /* 知识点预览 */
   .kb-preview { margin-top:16px; display:none; }
   .kb-preview.show { display:block; }
@@ -719,6 +797,7 @@
     .duo-banner { grid-template-columns: 1fr; }
     .duo-card { padding: 14px 16px; }
     .duo-illust svg { width: 80px; height: 80px; }
+    .kb-flashcard { flex:0 0 240px; }
   }
 
   /* 抖音账号推荐卡 */
@@ -1097,7 +1176,7 @@
   <div id="dataHealthBar" style="padding:6px 12px;font-size:9px;color:rgba(255,255,255,0.4);border-top:1px solid rgba(255,255,255,0.06);margin-top:auto;display:flex;align-items:center;gap:4px;">
       <span id="healthDot" style="width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
       <span id="healthLabel">正常</span>
-      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.25</span>
+      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.26</span>
       <span style="cursor:pointer;opacity:0.5;font-size:10px;" onclick="showDataManager()" title="数据管理">⚙</span>
     </div>
 </aside>
@@ -1182,18 +1261,14 @@
     </div>
 
     <!-- 形象插画双卡片 -->
-    <!-- ☀️ 今日知识点卡片 -->
-    <div class="card kb-card clickable-card" id="dashKnowledgeCard" style="margin-bottom:20px;" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面生成知识点">
+    <!-- ☀️ 今日知识点卡片（轮播） -->
+    <div class="card kb-card" id="dashKnowledgeCard" style="margin-bottom:20px;">
       <div class="card-header">
         <span class="card-title">☀️ 今日知识点</span>
         <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
       </div>
-      <div id="dashKbContent">
-        <div class="kb-card-empty">
-          <div class="kb-empty-icon">📝</div>
-          <div style="font-weight:600;margin-bottom:4px;">还没有今日的知识点</div>
-          <div style="font-size:13px;">去「每日计划」页面 → 选科目标签 → 生成明日知识点<br>明早打开就能看到啦 ✨</div>
-        </div>
+      <div class="kb-carousel" id="dashKbCarousel">
+        <div id="dashKbContent"></div>
       </div>
     </div>
 
@@ -4539,37 +4614,152 @@
     }
   }
 
-  // 首页加载今日知识点
+  // 首页加载今日知识点 — 轮播卡片
+  var _kbAutoInterval = null;
   function loadTodayKnowledge() {
-    const today = localDateStr();
-    const allKb = safeGetJSON(KB_KEY, {});
-    const todayKb = allKb[today];
+    var today = localDateStr();
+    var allKb = safeGetJSON(KB_KEY, {});
+    var todayKb = allKb[today];
 
-    const card = document.getElementById('dashKnowledgeCard');
-    const content = document.getElementById('dashKbContent');
-    const dateEl = document.getElementById('dashKbDate');
+    var card = document.getElementById('dashKnowledgeCard');
+    var content = document.getElementById('dashKbContent');
+    var dateEl = document.getElementById('dashKbDate');
+    if (!card || !content) return;
 
     if (todayKb && todayKb.subjects && todayKb.subjects.length > 0) {
       dateEl.textContent = '📅 ' + today;
-      let html = todayKb.subjects.map(s => {
-        const pointsHtml = s.points.map((p,i) =>
-          '<li><span class="kb-num">' + (i+1) + '</span>' + p + '</li>'
-        ).join('');
-        return '<div class="kb-subject-block"><div class="kb-subject-title">' + s.name +
-          '</div><ul class="kb-point-list">' + pointsHtml + '</ul></div>';
+      // 展平为每个知识点一张卡
+      var flatPoints = [];
+      todayKb.subjects.forEach(function(s) {
+        s.points.forEach(function(p) {
+          flatPoints.push({ subject:s.name, point:p });
+        });
+      });
+
+      var html = '';
+      var isAuto = flatPoints.length > 3;
+      html = '<div class="kb-carousel-track' + (isAuto ? ' auto' : '') + '" id="kbCarouselTrack">';
+      html += flatPoints.map(function(fp, i) {
+        return buildFlashCard(fp.subject, fp.point, i + 1, flatPoints.length);
       }).join('');
+      html += '</div>';
+      // 导航点
+      html += '<div class="kb-carousel-dots" id="kbCarouselDots">';
+      html += flatPoints.map(function(_, i) {
+        return '<span class="kb-dot' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '" onclick="scrollToKbCard(' + i + ')"></span>';
+      }).join('');
+      html += '</div>';
 
       if (todayKb.chapter) {
-        html = '<div style="background:#fffbeb;padding:8px 12px;border-radius:8px;margin-bottom:10px;border:1px solid #fde68a;font-size:12px;">📝 范围：<b>' + todayKb.chapter + '</b></div>' + html;
+        html = '<div style="background:#fffbeb;padding:8px 12px;border-radius:10px;margin-bottom:12px;border:1px solid #fde68a;font-size:12px;">📝 范围：<b>' + todayKb.chapter + '</b></div>' + html;
       }
 
       content.innerHTML = html;
       if (card) card.style.display = 'block';
+
+      // 启动自动轮播（4张以上）
+      if (isAuto) {
+        window._kbCarouselIdx = 0;
+        window._kbCarouselTotal = flatPoints.length;
+        startKbAutoScroll();
+      } else {
+        stopKbAutoScroll();
+      }
     } else {
-      // 没有今日知识点，显示提示
+      content.innerHTML = '<div class="kb-card-empty">' +
+        '<div class="kb-empty-icon">📝</div>' +
+        '<div style="font-weight:600;margin-bottom:4px;">还没有今日的知识点</div>' +
+        '<div style="font-size:13px;">去「每日计划」页面 → 选科目标签 → 生成明日知识点<br>明早打开就能看到啦 ✨</div>' +
+        '</div>';
       if (card) card.style.display = 'block';
     }
   }
+
+  function buildFlashCard(subject, point, num, total) {
+    // 安全转义
+    function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    var lines = point.split(/\n|\\n/);
+    var title = lines[0] || point;
+    var detail = lines.length > 1 ? lines.slice(1).join('<br>') : '';
+    var dashIdx = title.indexOf('——');
+    if (dashIdx > 0 && !detail) {
+      detail = title.substring(dashIdx + 2);
+      title = title.substring(0, dashIdx);
+    }
+    return '<div class="kb-flashcard" onclick="event.stopPropagation();toggleFlashCard(this)" title="点击展开/折叠">' +
+      '<span class="kb-flashcard-subj">' + esc(subject) + '</span>' +
+      '<div class="kb-flashcard-point">' + esc(title) + '</div>' +
+      (detail ? '<div class="kb-flashcard-detail">' + esc(detail) + '</div>' : '') +
+      (detail ? '<div class="kb-flashcard-hint">👆 点击卡片查看详解</div>' : '') +
+      '<div style="text-align:right;font-size:10px;color:var(--text-light);margin-top:6px;">' + num + ' / ' + total + '</div>' +
+      '</div>';
+  }
+
+  // 切换卡片展开/折叠
+  function toggleFlashCard(el) {
+    el.classList.toggle('expanded');
+  }
+
+  // 轮播滑动控制
+  function kbSlide(dir) {
+    var track = document.getElementById('kbCarouselTrack');
+    if (!track) return;
+    var cardW = 272; // 260 + 12 gap
+    track.scrollBy({ left: dir * cardW, behavior: 'smooth' });
+  }
+
+  function scrollToKbCard(idx) {
+    var track = document.getElementById('kbCarouselTrack');
+    if (!track) return;
+    var cardW = 272;
+    track.scrollTo({ left: idx * cardW, behavior: 'smooth' });
+    window._kbCarouselIdx = idx;
+    updateKbDots(idx);
+  }
+
+  function updateKbDots(idx) {
+    document.querySelectorAll('.kb-dot').forEach(function(d, i) {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  // 自动轮播（≥4张卡片）
+  function startKbAutoScroll() {
+    stopKbAutoScroll();
+    window._kbAutoTimer = setInterval(function() {
+      var track = document.getElementById('kbCarouselTrack');
+      if (!track || !window._kbCarouselTotal) return;
+      var next = (window._kbCarouselIdx || 0) + 1;
+      if (next >= window._kbCarouselTotal) next = 0;
+      scrollToKbCard(next);
+    }, 3500);
+  }
+
+  function stopKbAutoScroll() {
+    if (window._kbAutoTimer) { clearInterval(window._kbAutoTimer); window._kbAutoTimer = null; }
+  }
+
+  // 触摸/滚动时暂停自动轮播，停止滚动后恢复
+  (function() {
+    var _kbResumeTimer = null;
+    document.addEventListener('scroll', function(e) {
+      var track = document.getElementById('kbCarouselTrack');
+      if (!track || !track.contains(e.target)) return;
+      stopKbAutoScroll();
+      clearTimeout(_kbResumeTimer);
+      _kbResumeTimer = setTimeout(function() {
+        // 找到当前可视的卡片索引
+        var cardW = 272;
+        var idx = Math.round(track.scrollLeft / cardW);
+        if (idx < 0) idx = 0;
+        if (idx >= (window._kbCarouselTotal || 0)) idx = window._kbCarouselTotal - 1;
+        window._kbCarouselIdx = idx;
+        updateKbDots(idx);
+        // 如果原本是自动模式，恢复自动滚动
+        if (track.classList.contains('auto')) startKbAutoScroll();
+      }, 2000);
+    }, true);
+  })();
 
   // 编辑模式下加载计划页面时同时恢复知识点状态
   function loadKnowledgeState() {
