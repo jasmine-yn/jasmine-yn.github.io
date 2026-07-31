@@ -808,6 +808,7 @@
     cursor: pointer; transition: all .2s; align-items: center;
   }
   .dy-account-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); border-color: var(--accent); }
+  .bili-ep.active { background: var(--accent); color: #fff; border-color: var(--accent); }
   .dy-avatar {
     width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center; font-size: 24px;
@@ -1705,6 +1706,28 @@
               <a href="https://www.douyin.com/search/%E5%AD%99%E8%80%81%E5%B8%88%E7%88%B5%E5%A3%AB%E8%88%9E%E3%80%90%E9%9B%B6%E5%9F%BA%E7%A1%80%E3%80%91" target="_blank" style="background:#fff;color:#7c3aed;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;">🔍 去抖音搜这个全名</a>
               <span style="font-size:11px;opacity:.9;">进她主页关注 → 选「慢速口令版 / 1080P」视频跟练，画质最清晰</span>
             </div>
+          </div>
+          <!-- 📺 B站直嵌：零基础基本功合集（可网页直接跟练·慢放/镜像/AB循环） -->
+          <div id="bili-zone" style="margin:6px 0 14px;padding:12px;background:#fff;border-radius:14px;border:1px solid var(--border);">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div style="font-size:13px;font-weight:800;color:#7c3aed;">📺 直接跟练 · 零基础基本功合集（32集）</div>
+              <span id="bili-now" style="font-size:12px;color:var(--text-light);"></span>
+            </div>
+            <div style="position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:10px;overflow:hidden;">
+              <iframe id="bili-frame" src="https://player.bilibili.com/player.html?bvid=BV1aGSJYgEgy&page=1&high_quality=1&danmaku=0&autoplay=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" scrolling="no" frameborder="no" allowfullscreen="true" referrerpolicy="no-referrer"></iframe>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+              <button class="btn btn-outline btn-sm bili-ep" data-page="3" onclick="danceShowBV(3)">头部·甩头</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="5" onclick="danceShowBV(5)">肩部</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="6" onclick="danceShowBV(6)">胸部</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="7" onclick="danceShowBV(7)">胯部</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="9" onclick="danceShowBV(9)">每日跟练</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="14" onclick="danceShowBV(14)">手臂力量</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="18" onclick="danceShowBV(18)">不协调</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="19" onclick="danceShowBV(19)">协调训练</button>
+              <button class="btn btn-outline btn-sm bili-ep" data-page="21" onclick="danceShowBV(21)">记动作</button>
+            </div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:6px;line-height:1.5;">💡 播放器右下角「设置」可开 <b>镜像画面 / 倍速（0.5x慢放）/ 单集循环（AB循环）</b>，直接对着屏幕跟练。孙老师原版在抖音（见上方锁定块），此合集为同款最细基本功，画质清晰、讲得细。</div>
           </div>
           <!-- 视频播放器 -->
           <div id="dance-player-wrap" style="display:none; margin-bottom:12px;">
@@ -6620,6 +6643,17 @@
     dancePlayVideo(url, '外部视频');
   }
 
+  // B站合集直嵌：切换集数 + 高亮 + 滚动
+  function danceShowBV(page) {
+    const f = document.getElementById('bili-frame');
+    if (f) f.src = 'https://player.bilibili.com/player.html?bvid=' + DANCE_BV + '&page=' + page + '&high_quality=1&danmaku=0&autoplay=0';
+    document.querySelectorAll('.bili-ep').forEach(b => b.classList.toggle('active', b.dataset.page === String(page)));
+    const now = document.getElementById('bili-now');
+    if (now) now.textContent = '当前：第' + page + '集 · ' + (DANCE_BV_NAME[page] || '基本功');
+    const zone = document.getElementById('bili-zone');
+    if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   function dancePlayVideo(url, name) {
     const player = document.getElementById('dance-player');
     const wrap = document.getElementById('dance-player-wrap');
@@ -6870,24 +6904,24 @@
   const DANCE_30D_KEY = 'jasmine_dance_30d';
   // 每日跟学排期（抖音讲得最细的老师，按周专项推进）
   const DANCE_SCHED = [
-    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 颈部 基本功 慢速口令',c:'头部 isolation：点/摇/侧倾/绕圈，跟口令版',m:15},
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 颈部 基本功 慢速口令',c:'头部 isolation：点/摇/侧倾/绕圈，跟口令版',m:15,bv:3},
     {w:1,t:'milly 米粒儿',kw:'milly 练练肩 爵士基本功',c:'肩部：提沉 / 前后绕 / 单肩交替',m:15},
     {w:1,t:'大浪舞蹈',kw:'大浪舞蹈 绕胸 肩胸rolling',c:'胸腔：左右滑 / 前后pop / 绕圈',m:15},
     {w:1,t:'雪君老师',kw:'雪君老师 胯部练习组合',c:'胯部：左右顶 / 8字 / 绕胯',m:15},
-    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 一学就会系列',c:'综合隔离回顾（头肩胸胯连做）',m:20},
-    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 慢速口令版',c:'头+肩复习，慢速口令跟练',m:15},
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 一学就会系列',c:'综合隔离回顾（头肩胸胯连做）',m:20,bv:9},
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 慢速口令版',c:'头+肩复习，慢速口令跟练',m:15,bv:5},
     {w:1,t:'大浪舞蹈',kw:'大浪舞蹈 跳舞发力技巧',c:'第1周自检+发力细节纠正，录15秒视频',m:20},
-    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 手臂没有力量 2招',c:'手部/手臂线条：力量训练',m:15},
+    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 手臂没有力量 2招',c:'手部/手臂线条：力量训练',m:15,bv:14},
     {w:2,t:'milly 米粒儿',kw:'milly 手位练一练 爵士基本功',c:'手部：6种爵士手位',m:15},
     {w:2,t:'大浪舞蹈',kw:'大浪舞蹈 爵士步 基本功',c:'脚步：重心移 / step-touch',m:15},
     {w:2,t:'布濤濤零基础爵士舞',kw:'布濤濤 螃蟹步 爵士',c:'脚步：螃蟹步跟练',m:15},
-    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 一学就会系列 组合',c:'手+脚结合组合',m:20},
+    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 一学就会系列 组合',c:'手+脚结合组合',m:20,bv:9},
     {w:2,t:'milly 米粒儿',kw:'milly wave 练起来 爵士基本功',c:'wave：正wave / 侧wave',m:15},
     {w:2,t:'大浪舞蹈',kw:'大浪舞蹈 反WAVE',c:'第2周自检+wave，录视频',m:20},
     {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 摆胯 爵士基本功',c:'双部位：胯绕 + 手推（反方向）',m:15},
     {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 绕胸',c:'双部位：胸pop + 头侧倾',m:15},
     {w:3,t:'milly 米粒儿',kw:'milly 练练肩 爵士基本功',c:'双部位：肩沉 + 脚下step',m:15},
-    {w:3,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 慢速口令版',c:'双部位：头绕 + 手定住',m:15},
+    {w:3,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 慢速口令版',c:'双部位：头绕 + 手定住',m:15,bv:19},
     {w:3,t:'淡淡Dancey',kw:'淡淡Dancey 100个爵士基本功',c:'选2个双部位组合跟练',m:20},
     {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 跳舞发力技巧',c:'双部位节奏变化训练',m:15},
     {w:3,t:'淡淡Dancey',kw:'淡淡Dancey 爵士舞课堂',c:'第3周自检+录视频对比',m:20},
@@ -6901,6 +6935,9 @@
     {w:4,t:'淡淡Dancey',kw:'淡淡Dancey 爵士基本功',c:'串32拍组合（自选串联）',m:25},
     {w:4,t:'大浪舞蹈',kw:'大浪舞蹈 爵士基本功 发力技巧',c:'第30天总自检+录视频对比第1周',m:25}
   ];
+  // B站零基础基本功合集（可网页直嵌、自带慢放/镜像/AB循环）：与孙老师同款最细基本功
+  const DANCE_BV = 'BV1aGSJYgEgy';
+  const DANCE_BV_NAME = {3:'甩头',5:'肩部',6:'胸部',7:'胯部',9:'每日跟练',14:'力量训练',18:'身体不协调',19:'协调训练',21:'记不住动作'};
   const DANCE_WKNAME = {1:'第1周·隔离',2:'第2周·手脚',3:'第3周·协同',4:'第4周·融合'};
   function danceTeacherHref(kw){ return 'https://www.douyin.com/search/' + encodeURIComponent(kw); }
   function getPlanStart() {
@@ -6982,11 +7019,16 @@
       const d = DANCE_SCHED[dayIdx - 1];
       const kwFull = (d.t.indexOf('孙老师') >= 0) ? ('孙老师爵士舞【零基础】 ' + d.kw.replace(/^孙老师\s*/, '')) : d.kw;
       const href = danceTeacherHref(kwFull);
+      let biliBtn = '';
+      if (d.bv) {
+        biliBtn = '<button onclick="danceShowBV(' + d.bv + ')" style="background:#7c3aed;color:#fff;border:none;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13px;white-space:nowrap;cursor:pointer;">▶ 直接看第' + d.bv + '集·' + (DANCE_BV_NAME[d.bv] || '基本功') + '</button>';
+      }
       followEl.innerHTML =
         '<div style="font-size:12px;opacity:.85;margin-bottom:3px;">📺 今日跟学 · Day ' + dayIdx + '/30 · ' + DANCE_WKNAME[d.w] + '</div>' +
         '<div style="font-size:19px;font-weight:800;margin-bottom:6px;">👉 ' + escapeHtml(d.t) + '</div>' +
         '<div style="font-size:13px;opacity:.95;margin-bottom:9px;line-height:1.5;">' + escapeHtml(d.c) + '（跟练约 ' + d.m + ' 分钟）</div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          biliBtn +
           '<a href="' + href + '" target="_blank" style="background:#fff;color:#7c3aed;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;">🔍 去抖音搜：' + escapeHtml(d.t) + '</a>' +
           '<span style="font-size:11px;opacity:.88;">固定流程：5分钟激活 → 跟练 → 记动作</span>' +
         '</div>';
