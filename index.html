@@ -892,6 +892,8 @@
   .plan-preview-content { flex:1; line-height:1.6; }
   .plan-edit-link { font-size:12px; color:var(--accent); cursor:pointer; text-decoration:underline; margin-top:8px; display:inline-block; }
   .plan-empty-state { text-align:center; padding:20px 0; color:var(--text-light); font-size:13px; }
+  .plan-preview-active { background: linear-gradient(90deg, rgba(168,85,247,.12), transparent); border-radius:8px; margin:0 -6px; padding-left:6px; padding-right:6px; }
+  .plan-preview-more { text-align:center; font-size:12px; color:var(--accent); cursor:pointer; padding:8px 0 2px; margin-top:4px; user-select:none; }
 
   /* ====== OCR 拍照识别 ====== */
   .ocr-upload-zone {
@@ -1285,7 +1287,10 @@
     <div class="card" id="dashPlanCard">
       <div class="card-header">
         <span class="card-title" id="dashPlanTitle">📅 今日日程</span>
-        <span onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;">✏️ 编辑计划</span>
+        <span style="display:flex;gap:12px;align-items:center;">
+          <span id="dashPlanToggle" onclick="toggleDashPlan()" style="font-size:12px;color:var(--accent);cursor:pointer;user-select:none;">▾ 展开全部</span>
+          <span onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;">✏️ 编辑计划</span>
+        </span>
       </div>
       <div id="dashPlanContent">
         <div class="plan-empty-state">📝 还没有写今日计划～<br>去「每日计划」页面写下你的安排吧</div>
@@ -3350,11 +3355,12 @@
     if (statsEl) statsEl.textContent = `共 ${todos.length} 条 · ${done.length} 已完成`;
   }
 
-  // 首页 — 今日日程（从每日计划读取，晚间自动切换为明日日程）
+  // 首页 — 今日日程（可收缩：收起只显示当前时刻计划，点开看全部）
   function renderDashPlan() {
     const el = document.getElementById('dashPlanContent');
     if (!el) return;
     const titleEl = document.getElementById('dashPlanTitle');
+    const toggleEl = document.getElementById('dashPlanToggle');
     const now = new Date();
     const today = localDateStr(now);
 
@@ -3377,35 +3383,88 @@
     if (titleEl) titleEl.textContent = '📅 ' + label;
 
     if (!saved || !saved.trim()) {
+      if (toggleEl) toggleEl.style.display = 'none';
       el.innerHTML = '<div class="plan-empty-state">📝 还没有写今日计划～<br>去「每日计划」页面写下你的安排吧</div>';
       return;
     }
     const lines = saved.split('\n').filter(l => l.trim());
     if (lines.length === 0) {
+      if (toggleEl) toggleEl.style.display = 'none';
       el.innerHTML = '<div class="plan-empty-state">📝 还没有写今日计划～<br>去「每日计划」页面写下你的安排吧</div>';
       return;
     }
-    // 尝试解析时间格式的行
-    const timeRegex = /^(\d{1,2}:\d{2}[-~至]?\d{1,2}:\d{2})\s*(.*)$/;
-    const htmlParts = [];
+
+    // 解析带时间段的行
+    const items = [];
     let titleLine = null;
+    const rangeRe = /^(\d{1,2}:\d{2})\s*[-~至]\s*(\d{1,2}:\d{2})\s*(.*)$/;
+    const singleRe = /^(\d{1,2}:\d{2})\s+(.*)$/;
     lines.forEach(line => {
-      const m = line.match(timeRegex);
+      const m = line.match(rangeRe);
       if (m) {
-        htmlParts.push(`<div class="plan-preview-item"><span class="plan-preview-time">${m[1]}</span><span class="plan-preview-content">${m[2] || ''}</span></div>`);
-      } else if (line.startsWith('📅') && !titleLine) {
-        titleLine = line;
+        items.push({ start: toMin(m[1]), end: toMin(m[2]), display: m[1] + '–' + m[2], content: m[3] || '' });
+      } else {
+        const s = line.match(singleRe);
+        if (s) {
+          items.push({ start: toMin(s[1]), end: toMin(s[1]), display: s[1], content: s[2] || '' });
+        } else if (line.startsWith('📅') && !titleLine) {
+          titleLine = line;
+        }
       }
     });
-    if (htmlParts.length === 0) {
-      // 没有时间格式的行，直接显示原文
+
+    // 没有时间格式的行：直接显示原文，不支持收缩
+    if (items.length === 0) {
+      if (toggleEl) toggleEl.style.display = 'none';
       el.innerHTML = '<div style="white-space:pre-wrap;font-size:13px;line-height:1.8;">' + saved + '</div>';
-    } else {
-      let result = '';
-      if (titleLine) result += `<div style="font-weight:700;font-size:14px;margin-bottom:6px;">${titleLine}</div>`;
-      result += htmlParts.join('');
-      el.innerHTML = result;
+      return;
     }
+
+    const collapsed = (localStorage.getItem('jasmine_dashplan_collapsed') || '1') === '1';
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+
+    // 当前时刻对应的计划：正在进行的段 → 下一个待开始的段 → 最后一段
+    let activeIdx = items.findIndex(it => nowMin >= it.start && nowMin <= it.end);
+    if (activeIdx === -1) {
+      const nextIdx = items.findIndex(it => it.start > nowMin);
+      activeIdx = nextIdx === -1 ? items.length - 1 : nextIdx;
+    }
+
+    if (toggleEl) {
+      toggleEl.style.display = '';
+      toggleEl.textContent = collapsed ? '▾ 展开全部' : '▴ 收起';
+    }
+
+    const itemHtml = (it, highlight) =>
+      `<div class="plan-preview-item${highlight ? ' plan-preview-active' : ''}">` +
+      `<span class="plan-preview-time">${it.display}</span>` +
+      `<span class="plan-preview-content">${it.content}</span></div>`;
+
+    let result = '';
+    if (titleLine) result += `<div style="font-weight:700;font-size:14px;margin-bottom:6px;">${titleLine}</div>`;
+
+    if (collapsed) {
+      result += itemHtml(items[activeIdx], true);
+      if (items.length > 1) {
+        result += `<div class="plan-preview-more" onclick="toggleDashPlan()">还有 ${items.length - 1} 项 · 点击展开 ▾</div>`;
+      }
+    } else {
+      result += items.map((it, i) => itemHtml(it, i === activeIdx)).join('');
+    }
+    el.innerHTML = result;
+  }
+
+  // 切换首页日程收起 / 展开
+  function toggleDashPlan() {
+    const cur = (localStorage.getItem('jasmine_dashplan_collapsed') || '1') === '1';
+    localStorage.setItem('jasmine_dashplan_collapsed', cur ? '0' : '1');
+    renderDashPlan();
+  }
+
+  // 把 "HH:MM" 转成分钟数
+  function toMin(t) {
+    const parts = String(t).split(':').map(Number);
+    return (parts[0] || 0) * 60 + (parts[1] || 0);
   }
 
   // ===== 三餐记录系统 =====
