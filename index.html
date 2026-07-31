@@ -895,29 +895,33 @@
   .plan-preview-active { background: linear-gradient(90deg, rgba(168,85,247,.12), transparent); border-radius:8px; margin:0 -6px; padding-left:6px; padding-right:6px; }
   .plan-preview-more { text-align:center; font-size:12px; color:var(--accent); cursor:pointer; padding:8px 0 2px; margin-top:4px; user-select:none; }
 
-  /* ===== 学习计时浮窗 ===== */
-  .study-timer { position:fixed; left:20px; bottom:20px; z-index:9990; width:286px; background:#fff; border-radius:16px; box-shadow:0 10px 34px rgba(0,0,0,.20); overflow:hidden; border:1px solid var(--border); font-family:inherit; }
-  .study-timer .st-bar { display:flex; align-items:center; gap:9px; padding:11px 14px; background:linear-gradient(135deg,#7c3aed,#a855f7); color:#fff; cursor:pointer; user-select:none; }
-  .st-dot { width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.55); flex:none; }
-  .study-timer.running .st-dot { background:#fff; animation:stPulse 1.1s infinite; }
-  @keyframes stPulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.35;transform:scale(.7);} }
-  .st-title { font-size:13px; font-weight:700; }
-  .st-time { margin-left:auto; font-size:17px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:.5px; }
-  .st-collapse { font-size:12px; transition:transform .25s; }
-  .study-timer.collapsed .st-collapse { transform:rotate(180deg); }
-  .st-body { padding:13px 14px 14px; display:flex; flex-direction:column; gap:11px; }
-  .study-timer.collapsed .st-body { display:none; }
-  .st-select { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:10px; font-size:13px; background:#fff; color:var(--text); }
-  .st-select:disabled { background:#f3f4f6; color:var(--text-light); }
-  .st-btns { display:flex; gap:8px; }
-  .st-btn { flex:1; padding:10px 0; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; color:#fff; transition:opacity .2s; }
-  .st-btn:disabled { opacity:.4; cursor:default; }
+  /* ===== 首页学习计时钟 ===== */
+  .st-clock-wrap { display:flex; align-items:center; justify-content:center; gap:24px; padding:8px 4px 16px; flex-wrap:wrap; }
+  .st-clock-ring { position:relative; width:190px; height:190px; flex:none; }
+  .st-clock-svg { width:100%; height:100%; }
+  .st-clock-face { fill:#f8fafc; stroke:var(--border); stroke-width:2; }
+  .st-clock-tick { stroke:#9ca3af; stroke-width:1; }
+  .st-clock-tick-major { stroke:#6b7280; stroke-width:2; }
+  .st-clock-num { font-size:12px; fill:#6b7280; text-anchor:middle; dominant-baseline:middle; }
+  .st-clock-sector { fill:var(--accent); opacity:0.85; transition:opacity .3s; }
+  .dashStudyTimerCard.running .st-clock-sector { opacity:1; filter:brightness(1.08); }
+  .st-clock-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:23px; font-weight:800; color:var(--text); text-align:center; font-variant-numeric:tabular-nums; line-height:1; }
+  .st-clock-center small { display:block; font-size:10px; font-weight:600; color:var(--text-light); margin-top:2px; }
+  .st-clock-side { display:flex; flex-direction:column; gap:12px; min-width:170px; }
+  .st-clock-side .st-select { width:100%; padding:9px 10px; border:1px solid var(--border); border-radius:10px; font-size:13px; background:#fff; color:var(--text); }
+  .st-clock-side .st-select:disabled { background:#f3f4f6; color:var(--text-light); }
+  .st-total { font-size:26px; font-weight:800; color:var(--accent); }
+  .st-total-label { font-size:12px; color:var(--text-light); margin-top:-4px; }
+  .st-clock-side .st-btns { display:flex; gap:8px; }
+  .st-clock-side .st-btn { flex:1; padding:10px 0; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; color:#fff; transition:opacity .2s; }
+  .st-clock-side .st-btn:disabled { opacity:.4; cursor:default; }
   .st-start { background:#22c55e; }
   .st-pause { background:#f59e0b; }
   .st-stop { background:#ef4444; }
-  .st-hint { font-size:11px; color:var(--text-light); text-align:center; }
   @media(max-width:768px) {
-    .study-timer { left:0; right:0; bottom:0; width:auto; border-radius:0; border-left:none; border-right:none; border-bottom:none; }
+    .st-clock-wrap { gap:16px; }
+    .st-clock-ring { width:160px; height:160px; }
+    .st-clock-center { font-size:19px; }
   }
 
   /* ====== OCR 拍照识别 ====== */
@@ -1244,6 +1248,34 @@
         <div class="ec-days" id="exam2Days">124<span>天</span></div>
         <div class="ec-date">2026年12月 · 超格教育行测</div>
         <div class="ec-bar"><div class="ec-bar-fill" id="exam2Bar" style="width:15%"></div></div>
+      </div>
+    </div>
+
+    <!-- 学习计时钟 -->
+    <div class="card" id="dashStudyTimerCard" style="margin-top:20px;">
+      <div class="card-header">
+        <span class="card-title">⏱️ 学习计时</span>
+        <span style="font-size:12px;color:var(--text-light);">选科目开始 → 结束时自动计入今日总时长</span>
+      </div>
+      <div class="st-clock-wrap">
+        <div class="st-clock-ring">
+          <svg viewBox="0 0 200 200" class="st-clock-svg">
+            <circle cx="100" cy="100" r="92" class="st-clock-face"/>
+            <g id="stClockTicks"></g>
+            <path id="stClockSector" class="st-clock-sector" d=""/>
+          </svg>
+          <div class="st-clock-center" id="timerDisplay">00:00</div>
+        </div>
+        <div class="st-clock-side">
+          <select id="timerSubject" class="st-select"></select>
+          <div class="st-total" id="stTotalToday">今日 0m</div>
+          <div class="st-total-label">学习时长</div>
+          <div class="st-btns">
+            <button id="btnTimerStart" class="st-btn st-start" onclick="timerStart()">▶ 开始</button>
+            <button id="btnTimerPause" class="st-btn st-pause" onclick="timerPause()" disabled>⏸ 暂停</button>
+            <button id="btnTimerStop" class="st-btn st-stop" onclick="timerStop()" disabled>⏹ 结束</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2664,25 +2696,6 @@
   </div>
 
 </main>
-
-<!-- 学习计时浮窗（常驻，跨页面可见） -->
-<div id="studyTimerWidget" class="study-timer">
-  <div class="st-bar" onclick="toggleTimerCollapse()">
-    <span class="st-dot" id="stDot"></span>
-    <span class="st-title">学习计时</span>
-    <span class="st-time" id="timerDisplay">00:00</span>
-    <span class="st-collapse">▾</span>
-  </div>
-  <div class="st-body" id="stBody">
-    <select id="timerSubject" class="st-select"></select>
-    <div class="st-btns">
-      <button id="btnTimerStart" class="st-btn st-start" onclick="timerStart()">▶ 开始</button>
-      <button id="btnTimerPause" class="st-btn st-pause" onclick="timerPause()" disabled>⏸ 暂停</button>
-      <button id="btnTimerStop" class="st-btn st-stop" onclick="timerStop()" disabled>⏹ 结束</button>
-    </div>
-    <div class="st-hint">选科目 → 开始学习计时，结束后自动统计今日总时长</div>
-  </div>
-</div>
 
 <!-- 数据管理弹窗 -->
 <div id="dataMgrOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;" onclick="if(event.target===this)hideDataManager()">
@@ -6752,21 +6765,56 @@
     return runState.accumMs + (runState.running ? Date.now() - runState.startTs : 0);
   }
   function timerTick() {
+    const ms = elapsedMs();
     const disp = document.getElementById('timerDisplay');
-    if (disp) disp.textContent = fmtTimer(elapsedMs());
+    if (disp) disp.textContent = fmtTimer(ms);
+    updateClockSector(ms);
   }
   function startTimerInterval() {
     if (window.__timerIv) clearInterval(window.__timerIv);
     window.__timerIv = setInterval(timerTick, 1000);
   }
+  function polar(cx, cy, r, deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return [cx + r * Math.cos(rad), cy + r * Math.sin(rad)];
+  }
+  function sectorPath(cx, cy, r, deg) {
+    if (deg <= 0) return '';
+    if (deg >= 360) return `M ${cx - r} ${cy} A ${r} ${r} 0 1 1 ${cx + r} ${cy} A ${r} ${r} 0 1 1 ${cx - r} ${cy} Z`;
+    const [x1, y1] = polar(cx, cy, r, 0);
+    const [x2, y2] = polar(cx, cy, r, deg);
+    const largeArc = deg > 180 ? 1 : 0;
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+  }
+  function renderClockFace() {
+    const g = document.getElementById('stClockTicks');
+    if (!g) return;
+    let html = '';
+    for (let i = 0; i < 60; i++) {
+      const isMajor = i % 5 === 0;
+      const [x1, y1] = polar(100, 100, isMajor ? 82 : 86, i * 6);
+      const [x2, y2] = polar(100, 100, isMajor ? 91 : 89, i * 6);
+      html += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="${isMajor ? 'st-clock-tick-major' : 'st-clock-tick'}"/>`;
+    }
+    for (let i = 0; i < 12; i++) {
+      const [x, y] = polar(100, 100, 74, i * 30);
+      html += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" class="st-clock-num">${i * 5}</text>`;
+    }
+    g.innerHTML = html;
+  }
+  function updateClockSector(ms) {
+    const sec = Math.floor(ms / 1000);
+    const deg = ((sec % 3600) / 3600) * 360; // 一圈 = 60 分钟，类似实物计时器
+    const p = document.getElementById('stClockSector');
+    if (p) p.setAttribute('d', sectorPath(100, 100, 86, deg));
+  }
   function updateTimerUI(running) {
-    const widget = document.getElementById('studyTimerWidget');
-    if (!widget) return;
-    widget.classList.toggle('running', !!running);
     const startBtn = document.getElementById('btnTimerStart');
     const pauseBtn = document.getElementById('btnTimerPause');
     const stopBtn = document.getElementById('btnTimerStop');
     const sel = document.getElementById('timerSubject');
+    const card = document.getElementById('dashStudyTimerCard');
+    if (card) card.classList.toggle('running', !!running);
     if (running) {
       if (startBtn) startBtn.disabled = true;
       if (pauseBtn) pauseBtn.disabled = false;
@@ -6818,6 +6866,7 @@
     runState = null;
     const disp = document.getElementById('timerDisplay');
     if (disp) disp.textContent = '00:00';
+    updateClockSector(0);
     updateTimerUI(false);
     renderDashStudyTime();
     renderTimeStat();
@@ -6825,6 +6874,7 @@
   function timerInit() {
     const sel = document.getElementById('timerSubject');
     if (sel) sel.innerHTML = STUDY_SUBJECTS.map(s => `<option value="${s.label}">${s.label}</option>`).join('');
+    renderClockFace();
     try {
       const rs = JSON.parse(localStorage.getItem(TIMER_RUN_KEY) || 'null');
       if (rs) {
@@ -6841,17 +6891,8 @@
       updateTimerUI(false);
     } else {
       updateTimerUI(false);
+      updateClockSector(0);
     }
-    const collapsed = localStorage.getItem('jasmine_timer_collapsed') === '1';
-    const widget = document.getElementById('studyTimerWidget');
-    if (widget) widget.classList.toggle('collapsed', collapsed);
-  }
-  function toggleTimerCollapse() {
-    const widget = document.getElementById('studyTimerWidget');
-    if (!widget) return;
-    const collapsed = !widget.classList.contains('collapsed');
-    widget.classList.toggle('collapsed', collapsed);
-    localStorage.setItem('jasmine_timer_collapsed', collapsed ? '1' : '0');
   }
   function studyTimeToday() {
     const today = localDateStr();
@@ -6864,12 +6905,16 @@
     return loadStudySessions().filter(s => new Date(s.start) >= monday).reduce((a, s) => a + s.duration, 0);
   }
   function renderDashStudyTime() {
-    const el = document.getElementById('dashStudyTimeVal');
-    if (!el) return;
     const sec = studyTimeToday();
-    const h = sec / 3600;
-    if (h >= 1) el.innerHTML = h.toFixed(1) + '<span style="font-size:18px;color:var(--text-light)">h</span>';
-    else el.innerHTML = Math.floor(sec / 60) + '<span style="font-size:18px;color:var(--text-light)">m</span>';
+    const text = fmtDurCN(sec);
+    const mini = document.getElementById('dashStudyTimeVal');
+    if (mini) {
+      const h = sec / 3600;
+      if (h >= 1) mini.innerHTML = h.toFixed(1) + '<span style="font-size:18px;color:var(--text-light)">h</span>';
+      else mini.innerHTML = Math.floor(sec / 60) + '<span style="font-size:18px;color:var(--text-light)">m</span>';
+    }
+    const total = document.getElementById('stTotalToday');
+    if (total) total.textContent = '今日 ' + text;
   }
   function renderTimeStat() {
     const todaySec = studyTimeToday();
