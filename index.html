@@ -1672,6 +1672,21 @@
       <div class="main-subtitle" id="danceWeekSub">本周练习 0 次 · 累计 0 min · 训练日志 + 视频推荐 + 搜你想要的舞</div>
     </div>
 
+    <!-- 🎯 30天协调·基本功·记动作训练 -->
+    <div class="card" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);">
+      <div class="card-header">
+        <span class="card-title">🎯 30天突破训练 · 协调 / 基本功 / 记动作</span>
+        <span style="font-size:12px;color:var(--text-light);">开始日 <input type="date" id="dance-plan-start" onchange="setDancePlanStart()" style="border:1px solid var(--border);border-radius:8px;padding:3px 6px;font-size:12px;"></span>
+      </div>
+      <div id="dance30Summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;"></div>
+      <div id="dance30Tasks"></div>
+      <div style="margin-top:12px;">
+        <div style="font-size:12px;color:var(--text-light);margin-bottom:6px;">30天进度（紫=今日 · 绿=全勤 · 浅紫=部分完成）</div>
+        <div id="dance30Dots" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+      </div>
+      <div id="dance30Link" style="margin-top:10px;font-size:12px;color:var(--text-light);"></div>
+    </div>
+
     <!-- 🎬 老师分解视频跟跳 -->
     <div class="card" style="background:linear-gradient(135deg, #faf5ff, #ede9fe);">
       <div class="card-header"><span class="card-title">🎬 老师分解视频 · 跟跳练习</span><span class="card-badge purple">新!</span></div>
@@ -3056,7 +3071,7 @@
       try { renderMealsByDate(); } catch(e) { console.error('renderMealsByDate error:', e); }
     }
     if (pageId === 'summary') renderDailySummary('medical');
-    if (pageId === 'dance') { renderDancePlaylist(); setDanceDateDefault(); ensureDanceSeed(); renderDanceLogs(); }
+    if (pageId === 'dance') { renderDancePlaylist(); setDanceDateDefault(); ensureDanceSeed(); renderDanceLogs(); renderDance30d(); }
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
@@ -6801,6 +6816,124 @@
     }
   }
 
+  // ===== 30天协调/基本功/记动作训练打卡 =====
+  const DANCE_PLAN_KEY = 'jasmine_dance_plan_start';
+  const DANCE_30D_KEY = 'jasmine_dance_30d';
+  function getPlanStart() {
+    let s = localStorage.getItem(DANCE_PLAN_KEY);
+    if (!s) { s = localDateStr(); localStorage.setItem(DANCE_PLAN_KEY, s); }
+    return s;
+  }
+  function getDance30d() {
+    try { return JSON.parse(localStorage.getItem(DANCE_30D_KEY)) || {}; } catch(e) { return {}; }
+  }
+  function setDance30d(obj) { try { localStorage.setItem(DANCE_30D_KEY, JSON.stringify(obj)); } catch(e) {} }
+  function danceDayIndex(dateStr) {
+    const start = parseLocalDate(getPlanStart());
+    const cur = parseLocalDate(dateStr);
+    const diff = Math.floor((cur - start) / 86400000) + 1;
+    return Math.max(1, Math.min(30, diff));
+  }
+  function danceWeekFocus(week) {
+    const map = {
+      1: '隔离地基：头·肩·胸·胯 单独练干净',
+      2: '加手脚：手部线条 + 脚步',
+      3: '双部位协同：两部位反方向同时做',
+      4: '全身融合：三部位以上 + 节奏变化'
+    };
+    return map[week] || '';
+  }
+  function setDancePlanStart() {
+    const el = document.getElementById('dance-plan-start');
+    if (el && el.value) { localStorage.setItem(DANCE_PLAN_KEY, el.value); renderDance30d(); }
+  }
+  function toggleDance30d(task) {
+    const today = localDateStr();
+    const all = getDance30d();
+    const rec = all[today] || { activate:false, basic:false, memory:false };
+    rec[task] = !rec[task];
+    all[today] = rec;
+    setDance30d(all);
+    renderDance30d();
+  }
+  function danceStreak() {
+    const all = getDance30d();
+    const today = localDateStr();
+    const total = Object.keys(all).filter(d => {
+      const r = all[d]; return r && (r.activate || r.basic || r.memory);
+    }).length;
+    let streak = 0;
+    let d = parseLocalDate(today);
+    const fmt = dt => { const p = n => String(n).padStart(2, '0'); return dt.getFullYear() + '-' + p(dt.getMonth() + 1) + '-' + p(dt.getDate()); };
+    for (let i = 0; i < 60; i++) {
+      const key = fmt(d);
+      const r = all[key];
+      if (r && (r.activate || r.basic || r.memory)) streak++;
+      else if (i > 0) break;
+      d = new Date(d); d.setDate(d.getDate() - 1);
+    }
+    return { total, streak };
+  }
+  function dance30Stat(v, sub) {
+    return '<div style="flex:1;min-width:120px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:10px 12px;"><div style="font-size:19px;font-weight:800;color:var(--accent);">' + v + '</div><div style="font-size:11px;color:var(--text-light);">' + sub + '</div></div>';
+  }
+  function renderDance30d() {
+    const sumEl = document.getElementById('dance30Summary');
+    const taskEl = document.getElementById('dance30Tasks');
+    const dotsEl = document.getElementById('dance30Dots');
+    const linkEl = document.getElementById('dance30Link');
+    const startEl = document.getElementById('dance-plan-start');
+    if (!sumEl) return;
+    if (startEl && !startEl.value) startEl.value = getPlanStart();
+    const today = localDateStr();
+    const dayIdx = danceDayIndex(today);
+    const week = Math.ceil(dayIdx / 7);
+    const { total, streak } = danceStreak();
+    const all = getDance30d();
+    const rec = all[today] || { activate:false, basic:false, memory:false };
+    const focus = danceWeekFocus(week);
+    sumEl.innerHTML =
+      dance30Stat('第 ' + week + ' 周', '共 4 周') +
+      dance30Stat('Day ' + dayIdx + '/30', focus) +
+      dance30Stat('连续 ' + streak + ' 天', '打卡不断') +
+      dance30Stat('累计 ' + total + ' 天', '已练');
+    const taskDefs = [
+      { key:'activate', icon:'⏱', name:'5分钟协调激活', desc:'头→肩→胸→胯→融合反方向，跟节拍器' },
+      { key:'basic', icon:'🎯', name:'当日基本功', desc: focus },
+      { key:'memory', icon:'🧠', name:'记动作训练', desc:'学1个8拍：命名 + 慢练 + 倒带复述' }
+    ];
+    taskEl.innerHTML = taskDefs.map(t => {
+      const on = rec[t.key];
+      return '<div onclick="toggleDance30d(\'' + t.key + '\')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:8px;border-radius:12px;cursor:pointer;border:1px solid ' + (on ? 'var(--accent)' : 'var(--border)') + ';background:' + (on ? '#f5f3ff' : '#fff') + ';">' +
+        '<span style="width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;background:' + (on ? 'var(--accent)' : '#eee') + ';color:' + (on ? '#fff' : '#aaa') + ';flex:none;">' + (on ? '✓' : '○') + '</span>' +
+        '<span style="font-size:20px;flex:none;">' + t.icon + '</span>' +
+        '<span style="flex:1;"><div style="font-weight:700;font-size:14px;">' + t.name + '</div><div style="font-size:12px;color:var(--text-light);">' + t.desc + '</div></span>' +
+        '</div>';
+    }).join('');
+    // 30 天进度点
+    let dots = '';
+    const p = n => String(n).padStart(2, '0');
+    for (let i = 1; i <= 30; i++) {
+      const d = parseLocalDate(getPlanStart()); d.setDate(d.getDate() + (i - 1));
+      const key = d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+      const r = all[key];
+      const done = r && r.activate && r.basic && r.memory;
+      const part = r && (r.activate || r.basic || r.memory);
+      const isToday = key === today;
+      let bg = '#ece8f4';
+      if (done) bg = '#22c55e'; else if (part) bg = '#a855f7';
+      if (isToday) bg = '#7c3aed';
+      dots += '<span title="Day ' + i + ' (' + key + ')" style="width:14px;height:14px;border-radius:4px;background:' + bg + ';flex:none;"></span>';
+    }
+    dotsEl.innerHTML = dots;
+    // 与练习日志打通
+    const logs = getDanceLogs().filter(l => l.date === today);
+    const min = logs.reduce((s, l) => s + (parseInt(l.duration, 10) || 0), 0);
+    linkEl.innerHTML = min > 0
+      ? ('🔗 今日已记录练习 <b>' + min + ' min</b>（来自「录入练习」），与本次训练叠加统计')
+      : '🔗 练完可去「录入练习」记录时长，首页舞蹈卡片会同步';
+  }
+
   function searchDance() {
     const q = document.getElementById('dance-search-input').value.trim();
     if (!q) { alert('请输入舞蹈名称或关键词哦～'); return; }
@@ -7185,6 +7318,7 @@
     renderDashWeight();
     ensureDanceSeed();
     renderDashDance();
+    renderDance30d();
 
     // 数据健康检查
     updateDataHealth();
