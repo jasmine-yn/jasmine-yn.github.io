@@ -834,6 +834,7 @@
   .wo-icon { font-size: 28px; margin-bottom: 8px; }
   .wo-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
   .wo-meta { font-size: 12px; color: var(--text-light); margin-bottom: 6px; }
+  .wo-gear { font-size: 11.5px; color: #b45309; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 4px 8px; margin-bottom: 8px; display: inline-block; }
   .wo-actions { display: flex; gap: 6px; flex-wrap: wrap; }
   .wo-btn {
     font-size: 11px; padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border);
@@ -2365,7 +2366,7 @@
           <div class="time-slot highlight-med"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
           <div class="time-slot"><div class="ts-time">21:30-22:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进</div></div>
           <div class="time-slot highlight-review"><div class="ts-time">🔄 22:00-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习打卡</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
-          <div class="time-slot"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
+          <div class="time-slot"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min(绷带+哑铃)+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
         </div>
         <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
       </div>
@@ -2487,7 +2488,7 @@
             <input type="checkbox" class="ts-check" data-time="22:00-23:00" data-label="🔄 艾宾浩斯复习打卡" data-note="自动计算今日需复习节点" checked> 🔄 22:00-23:00 艾宾浩斯复习
           </label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT
+            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min(绷带+哑铃)+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT（绷带+哑铃）
           </label>
         </div>
       </div>
@@ -3578,7 +3579,7 @@
     return diff >= 0 && diff % 2 === 0;
   }
   const EVENING_ITEMS = [
-    { start: '23:00', end: '23:20', icon: '💪', label: '肩背训练（20分钟）', bv: 'BV14K4y1K7zs', search: '帕梅拉 10分钟 美背 肩背训练', note: '帕梅拉10分钟美背·连做2遍≈20min' },
+    { start: '23:00', end: '23:20', icon: '💪', label: '肩背训练（20分钟）· 绷带+哑铃', bv: 'BV14K4y1K7zs', search: '帕梅拉 10分钟 美背 肩背训练 哑铃 弹力带', note: '帕梅拉10分钟美背·连做2遍≈20min', gear: '🔧 装备：弹力绷带 + 哑铃（每个动作加阻力）' },
     { start: '23:20', end: '23:30', icon: '🔥', label: '帕梅拉 · 10分钟HIIT', bv: 'BV1LT4m1S7qQ', search: '帕梅拉 10分钟 HIIT', note: '电音HIIT踩点·暴汗燃脂' }
   ];
   const EVENING_TRAPEZIUS = { start: '23:30', end: '23:40', icon: '🧘', label: '欧阳春晓 · 斜方肌消除（10分钟）', bv: 'BV1mv411C7cm', search: '欧阳春晓 斜方肌消除', note: '直角肩+少女背·消除斜方肌' };
@@ -3603,9 +3604,11 @@
     list.innerHTML = items.map(it => {
       const play = it.bv ? '<button class="wo-btn bili" onclick="openBili(\'' + it.bv + '\')">▶ 去B站跟练</button>' : '';
       const more = '<button class="wo-btn dy" onclick="window.open(\'https://search.bilibili.com/all?keyword=' + encodeURIComponent(it.search || it.label) + '\',\'_blank\')">🔍 更多</button>';
+      const gear = it.gear ? '<div class="wo-gear">' + it.gear + '</div>' : '';
       return '<div class="workout-card"><div class="wo-icon">' + it.icon + '</div>' +
         '<div class="wo-title">' + it.label + '</div>' +
         '<div class="wo-meta">' + it.note + '</div>' +
+        gear +
         '<div class="wo-actions">' + play + more + '</div></div>';
     }).join('');
     if (tip) tip.innerHTML = trape
