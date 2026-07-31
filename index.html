@@ -1299,8 +1299,8 @@
       </div>
       <div class="mini-card" onclick="switchPage('weight', document.querySelector('[data-page=weight]'))" title="管理体重数据">
         <div class="mc-icon">⚖️</div>
-        <div class="mc-value">55.0<span style="font-size:18px;color:var(--text-light)">kg</span></div>
-        <div class="mc-label">今日体重 · 目标46kg · <span style="color:#ef4444;font-size:14px">还差9.0kg</span></div>
+        <div class="mc-value"><span id="dashWeightVal">55.0</span><span style="font-size:18px;color:var(--text-light)">kg</span></div>
+        <div class="mc-label" id="dashWeightLabel">今日体重 · 目标46kg · <span style="color:#ef4444;font-size:14px">还差9.0kg</span></div>
       </div>
       <div class="mini-card" onclick="switchPage('exercise', document.querySelector('[data-page=exercise]'))" title="记录运动消耗">
         <div class="mc-icon">🔥</div>
@@ -2802,6 +2802,7 @@
 
   // ====== ⚖️ 体重打卡 ======
   var WEIGHT_KEY = 'jasmine_weights';
+  var WEIGHT_GOAL = 46.0; // 目标体重 kg
 
   function getWeights() {
     try { return JSON.parse(localStorage.getItem(WEIGHT_KEY)) || []; }
@@ -2833,6 +2834,7 @@
     // 更新图表
     renderWeightChart();
     renderWeightList();
+    renderDashWeight(); // 同步首页预览
     alert('\u2705 体重已记录：' + weight + ' kg');
   }
 
@@ -3075,7 +3077,7 @@
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
-    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); }
+    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); }
     // 移动端关闭侧边栏
     if (window.innerWidth <= 900) toggleSidebar();
   }
@@ -6916,6 +6918,31 @@
     const total = document.getElementById('stTotalToday');
     if (total) total.textContent = '今日 ' + text;
   }
+  // 首页体重迷你卡片 — 从 jasmine_weights 实时读取，与体重子页同步
+  function renderDashWeight() {
+    const valEl = document.getElementById('dashWeightVal');
+    const lblEl = document.getElementById('dashWeightLabel');
+    if (!valEl || !lblEl) return;
+    const today = localDateStr();
+    const weights = getWeights();
+    if (!weights.length) {
+      valEl.textContent = '—';
+      lblEl.innerHTML = '今日体重 · 目标' + WEIGHT_GOAL + 'kg';
+      return;
+    }
+    const todayRec = weights.find(w => w.date === today);
+    const rec = todayRec || weights[weights.length - 1];
+    const w = rec.weight;
+    const diff = +(w - WEIGHT_GOAL).toFixed(1);
+    valEl.textContent = w.toFixed(1);
+    if (diff <= 0) {
+      lblEl.innerHTML = '今日体重 · 目标' + WEIGHT_GOAL + 'kg · <span style="color:#10b981;font-size:14px">已达标 🎉</span>';
+    } else if (todayRec) {
+      lblEl.innerHTML = '今日体重 · 目标' + WEIGHT_GOAL + 'kg · <span style="color:#ef4444;font-size:14px">还差' + diff.toFixed(1) + 'kg</span>';
+    } else {
+      lblEl.innerHTML = '最近 ' + rec.date + ' · 目标' + WEIGHT_GOAL + 'kg · <span style="color:#ef4444;font-size:14px">还差' + diff.toFixed(1) + 'kg</span>';
+    }
+  }
   function renderTimeStat() {
     const todaySec = studyTimeToday();
     const weekSec = studyTimeWeek();
@@ -7046,6 +7073,7 @@
     renderDashStudyTime();
     renderWeightChart();
     renderWeightList();
+    renderDashWeight();
 
     // 数据健康检查
     updateDataHealth();
@@ -7066,6 +7094,7 @@
       renderDashMeals();
       renderDashCheckin();
       renderDashStudyTime();
+      renderDashWeight();
 
       // 如果在计划页，重新加载日期和计划内容
       var planPage = document.getElementById('page-plan');
