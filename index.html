@@ -1707,16 +1707,18 @@
               <span style="font-size:11px;opacity:.9;">进她主页关注 → 选「慢速口令版 / 1080P」视频跟练，画质最清晰</span>
             </div>
           </div>
-          <!-- 📺 B站直嵌：零基础基本功合集（可网页直接跟练·慢放/镜像/AB循环） -->
+          <!-- 📺 B站跟练：零基础基本功合集（网页打开B站对应集，原生支持慢放/镜像/循环） -->
           <div id="bili-zone" style="margin:6px 0 14px;padding:12px;background:#fff;border-radius:14px;border:1px solid var(--border);">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div style="font-size:13px;font-weight:800;color:#7c3aed;">📺 直接跟练 · 零基础基本功合集（32集）</div>
               <span id="bili-now" style="font-size:12px;color:var(--text-light);"></span>
             </div>
-            <div style="position:relative;width:100%;padding-top:56.25%;background:#000;border-radius:10px;overflow:hidden;">
-              <iframe id="bili-frame" src="https://player.bilibili.com/player.html?bvid=BV1aGSJYgEgy&page=1&high_quality=1&danmaku=0&autoplay=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" scrolling="no" frameborder="no" allowfullscreen="true" referrerpolicy="no-referrer"></iframe>
+            <div style="background:linear-gradient(135deg,#faf5ff,#f5f3ff);border-radius:12px;padding:16px;text-align:center;border:1px dashed #c4b5fd;">
+              <div style="font-size:12px;color:var(--text-light);margin-bottom:6px;">点击下方按钮，在新标签页打开 <b>B站</b> 对应集数跟练（自带镜像 / 0.5x慢放 / 单集循环）</div>
+              <div id="bili-cur" style="font-size:16px;font-weight:800;color:#7c3aed;margin-bottom:10px;">当前：第 1 集 · 入门</div>
+              <button onclick="danceShowBV(curBiliPage)" style="background:#7c3aed;color:#fff;border:none;border-radius:12px;padding:12px 22px;font-size:15px;font-weight:800;cursor:pointer;">▶ 在 B站 观看第 <span id="bili-cur-num">1</span> 集 · 跟练</button>
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+            <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
               <button class="btn btn-outline btn-sm bili-ep" data-page="3" onclick="danceShowBV(3)">头部·甩头</button>
               <button class="btn btn-outline btn-sm bili-ep" data-page="5" onclick="danceShowBV(5)">肩部</button>
               <button class="btn btn-outline btn-sm bili-ep" data-page="6" onclick="danceShowBV(6)">胸部</button>
@@ -1727,7 +1729,7 @@
               <button class="btn btn-outline btn-sm bili-ep" data-page="19" onclick="danceShowBV(19)">协调训练</button>
               <button class="btn btn-outline btn-sm bili-ep" data-page="21" onclick="danceShowBV(21)">记动作</button>
             </div>
-            <div style="font-size:11px;color:var(--text-light);margin-top:6px;line-height:1.5;">💡 播放器右下角「设置」可开 <b>镜像画面 / 倍速（0.5x慢放）/ 单集循环（AB循环）</b>，直接对着屏幕跟练。孙老师原版在抖音（见上方锁定块），此合集为同款最细基本功，画质清晰、讲得细。</div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:6px;line-height:1.5;">💡 在 <b>B站网页</b> 里点右下角「设置」可开 <b>镜像 / 倍速（0.5x）/ 单集循环（AB循环）</b>，对着屏幕跟练。孙老师原版在抖音（上方锁定块），此合集是同款最细基本功，画质清晰。</div>
           </div>
           <!-- 视频播放器 -->
           <div id="dance-player-wrap" style="display:none; margin-bottom:12px;">
@@ -6643,15 +6645,20 @@
     dancePlayVideo(url, '外部视频');
   }
 
-  // B站合集直嵌：切换集数 + 高亮 + 滚动
+  // B站合集：打开对应集数到 B站网页（自带镜像/慢放/单集循环）
+  var curBiliPage = 1;
   function danceShowBV(page) {
-    const f = document.getElementById('bili-frame');
-    if (f) f.src = 'https://player.bilibili.com/player.html?bvid=' + DANCE_BV + '&page=' + page + '&high_quality=1&danmaku=0&autoplay=0';
-    document.querySelectorAll('.bili-ep').forEach(b => b.classList.toggle('active', b.dataset.page === String(page)));
+    curBiliPage = page;
+    const name = DANCE_BV_NAME[page] || '基本功';
+    const url = 'https://www.bilibili.com/video/' + DANCE_BV + '?p=' + page;
     const now = document.getElementById('bili-now');
-    if (now) now.textContent = '当前：第' + page + '集 · ' + (DANCE_BV_NAME[page] || '基本功');
-    const zone = document.getElementById('bili-zone');
-    if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (now) now.textContent = '第' + page + '集 · ' + name;
+    const cur = document.getElementById('bili-cur');
+    if (cur) cur.textContent = '当前：第 ' + page + ' 集 · ' + name;
+    const curNum = document.getElementById('bili-cur-num');
+    if (curNum) curNum.textContent = page;
+    document.querySelectorAll('.bili-ep').forEach(b => b.classList.toggle('active', b.dataset.page === String(page)));
+    window.open(url, '_blank');
   }
 
   function dancePlayVideo(url, name) {
