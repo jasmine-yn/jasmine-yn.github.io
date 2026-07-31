@@ -1733,6 +1733,40 @@
       </div>
     </div>
 
+    <!-- 📹 拍视频打卡 -->
+    <div class="card" style="background:linear-gradient(135deg,#fff5f7,#fdf2f8);">
+      <div class="card-header">
+        <span class="card-title">📹 拍视频打卡 · 记录你的进步</span>
+        <span style="font-size:12px;color:var(--text-light);" id="videoRecStreak"></span>
+      </div>
+      <div style="font-size:12px;color:var(--text-light);margin-bottom:10px;">每周/每月回看对比，进步看得见。录一段自己的舞，存到本机（手机/电脑本地，不上传网络）。</div>
+      <!-- 录制区 -->
+      <div id="videoRecArea" style="display:none;margin-bottom:12px;">
+        <video id="videoRecPreview" autoplay muted playsinline style="width:100%;max-height:50vh;border-radius:10px;background:#000;transform:scaleX(-1);"></video>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;">
+          <button class="btn btn-sm" id="btnVideoRecStart" onclick="startVideoRec()" style="background:#ef4444;color:#fff;font-weight:700;">● 开始录制</button>
+          <button class="btn btn-sm" id="btnVideoRecStop" onclick="stopVideoRec()" style="display:none;background:#7c3aed;color:#fff;font-weight:700;">■ 停止</button>
+          <span id="videoRecTimer" style="font-size:13px;font-weight:700;color:#ef4444;font-variant-numeric:tabular-nums;">00:00</span>
+          <span style="font-size:11px;color:var(--text-light);margin-left:auto;">最长 60 秒</span>
+        </div>
+      </div>
+      <!-- 录制完成后预览+保存 -->
+      <div id="videoRecResult" style="display:none;margin-bottom:12px;">
+        <video id="videoRecPlayback" controls playsinline style="width:100%;max-height:50vh;border-radius:10px;background:#000;"></video>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;">
+          <input id="videoRecNote" class="form-input" type="text" placeholder="备注：今天练了什么（如 Day1 头部隔离）" style="flex:1;min-width:160px;">
+          <button class="btn btn-primary btn-sm" onclick="saveVideoRec()">💾 保存打卡</button>
+          <button class="btn btn-outline btn-sm" onclick="discardVideoRec()">重拍</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" id="btnVideoRecOpen" onclick="openVideoCam()">📷 打开摄像头拍摄</button>
+        <label class="btn btn-outline btn-sm" style="cursor:pointer;display:flex;align-items:center;gap:4px;">📁 或选本地视频<input type="file" id="videoRecFile" accept="video/*" style="display:none;" onchange="pickVideoFile(this)"></label>
+      </div>
+      <!-- 历史列表 -->
+      <div id="videoRecList" style="margin-top:14px;"></div>
+    </div>
+
     <!-- 🔍 搜你想学的舞 -->
     <div class="card" style="background:linear-gradient(135deg, #faf5ff, #fdf2f8);">
       <div class="card-header"><span class="card-title">🔍 告诉我想学什么舞，AI 帮你搜</span></div>
@@ -3072,7 +3106,7 @@
       try { renderMealsByDate(); } catch(e) { console.error('renderMealsByDate error:', e); }
     }
     if (pageId === 'summary') renderDailySummary('medical');
-    if (pageId === 'dance') { renderDancePlaylist(); setDanceDateDefault(); ensureDanceSeed(); renderDanceLogs(); renderDance30d(); }
+    if (pageId === 'dance') { renderDancePlaylist(); setDanceDateDefault(); ensureDanceSeed(); renderDanceLogs(); renderDance30d(); loadVideoRecList(); }
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
@@ -6982,6 +7016,147 @@
     linkEl.innerHTML = min > 0
       ? ('🔗 今日已记录练习 <b>' + min + ' min</b>（来自「录入练习」），与本次训练叠加统计')
       : '🔗 练完可去「录入练习」记录时长，首页舞蹈卡片会同步';
+  }
+
+  // ===== 拍视频打卡（本地 IndexedDB 存储）=====
+  const VDB_NAME = 'jasmine_dance_video';
+  const VDB_STORE = 'videos';
+  let recStream = null, mediaRecorder = null, recChunks = [], recTimerIv = null, recStartTs = 0, recBlob = null;
+  function vdbOpen() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open(VDB_NAME, 1);
+      r.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains(VDB_STORE)) db.createObjectStore(VDB_STORE, { keyPath:'id', autoIncrement:true }); };
+      r.onsuccess = e => res(e.target.result);
+      r.onerror = e => rej(e.target.error);
+    });
+  }
+  function vdbPut(rec) {
+    return vdbOpen().then(db => new Promise((res, rej) => {
+      const tx = db.transaction(VDB_STORE, 'readwrite');
+      tx.objectStore(VDB_STORE).put(rec);
+      tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+    }));
+  }
+  function vdbAll() {
+    return vdbOpen().then(db => new Promise((res, rej) => {
+      const tx = db.transaction(VDB_STORE, 'readonly');
+      const rq = tx.objectStore(VDB_STORE).getAll();
+      rq.onsuccess = () => res(rq.result || []); rq.onerror = () => rej(rq.error);
+    }));
+  }
+  function vdbDel(id) {
+    return vdbOpen().then(db => new Promise((res, rej) => {
+      const tx = db.transaction(VDB_STORE, 'readwrite');
+      tx.objectStore(VDB_STORE).delete(id);
+      tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+    }));
+  }
+  async function openVideoCam() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { alert('当前浏览器不支持摄像头录制'); return; }
+    try {
+      recStream = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'user'}, audio:true });
+    } catch(err) {
+      try { recStream = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'user'}, audio:false }); }
+      catch(e2) { alert('无法打开摄像头：' + (err.message || '请检查权限')); return; }
+    }
+    const pv = document.getElementById('videoRecPreview');
+    pv.srcObject = recStream;
+    document.getElementById('videoRecArea').style.display = 'block';
+    document.getElementById('videoRecResult').style.display = 'none';
+    document.getElementById('btnVideoRecOpen').style.display = 'none';
+  }
+  function startVideoRec() {
+    if (!recStream) return;
+    recChunks = [];
+    try { mediaRecorder = new MediaRecorder(recStream); }
+    catch(e) { alert('当前浏览器不支持录制，可改用「或选本地视频」上传'); return; }
+    mediaRecorder.ondataavailable = e => { if (e.data && e.data.size) recChunks.push(e.data); };
+    mediaRecorder.onstop = onVideoRecStop;
+    mediaRecorder.start();
+    recStartTs = Date.now();
+    document.getElementById('btnVideoRecStart').style.display = 'none';
+    document.getElementById('btnVideoRecStop').style.display = 'inline-block';
+    recTimerIv = setInterval(() => {
+      const s = Math.floor((Date.now() - recStartTs) / 1000);
+      const mm = String(Math.floor(s / 60)).padStart(2, '0'), ss = String(s % 60).padStart(2, '0');
+      document.getElementById('videoRecTimer').textContent = mm + ':' + ss;
+      if (s >= 60) stopVideoRec();
+    }, 500);
+  }
+  function stopVideoRec() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    if (recTimerIv) { clearInterval(recTimerIv); recTimerIv = null; }
+    document.getElementById('btnVideoRecStart').style.display = 'inline-block';
+    document.getElementById('btnVideoRecStop').style.display = 'none';
+  }
+  function onVideoRecStop() {
+    if (recChunks.length === 0) { discardVideoRec(); return; }
+    recBlob = new Blob(recChunks, { type:(mediaRecorder && mediaRecorder.mimeType) || 'video/webm' });
+    const pb = document.getElementById('videoRecPlayback');
+    pb.src = URL.createObjectURL(recBlob);
+    document.getElementById('videoRecArea').style.display = 'none';
+    document.getElementById('videoRecResult').style.display = 'block';
+    if (recStream) { recStream.getTracks().forEach(t => t.stop()); recStream = null; }
+  }
+  function discardVideoRec() {
+    recBlob = null;
+    document.getElementById('videoRecResult').style.display = 'none';
+    document.getElementById('videoRecTimer').textContent = '00:00';
+    document.getElementById('btnVideoRecOpen').style.display = 'inline-block';
+  }
+  function saveVideoRec() {
+    if (!recBlob) return;
+    const note = document.getElementById('videoRecNote').value || '';
+    const rec = { date: localDateStr(), ts: Date.now(), blob: recBlob, duration: Math.round((Date.now() - recStartTs) / 1000), note: note };
+    vdbPut(rec).then(() => {
+      recBlob = null;
+      document.getElementById('videoRecResult').style.display = 'none';
+      document.getElementById('videoRecNote').value = '';
+      document.getElementById('videoRecTimer').textContent = '00:00';
+      document.getElementById('btnVideoRecOpen').style.display = 'inline-block';
+      loadVideoRecList();
+      alert('✅ 视频打卡已保存');
+    }).catch(e => alert('保存失败：' + (e.message || e)));
+  }
+  function pickVideoFile(input) {
+    const f = input.files && input.files[0];
+    if (!f) return;
+    recBlob = f;
+    const pb = document.getElementById('videoRecPlayback');
+    pb.src = URL.createObjectURL(f);
+    document.getElementById('videoRecResult').style.display = 'block';
+    document.getElementById('videoRecArea').style.display = 'none';
+    document.getElementById('btnVideoRecOpen').style.display = 'none';
+    input.value = '';
+  }
+  async function loadVideoRecList() {
+    const listEl = document.getElementById('videoRecList');
+    const streakEl = document.getElementById('videoRecStreak');
+    if (!listEl) return;
+    let recs = [];
+    try { recs = await vdbAll(); } catch(e) {
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--text-light);">⚠️ 本地数据库不可用（隐私模式可能受限）</div>';
+      return;
+    }
+    recs.sort((a, b) => b.ts - a.ts);
+    streakEl.textContent = recs.length ? ('已拍 ' + recs.length + ' 段') : '';
+    if (recs.length === 0) {
+      listEl.innerHTML = '<div style="font-size:12px;color:var(--text-light);text-align:center;padding:10px 0;">还没有视频打卡，拍一段记录今天的进步吧 💪</div>';
+      return;
+    }
+    listEl.innerHTML = recs.map(r => {
+      const url = URL.createObjectURL(r.blob);
+      return '<div style="border:1px solid var(--border);border-radius:12px;padding:10px;margin-bottom:10px;">' +
+        '<video src="' + url + '" controls playsinline style="width:100%;max-height:38vh;border-radius:8px;background:#000;"></video>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:8px;">' +
+          '<div style="font-size:12px;color:var(--text-light);">' + (r.date || '') + ' · ' + (r.duration || 0) + 's' + (r.note ? ' · ' + escapeHtml(r.note) : '') + '</div>' +
+          '<button class="btn btn-outline btn-sm" onclick="deleteVideoRec(' + r.id + ')">🗑 删除</button>' +
+        '</div></div>';
+    }).join('');
+  }
+  function deleteVideoRec(id) {
+    if (!confirm('确定删除这段视频打卡？')) return;
+    vdbDel(id).then(() => loadVideoRecList());
   }
 
   function searchDance() {
