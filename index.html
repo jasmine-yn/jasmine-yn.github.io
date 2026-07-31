@@ -1314,8 +1314,8 @@
       </div>
       <div class="mini-card" onclick="switchPage('dance', document.querySelector('[data-page=dance]'))" title="学习舞蹈">
         <div class="mc-icon">💃</div>
-        <div class="mc-value">60<span style="font-size:18px;color:var(--text-light)">min</span></div>
-        <div class="mc-label">舞蹈练习 &nbsp;<span style="font-size:14px">Dance On</span></div>
+        <div class="mc-value"><span id="dashDanceVal">0</span><span style="font-size:18px;color:var(--text-light)">min</span></div>
+        <div class="mc-label" id="dashDanceLabel">舞蹈练习 &nbsp;<span style="font-size:14px">今日未练</span></div>
       </div>
     </div>
 
@@ -1669,7 +1669,7 @@
   <div class="page" id="page-dance">
     <div class="main-header">
       <div class="main-title">💃 舞蹈学习（爵士）</div>
-      <div class="main-subtitle">本周练习 4 次 · 累计 240 min · 训练日志 + 视频推荐 + 搜你想要的舞</div>
+      <div class="main-subtitle" id="danceWeekSub">本周练习 0 次 · 累计 0 min · 训练日志 + 视频推荐 + 搜你想要的舞</div>
     </div>
 
     <!-- 🎬 老师分解视频跟跳 -->
@@ -1810,54 +1810,37 @@
     <!-- 训练日志 + 录入表单 -->
     <div class="card-row">
       <div class="card">
-        <div class="card-header"><span class="card-title">📝 最近训练日志</span></div>
-        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-          <div style="font-weight:700;margin-bottom:4px;">07-29 | 成品舞 Dance On | 60 min</div>
-          <div style="font-size:13px;color:var(--text-light);">热身拉伸 · 第2段×6 · 第3段×3 · 完整串排×1</div>
-          <div style="margin-top:4px;display:flex;gap:8px;">
-            <span style="font-size:12px">节拍 ⭐⭐⭐⭐</span>
-            <span style="font-size:12px">律动 ⭐⭐⭐</span>
-            <span style="font-size:12px">力度 ⭐⭐⭐⭐</span>
-            <span style="font-size:12px">表现 ⭐⭐⭐</span>
-          </div>
-          <div style="font-size:12px;color:var(--orange);margin-top:4px;">⚠️ 第3段转肩+弹跳跟不上节拍</div>
-        </div>
-        <div style="padding:12px 0;border-bottom:1px solid var(--border);">
-          <div style="font-weight:700;margin-bottom:4px;">07-28 | 基本功 | 45 min</div>
-          <div style="font-size:13px;color:var(--text-light);">isolation · 律动 · 八拍组合</div>
-          <div style="margin-top:4px;display:flex;gap:8px;">
-            <span style="font-size:12px">节拍 ⭐⭐⭐⭐</span>
-            <span style="font-size:12px">律动 ⭐⭐⭐⭐</span>
-          </div>
-        </div>
+        <div class="card-header"><span class="card-title">📝 最近训练日志</span><span id="danceLogCount" style="font-size:12px;color:var(--text-light)"></span></div>
+        <div id="danceLogList"></div>
+        <div id="danceLogEmpty" style="color:var(--text-light);text-align:center;padding:16px;">还没有练习记录～练完点「保存练习」就好啦</div>
       </div>
 
       <div class="card">
         <div class="card-header"><span class="card-title">➕ 录入练习</span></div>
         <div class="form-grid">
-          <div class="form-group"><label class="form-label">日期</label><input class="form-input" type="date" value="2026-07-30"></div>
-          <div class="form-group"><label class="form-label">时长（分钟）</label><input class="form-input" type="number" value="60"></div>
+          <div class="form-group"><label class="form-label">日期</label><input class="form-input" type="date" id="dance-log-date"></div>
+          <div class="form-group"><label class="form-label">时长（分钟）</label><input class="form-input" type="number" id="dance-log-duration" value="60" min="1"></div>
           <div class="form-group"><label class="form-label">类型</label>
-            <select class="form-select"><option>成品舞</option><option>基本功</option><option>组合</option><option>体能</option></select>
+            <select class="form-input" id="dance-log-type"><option>成品舞</option><option>基本功</option><option>组合</option><option>体能</option></select>
           </div>
-          <div class="form-group"><label class="form-label">曲目</label><input class="form-input" type="text" placeholder="Dance On"></div>
-          <div class="form-group full"><label class="form-label">练习内容</label><textarea class="form-textarea" placeholder="热身+第2段×6+第3段×3+串排×1"></textarea></div>
-          <div class="form-group full"><label class="form-label">难点/心得</label><input class="form-input" type="text" placeholder="转肩+弹跳跟不上"></div>
+          <div class="form-group"><label class="form-label">曲目</label><input class="form-input" type="text" id="dance-log-song" placeholder="Dance On"></div>
+          <div class="form-group full"><label class="form-label">练习内容</label><textarea class="form-textarea" id="dance-log-content" placeholder="热身+第2段×6+第3段×3+串排×1"></textarea></div>
+          <div class="form-group full"><label class="form-label">难点/心得</label><input class="form-input" type="text" id="dance-log-note" placeholder="转肩+弹跳跟不上"></div>
           <div class="form-group full">
             <label class="form-label">自评</label>
             <div style="display:flex;gap:8px;align-items:center;">
               <span style="font-size:12px;min-width:48px;">节拍</span>
-              <input class="form-input" type="number" min="1" max="5" value="4" style="width:60px;text-align:center;">
+              <input class="form-input" type="number" min="1" max="5" value="4" id="dance-rate-beat" style="width:60px;text-align:center;">
               <span style="font-size:12px;min-width:48px;">律动</span>
-              <input class="form-input" type="number" min="1" max="5" value="3" style="width:60px;text-align:center;">
+              <input class="form-input" type="number" min="1" max="5" value="3" id="dance-rate-groove" style="width:60px;text-align:center;">
               <span style="font-size:12px;min-width:48px;">力度</span>
-              <input class="form-input" type="number" min="1" max="5" value="4" style="width:60px;text-align:center;">
+              <input class="form-input" type="number" min="1" max="5" value="4" id="dance-rate-power" style="width:60px;text-align:center;">
               <span style="font-size:12px;min-width:48px;">表现</span>
-              <input class="form-input" type="number" min="1" max="5" value="3" style="width:60px;text-align:center;">
+              <input class="form-input" type="number" min="1" max="5" value="3" id="dance-rate-expr" style="width:60px;text-align:center;">
             </div>
           </div>
         </div>
-        <button class="btn btn-primary" style="margin-top:12px;width:100%">保存练习</button>
+        <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="saveDanceLog()">💾 保存练习</button>
       </div>
     </div>
   </div>
@@ -3073,11 +3056,11 @@
       try { renderMealsByDate(); } catch(e) { console.error('renderMealsByDate error:', e); }
     }
     if (pageId === 'summary') renderDailySummary('medical');
-    if (pageId === 'dance') renderDancePlaylist();
+    if (pageId === 'dance') { renderDancePlaylist(); setDanceDateDefault(); ensureDanceSeed(); renderDanceLogs(); }
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
-    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); }
+    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); renderDashDance(); }
     // 移动端关闭侧边栏
     if (window.innerWidth <= 900) toggleSidebar();
   }
@@ -6692,6 +6675,132 @@
         '</div>').join('');
   }
 
+  // ===== 舞蹈练习按日记录（同步首页预览） =====
+  const DANCE_LOG_KEY = 'jasmine_dance_logs';
+  function getDanceLogs() {
+    try { return JSON.parse(localStorage.getItem(DANCE_LOG_KEY)) || []; } catch(e) { return []; }
+  }
+  function saveDanceLogs(arr) {
+    try { localStorage.setItem(DANCE_LOG_KEY, JSON.stringify(arr)); } catch(e) {}
+  }
+  function parseLocalDate(s) {
+    const p = String(s).split('-').map(Number);
+    return new Date(p[0], (p[1] || 1) - 1, p[2] || 1);
+  }
+  function clampRate(el) {
+    let v = el ? parseInt(el.value, 10) : 0;
+    if (isNaN(v)) v = 3;
+    return Math.max(1, Math.min(5, v));
+  }
+  function setDanceDateDefault() {
+    const d = document.getElementById('dance-log-date');
+    if (d && !d.value) d.value = localDateStr();
+  }
+  function ensureDanceSeed() {
+    // 首次使用：把原页面里的示例训练日志落为真实数据，避免空列表
+    if (localStorage.getItem(DANCE_LOG_KEY) !== null) return;
+    const t = new Date();
+    const fmt = n => { const x = new Date(t); x.setDate(t.getDate() - n); const p = v => String(v).padStart(2, '0'); return x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate()); };
+    saveDanceLogs([
+      { date: fmt(2), duration: 60, type: '成品舞', song: 'Dance On', content: '热身拉伸 · 第2段×6 · 第3段×3 · 完整串排×1', note: '第3段转肩+弹跳跟不上节拍', rating: { beat: 4, groove: 3, power: 4, expr: 3 } },
+      { date: fmt(3), duration: 45, type: '基本功', song: '', content: 'isolation · 律动 · 八拍组合', note: '', rating: { beat: 4, groove: 4, power: 3, expr: 3 } }
+    ]);
+  }
+  function saveDanceLog() {
+    const dateEl = document.getElementById('dance-log-date');
+    const durEl = document.getElementById('dance-log-duration');
+    if (!dateEl || !durEl) return;
+    const date = dateEl.value;
+    const duration = parseInt(durEl.value, 10);
+    if (!date || !duration || duration <= 0) {
+      alert('请填写有效的日期和练习时长（分钟）');
+      return;
+    }
+    const typeEl = document.getElementById('dance-log-type');
+    const songEl = document.getElementById('dance-log-song');
+    const contentEl = document.getElementById('dance-log-content');
+    const noteEl = document.getElementById('dance-log-note');
+    const logs = getDanceLogs();
+    logs.push({
+      date,
+      duration,
+      type: typeEl ? typeEl.value : '成品舞',
+      song: songEl ? (songEl.value || '').trim() : '',
+      content: contentEl ? (contentEl.value || '').trim() : '',
+      note: noteEl ? (noteEl.value || '').trim() : '',
+      rating: {
+        beat: clampRate(document.getElementById('dance-rate-beat')),
+        groove: clampRate(document.getElementById('dance-rate-groove')),
+        power: clampRate(document.getElementById('dance-rate-power')),
+        expr: clampRate(document.getElementById('dance-rate-expr'))
+      }
+    });
+    logs.sort((a, b) => a.date < b.date ? 1 : (a.date > b.date ? -1 : 0)); // 新→旧
+    saveDanceLogs(logs);
+    renderDanceLogs();
+    renderDashDance();
+    alert('✅ 练习已记录：' + duration + ' min' + (songEl && songEl.value ? ' · ' + songEl.value : ''));
+    // 清空练习内容/心得，保留日期与时长方便连续记录
+    if (contentEl) contentEl.value = '';
+    if (noteEl) noteEl.value = '';
+  }
+  function renderDanceLogs() {
+    const listEl = document.getElementById('danceLogList');
+    const emptyEl = document.getElementById('danceLogEmpty');
+    const countEl = document.getElementById('danceLogCount');
+    const subEl = document.getElementById('danceWeekSub');
+    const logs = getDanceLogs();
+    // 本周统计（周一为起点）
+    const now = new Date();
+    const day = (now.getDay() + 6) % 7;
+    const monday = new Date(now); monday.setDate(now.getDate() - day); monday.setHours(0, 0, 0, 0);
+    const weekLogs = logs.filter(l => parseLocalDate(l.date) >= monday);
+    const weekCount = weekLogs.length;
+    const weekMin = weekLogs.reduce((s, l) => s + (parseInt(l.duration, 10) || 0), 0);
+    if (subEl) subEl.innerHTML = `本周练习 ${weekCount} 次 · 累计 ${weekMin} min · 训练日志 + 视频推荐 + 搜你想要的舞`;
+    if (countEl) countEl.textContent = logs.length ? ('共 ' + logs.length + ' 条') : '';
+    if (!listEl) return;
+    if (!logs.length) {
+      listEl.innerHTML = '';
+      if (emptyEl) emptyEl.style.display = 'block';
+      return;
+    }
+    if (emptyEl) emptyEl.style.display = 'none';
+    const stars = n => '⭐'.repeat(n) + '☆'.repeat(5 - n);
+    listEl.innerHTML = logs.slice(0, 12).map(l => {
+      const r = l.rating || {};
+      const rateHtml = (r.beat ? `<span style="font-size:12px">节拍 ${stars(r.beat)}</span>` : '') +
+        (r.groove ? `<span style="font-size:12px">律动 ${stars(r.groove)}</span>` : '') +
+        (r.power ? `<span style="font-size:12px">力度 ${stars(r.power)}</span>` : '') +
+        (r.expr ? `<span style="font-size:12px">表现 ${stars(r.expr)}</span>` : '');
+      const songTag = l.song ? ' · ' + escapeHtml(l.song) : '';
+      const content = l.content ? `<div style="font-size:13px;color:var(--text-light);">${escapeHtml(l.content)}</div>` : '';
+      const note = l.note ? `<div style="font-size:12px;color:var(--orange);margin-top:4px;">⚠️ ${escapeHtml(l.note)}</div>` : '';
+      return `<div style="padding:12px 0;border-bottom:1px solid var(--border);">
+        <div style="font-weight:700;margin-bottom:4px;">${l.date} | ${escapeHtml(l.type)}${songTag} | ${l.duration} min</div>
+        ${content}
+        ${rateHtml ? `<div style="margin-top:4px;display:flex;gap:8px;flex-wrap:wrap;">${rateHtml}</div>` : ''}
+        ${note}
+      </div>`;
+    }).join('');
+  }
+  function renderDashDance() {
+    const valEl = document.getElementById('dashDanceVal');
+    const lblEl = document.getElementById('dashDanceLabel');
+    if (!valEl || !lblEl) return;
+    const today = localDateStr();
+    const logs = getDanceLogs().filter(l => l.date === today);
+    const total = logs.reduce((s, l) => s + (parseInt(l.duration, 10) || 0), 0);
+    if (total > 0) {
+      valEl.textContent = total;
+      const song = (logs[0] && logs[0].song) || '练习';
+      lblEl.innerHTML = '舞蹈练习 &nbsp;<span style="font-size:14px">' + escapeHtml(song) + '</span>';
+    } else {
+      valEl.textContent = '0';
+      lblEl.innerHTML = '舞蹈练习 &nbsp;<span style="font-size:14px">今日未练</span>';
+    }
+  }
+
   function searchDance() {
     const q = document.getElementById('dance-search-input').value.trim();
     if (!q) { alert('请输入舞蹈名称或关键词哦～'); return; }
@@ -7074,6 +7183,8 @@
     renderWeightChart();
     renderWeightList();
     renderDashWeight();
+    ensureDanceSeed();
+    renderDashDance();
 
     // 数据健康检查
     updateDataHealth();
@@ -7095,6 +7206,7 @@
       renderDashCheckin();
       renderDashStudyTime();
       renderDashWeight();
+      renderDashDance();
 
       // 如果在计划页，重新加载日期和计划内容
       var planPage = document.getElementById('page-plan');
