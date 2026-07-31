@@ -1678,6 +1678,7 @@
         <span class="card-title">🎯 30天突破训练 · 协调 / 基本功 / 记动作</span>
         <span style="font-size:12px;color:var(--text-light);">开始日 <input type="date" id="dance-plan-start" onchange="setDancePlanStart()" style="border:1px solid var(--border);border-radius:8px;padding:3px 6px;font-size:12px;"></span>
       </div>
+      <div id="dance30Follow" style="background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:14px;"></div>
       <div id="dance30Summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;"></div>
       <div id="dance30Tasks"></div>
       <div style="margin-top:12px;">
@@ -6819,6 +6820,41 @@
   // ===== 30天协调/基本功/记动作训练打卡 =====
   const DANCE_PLAN_KEY = 'jasmine_dance_plan_start';
   const DANCE_30D_KEY = 'jasmine_dance_30d';
+  // 每日跟学排期（抖音讲得最细的老师，按周专项推进）
+  const DANCE_SCHED = [
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 颈部 基本功 慢速口令',c:'头部 isolation：点/摇/侧倾/绕圈，跟口令版',m:15},
+    {w:1,t:'milly 米粒儿',kw:'milly 练练肩 爵士基本功',c:'肩部：提沉 / 前后绕 / 单肩交替',m:15},
+    {w:1,t:'大浪舞蹈',kw:'大浪舞蹈 绕胸 肩胸rolling',c:'胸腔：左右滑 / 前后pop / 绕圈',m:15},
+    {w:1,t:'雪君老师',kw:'雪君老师 胯部练习组合',c:'胯部：左右顶 / 8字 / 绕胯',m:15},
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 一学就会系列',c:'综合隔离回顾（头肩胸胯连做）',m:20},
+    {w:1,t:'孙老师爵士舞【零基础】',kw:'孙老师 爵士基本功 慢速口令版',c:'头+肩复习，慢速口令跟练',m:15},
+    {w:1,t:'大浪舞蹈',kw:'大浪舞蹈 跳舞发力技巧',c:'第1周自检+发力细节纠正，录15秒视频',m:20},
+    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 手臂没有力量 2招',c:'手部/手臂线条：力量训练',m:15},
+    {w:2,t:'milly 米粒儿',kw:'milly 手位练一练 爵士基本功',c:'手部：6种爵士手位',m:15},
+    {w:2,t:'大浪舞蹈',kw:'大浪舞蹈 爵士步 基本功',c:'脚步：重心移 / step-touch',m:15},
+    {w:2,t:'布濤濤零基础爵士舞',kw:'布濤濤 螃蟹步 爵士',c:'脚步：螃蟹步跟练',m:15},
+    {w:2,t:'孙老师爵士舞【零基础】',kw:'孙老师 一学就会系列 组合',c:'手+脚结合组合',m:20},
+    {w:2,t:'milly 米粒儿',kw:'milly wave 练起来 爵士基本功',c:'wave：正wave / 侧wave',m:15},
+    {w:2,t:'大浪舞蹈',kw:'大浪舞蹈 反WAVE',c:'第2周自检+wave，录视频',m:20},
+    {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 摆胯 爵士基本功',c:'双部位：胯绕 + 手推（反方向）',m:15},
+    {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 绕胸',c:'双部位：胸pop + 头侧倾',m:15},
+    {w:3,t:'milly 米粒儿',kw:'milly 练练肩 爵士基本功',c:'双部位：肩沉 + 脚下step',m:15},
+    {w:3,t:'孙老师爵士舞【零基础】',kw:'孙老师 头部 慢速口令版',c:'双部位：头绕 + 手定住',m:15},
+    {w:3,t:'淡淡Dancey',kw:'淡淡Dancey 100个爵士基本功',c:'选2个双部位组合跟练',m:20},
+    {w:3,t:'大浪舞蹈',kw:'大浪舞蹈 跳舞发力技巧',c:'双部位节奏变化训练',m:15},
+    {w:3,t:'淡淡Dancey',kw:'淡淡Dancey 爵士舞课堂',c:'第3周自检+录视频对比',m:20},
+    {w:4,t:'淡淡Dancey',kw:'淡淡Dancey 爵士基本功 组合',c:'三部位以上融合',m:20},
+    {w:4,t:'大浪舞蹈',kw:'大浪舞蹈 Hush 爵士 简化',c:'融合+节奏（放慢跟）',m:20},
+    {w:4,t:'孙老师爵士舞【零基础】',kw:'孙老师 一学就会 短舞',c:'成品舞入门：8拍短舞',m:20},
+    {w:4,t:'布濤濤零基础爵士舞',kw:'布濤濤 爵士舞 保姆级分解',c:'成品舞：保姆级分解跟练',m:20},
+    {w:4,t:'孙老师爵士舞【零基础】',kw:'孙老师 热门 短舞 一学就会',c:'成品舞：热门短舞',m:20},
+    {w:4,t:'大浪舞蹈',kw:'大浪舞蹈 绕胸 摆胯 发力',c:'弱项补强：回看Week1-3难点',m:20},
+    {w:4,t:'milly 米粒儿',kw:'milly wave 手位 爵士基本功',c:'弱项补强：wave / 手位',m:20},
+    {w:4,t:'淡淡Dancey',kw:'淡淡Dancey 爵士基本功',c:'串32拍组合（自选串联）',m:25},
+    {w:4,t:'大浪舞蹈',kw:'大浪舞蹈 爵士基本功 发力技巧',c:'第30天总自检+录视频对比第1周',m:25}
+  ];
+  const DANCE_WKNAME = {1:'第1周·隔离',2:'第2周·手脚',3:'第3周·协同',4:'第4周·融合'};
+  function danceTeacherHref(kw){ return 'https://www.douyin.com/search/' + encodeURIComponent(kw); }
   function getPlanStart() {
     let s = localStorage.getItem(DANCE_PLAN_KEY);
     if (!s) { s = localDateStr(); localStorage.setItem(DANCE_PLAN_KEY, s); }
@@ -6882,6 +6918,7 @@
     const taskEl = document.getElementById('dance30Tasks');
     const dotsEl = document.getElementById('dance30Dots');
     const linkEl = document.getElementById('dance30Link');
+    const followEl = document.getElementById('dance30Follow');
     const startEl = document.getElementById('dance-plan-start');
     if (!sumEl) return;
     if (startEl && !startEl.value) startEl.value = getPlanStart();
@@ -6892,6 +6929,19 @@
     const all = getDance30d();
     const rec = all[today] || { activate:false, basic:false, memory:false };
     const focus = danceWeekFocus(week);
+    // 今日跟学（自动按 Day 序号显示老师 + 抖音直达）
+    if (followEl) {
+      const d = DANCE_SCHED[dayIdx - 1];
+      const href = danceTeacherHref(d.kw);
+      followEl.innerHTML =
+        '<div style="font-size:12px;opacity:.85;margin-bottom:3px;">📺 今日跟学 · Day ' + dayIdx + '/30 · ' + DANCE_WKNAME[d.w] + '</div>' +
+        '<div style="font-size:19px;font-weight:800;margin-bottom:6px;">👉 ' + escapeHtml(d.t) + '</div>' +
+        '<div style="font-size:13px;opacity:.95;margin-bottom:9px;line-height:1.5;">' + escapeHtml(d.c) + '（跟练约 ' + d.m + ' 分钟）</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          '<a href="' + href + '" target="_blank" style="background:#fff;color:#7c3aed;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13px;text-decoration:none;white-space:nowrap;">🔍 去抖音搜：' + escapeHtml(d.t) + '</a>' +
+          '<span style="font-size:11px;opacity:.88;">固定流程：5分钟激活 → 跟练 → 记动作</span>' +
+        '</div>';
+    }
     sumEl.innerHTML =
       dance30Stat('第 ' + week + ' 周', '共 4 周') +
       dance30Stat('Day ' + dayIdx + '/30', focus) +
