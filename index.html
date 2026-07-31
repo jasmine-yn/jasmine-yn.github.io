@@ -2488,7 +2488,7 @@
             <input type="checkbox" class="ts-check" data-time="22:00-23:00" data-label="🔄 艾宾浩斯复习打卡" data-note="自动计算今日需复习节点" checked> 🔄 22:00-23:00 艾宾浩斯复习
           </label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min(绷带+哑铃)+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT（绷带+哑铃）
+            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min(哑铃+8字拉力器带)+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT（哑铃+8字拉力器带）
           </label>
         </div>
       </div>
@@ -3511,7 +3511,8 @@
     const hasEvening = lines.some(l => eveningKw.some(k => l.includes(k)));
     if (!hasEvening) {
       eveningPlanFor(planDate).forEach(it => {
-        items.push({ start: toMin(it.start), end: toMin(it.end), display: it.start + '–' + it.end, content: it.icon + ' ' + it.label, bv: it.bv });
+        const bv = (it.bvList && it.bvList[0] && it.bvList[0].bv) || it.bv || '';
+        items.push({ start: toMin(it.start), end: toMin(it.end), display: it.start + '–' + it.end, content: it.icon + ' ' + it.label, bv: bv });
       });
     }
     items.sort((a, b) => a.start - b.start);
@@ -3579,7 +3580,13 @@
     return diff >= 0 && diff % 2 === 0;
   }
   const EVENING_ITEMS = [
-    { start: '23:00', end: '23:20', icon: '💪', label: '肩背训练（20分钟）· 绷带+哑铃', bv: 'BV14K4y1K7zs', search: '帕梅拉 10分钟 美背 肩背训练 哑铃 弹力带', note: '帕梅拉10分钟美背·连做2遍≈20min', gear: '🔧 装备：弹力绷带 + 哑铃（每个动作加阻力）' },
+    { start: '23:00', end: '23:20', icon: '💪', label: '哑铃+8字拉力器带 肩背训练（20分钟）', search: '哑铃 8字拉力器带 肩背训练 跟练',
+      bvList: [
+        { name: '哑铃肩背（俯身划船+侧平举+面拉）', bv: 'BV1gg8RzFE5B' },
+        { name: '8字拉力器带·开肩美背', bv: 'BV183411N7uG' }
+      ],
+      note: '哑铃10分钟（俯身划船+侧平举+面拉）+ 8字拉力器带10分钟（开肩美背，连做2遍）',
+      gear: '🔧 装备：哑铃（1-2.5kg/只） + 8字拉力器带' },
     { start: '23:20', end: '23:30', icon: '🔥', label: '帕梅拉 · 10分钟HIIT', bv: 'BV1LT4m1S7qQ', search: '帕梅拉 10分钟 HIIT', note: '电音HIIT踩点·暴汗燃脂' }
   ];
   const EVENING_TRAPEZIUS = { start: '23:30', end: '23:40', icon: '🧘', label: '欧阳春晓 · 斜方肌消除（10分钟）', bv: 'BV1mv411C7cm', search: '欧阳春晓 斜方肌消除', note: '直角肩+少女背·消除斜方肌' };
@@ -3602,7 +3609,8 @@
       badge.style.background = trape ? '#dc2626' : '#7c3aed';
     }
     list.innerHTML = items.map(it => {
-      const play = it.bv ? '<button class="wo-btn bili" onclick="openBili(\'' + it.bv + '\')">▶ 去B站跟练</button>' : '';
+      const playList = (it.bvList && it.bvList.length) ? it.bvList : (it.bv ? [{ name: '去B站跟练', bv: it.bv }] : []);
+      const play = playList.map(x => '<button class="wo-btn bili" onclick="openBili(\'' + x.bv + '\')">▶ ' + (x.name || '去B站跟练') + '</button>').join('');
       const more = '<button class="wo-btn dy" onclick="window.open(\'https://search.bilibili.com/all?keyword=' + encodeURIComponent(it.search || it.label) + '\',\'_blank\')">🔍 更多</button>';
       const gear = it.gear ? '<div class="wo-gear">' + it.gear + '</div>' : '';
       return '<div class="workout-card"><div class="wo-icon">' + it.icon + '</div>' +
