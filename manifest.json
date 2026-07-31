@@ -1,0 +1,24 @@
+{
+  "name": "jasmine · 专属备考工作台",
+  "short_name": "jasmine工作台",
+  "description": "医学考公+行测+体重管理+爵士舞学习",
+  "start_url": "/?pwa=1",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f7fc",
+  "theme_color": "#6366f1",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

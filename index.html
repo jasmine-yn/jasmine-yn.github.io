@@ -891,6 +891,8 @@
   .plan-preview-item:last-child { border-bottom:none; }
   .plan-preview-time { min-width:80px; font-weight:700; color:var(--accent); font-size:12px; white-space:nowrap; }
   .plan-preview-content { flex:1; line-height:1.6; }
+  .plan-ev-link { color:#7c3aed; font-weight:700; cursor:pointer; margin-left:6px; font-size:12px; white-space:nowrap; }
+  .plan-ev-link:active { opacity:.6; }
   .plan-edit-link { font-size:12px; color:var(--accent); cursor:pointer; text-decoration:underline; margin-top:8px; display:inline-block; }
   .plan-empty-state { text-align:center; padding:20px 0; color:var(--text-light); font-size:13px; }
   .plan-preview-active { background: linear-gradient(90deg, rgba(168,85,247,.12), transparent); border-radius:8px; margin:0 -6px; padding-left:6px; padding-right:6px; }
@@ -1595,74 +1597,14 @@
       <button class="btn btn-primary" style="margin-top:12px;width:100%">计算消耗并保存</button>
     </div>
 
-    <!-- 💪 晚间无氧跟练推荐 -->
-    <div class="card" style="background:linear-gradient(135deg, #fdf2f8, #fef3c7);">
-      <div class="card-header"><span class="card-title">💪 晚间无氧跟练推荐（23:00-23:30）</span><span class="card-badge" style="background:#dc2626;">今晚跟练</span></div>
-      <div class="workout-grid">
-        <!-- 核心训练 -->
-        <div class="workout-card">
-          <div class="wo-icon">🔥</div>
-          <div class="wo-title">帕梅拉 · 10分钟腹部核心</div>
-          <div class="wo-meta">无器械 · 初学者友好 · 高效虐腹</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E5%B8%95%E6%A2%85%E6%8B%89+10%E5%88%86%E9%92%9F+%E8%85%B9%E9%83%A8+%E8%B7%9F%E7%BB%83','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E5%B8%95%E6%A2%85%E6%8B%89+10%E5%88%86%E9%92%9F+%E8%85%B9%E8%82%8C','_blank')">📺 B站搜</button>
-          </div>
-        </div>
-        <!-- 臀腿训练 -->
-        <div class="workout-card">
-          <div class="wo-icon">🍑</div>
-          <div class="wo-title">帕梅拉 · 10分钟泵感臀桥</div>
-          <div class="wo-meta">不同腿姿全方位练臀 · 无深蹲</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E5%B8%95%E6%A2%85%E6%8B%89+%E8%87%80%E6%A1%A5+%E8%B7%9F%E7%BB%83','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E5%B8%95%E6%A2%85%E6%8B%89+%E8%87%80%E6%A1%A5','_blank')">📺 B站搜</button>
-          </div>
-        </div>
-        <!-- 全身HIIT -->
-        <div class="workout-card">
-          <div class="wo-icon">⚡</div>
-          <div class="wo-title">站立HIIT · 20分钟全身燃脂</div>
-          <div class="wo-meta">无跳跃不扰邻 · 大体重友好</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E7%AB%99%E7%AB%8BHIIT+%E6%97%A0%E8%B9%A6%E8%B7%B3+%E8%B7%9F%E7%BB%83','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E7%AB%99%E7%AB%8BHIIT+%E6%97%A0%E8%B9%A6%E8%B7%B3','_blank')">📺 B站搜</button>
-          </div>
-        </div>
-        <!-- 上肢力量 -->
-        <div class="workout-card">
-          <div class="wo-icon">💪</div>
-          <div class="wo-title">居家上肢 · 弹力带/矿泉水瓶</div>
-          <div class="wo-meta">手臂+肩背 · 新手友好 · 10-15分钟</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E5%B1%85%E5%AE%B6%E4%B8%8A%E8%82%A2%E5%8A%9B%E9%87%8F+%E5%BC%B9%E5%8A%9B%E5%B8%A6+%E8%B7%9F%E7%BB%83','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E5%B1%85%E5%AE%B6+%E4%B8%8A%E8%82%A2%E5%8A%9B%E9%87%8F+%E8%B7%9F%E7%BB%83','_blank')">📺 B站搜</button>
-          </div>
-        </div>
-        <!-- 全身综合 -->
-        <div class="workout-card">
-          <div class="wo-icon">🎯</div>
-          <div class="wo-title">帕梅拉 · 20分钟全身力量</div>
-          <div class="wo-meta">含背部+腹部+臀部+手臂 · 最全面</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E5%B8%95%E6%A2%85%E6%8B%89+20%E5%88%86%E9%92%9F+%E5%85%A8%E8%BA%AB+%E5%8A%9B%E9%87%8F','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E5%B8%95%E6%A2%85%E6%8B%89+20%E5%88%86%E9%92%9F+%E5%85%A8%E8%BA%AB','_blank')">📺 B站搜</button>
-          </div>
-        </div>
-        <!-- 拉伸 -->
-        <div class="workout-card">
-          <div class="wo-icon">🧘</div>
-          <div class="wo-title">运动后拉伸 · 10分钟全身</div>
-          <div class="wo-meta">防肌肉腿 · 改善柔韧性 · 必做</div>
-          <div class="wo-actions">
-            <button class="wo-btn dy" onclick="window.open('https://www.douyin.com/search/%E8%BF%90%E5%8A%A8%E5%90%8E%E6%8B%89%E4%BC%B8+10%E5%88%86%E9%92%9F+%E5%85%A8%E8%BA%AB','_blank')">🎵 抖音搜</button>
-            <button class="wo-btn bili" onclick="window.open('https://search.bilibili.com/all?keyword=%E5%85%A8%E8%BA%AB%E6%8B%89%E4%BC%B8+%E8%B7%9F%E7%BB%83+10%E5%88%86%E9%92%9F','_blank')">📺 B站搜</button>
-          </div>
-        </div>
+    <!-- 🌙 晚间肩背训练（23:00 固定）-->
+    <div class="card" id="eveningCard" style="background:linear-gradient(135deg,#fdf2f8,#ede9fe);">
+      <div class="card-header">
+        <span class="card-title">🌙 晚间肩背训练（23:00 起）</span>
+        <span class="card-badge" id="eveningBadge" style="background:#7c3aed;">今晚跟练</span>
       </div>
-      <div style="margin-top:12px;font-size:12px;color:var(--text-light);">
-        💡 建议轮换：周一/四核心+臀桥 | 周二/五上肢+HIIT | 周三/六全身20min | 周日休息 · 每次结束必须拉伸！
-      </div>
+      <div id="eveningList" class="workout-grid"></div>
+      <div id="eveningTip" style="margin-top:10px;font-size:12px;color:var(--text-light);"></div>
     </div>
   </div>
 
@@ -2423,7 +2365,7 @@
           <div class="time-slot highlight-med"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
           <div class="time-slot"><div class="ts-time">21:30-22:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进</div></div>
           <div class="time-slot highlight-review"><div class="ts-time">🔄 22:00-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习打卡</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
-          <div class="time-slot"><div class="ts-time">23:00-23:30</div><div class="ts-icon">💪</div><div class="ts-label">无氧运动半小时</div><div class="ts-desc">核心/臀腿/上肢轮换</div></div>
+          <div class="time-slot"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
         </div>
         <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
       </div>
@@ -2545,7 +2487,7 @@
             <input type="checkbox" class="ts-check" data-time="22:00-23:00" data-label="🔄 艾宾浩斯复习打卡" data-note="自动计算今日需复习节点" checked> 🔄 22:00-23:00 艾宾浩斯复习
           </label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="23:00-23:30" data-label="💪 无氧运动半小时" data-note="核心/臀腿/上肢轮换" checked> 💪 23:00-23:30 无氧运动
+            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT
           </label>
         </div>
       </div>
@@ -3149,7 +3091,7 @@
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
-    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); renderDashDance(); }
+    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); renderDashDance(); renderEveningCard(); }
     // 移动端关闭侧边栏
     if (window.innerWidth <= 900) toggleSidebar();
   }
@@ -3529,6 +3471,7 @@
       }
     }
 
+    let planDate = (label === '明日日程') ? tomorrow : now;
     if (titleEl) titleEl.textContent = '📅 ' + label;
 
     if (!saved || !saved.trim()) {
@@ -3562,6 +3505,16 @@
       }
     });
 
+    // 追加固定晚间肩背训练（若今日计划已手动写晚间训练则不重复）
+    const eveningKw = ['肩背','无氧','HIIT','帕梅拉','欧阳春晓','斜方','晚间'];
+    const hasEvening = lines.some(l => eveningKw.some(k => l.includes(k)));
+    if (!hasEvening) {
+      eveningPlanFor(planDate).forEach(it => {
+        items.push({ start: toMin(it.start), end: toMin(it.end), display: it.start + '–' + it.end, content: it.icon + ' ' + it.label, bv: it.bv });
+      });
+    }
+    items.sort((a, b) => a.start - b.start);
+
     // 没有时间格式的行：直接显示原文，不支持收缩
     if (items.length === 0) {
       if (toggleEl) toggleEl.style.display = 'none';
@@ -3587,7 +3540,7 @@
     const itemHtml = (it, highlight) =>
       `<div class="plan-preview-item${highlight ? ' plan-preview-active' : ''}">` +
       `<span class="plan-preview-time">${it.display}</span>` +
-      `<span class="plan-preview-content">${it.content}</span></div>`;
+      `<span class="plan-preview-content">${it.content}` + (it.bv ? ` <span class="plan-ev-link" onclick="openBili('${it.bv}')">▶跟练</span>` : '') + `</span></div>`;
 
     let result = '';
     if (titleLine) result += `<div style="font-weight:700;font-size:14px;margin-bottom:6px;">${titleLine}</div>`;
@@ -3601,6 +3554,7 @@
       result += items.map((it, i) => itemHtml(it, i === activeIdx)).join('');
     }
     el.innerHTML = result;
+    renderEveningCard();
   }
 
   // 切换首页日程收起 / 展开
@@ -3614,6 +3568,49 @@
   function toMin(t) {
     const parts = String(t).split(':').map(Number);
     return (parts[0] || 0) * 60 + (parts[1] || 0);
+  }
+
+  // ===== 晚间肩背训练（23:00 固定 · 隔日加欧阳春晓斜方肌消除）=====
+  const EVENING_BASE = '2026-07-31'; // 隔日循环基准日（含欧阳春晓）
+  function isTrapeziusDay(d) {
+    const base = new Date(EVENING_BASE + 'T00:00:00');
+    const diff = Math.floor((d - base) / 86400000);
+    return diff >= 0 && diff % 2 === 0;
+  }
+  const EVENING_ITEMS = [
+    { start: '23:00', end: '23:20', icon: '💪', label: '肩背训练（20分钟）', bv: 'BV14K4y1K7zs', search: '帕梅拉 10分钟 美背 肩背训练', note: '帕梅拉10分钟美背·连做2遍≈20min' },
+    { start: '23:20', end: '23:30', icon: '🔥', label: '帕梅拉 · 10分钟HIIT', bv: 'BV1LT4m1S7qQ', search: '帕梅拉 10分钟 HIIT', note: '电音HIIT踩点·暴汗燃脂' }
+  ];
+  const EVENING_TRAPEZIUS = { start: '23:30', end: '23:40', icon: '🧘', label: '欧阳春晓 · 斜方肌消除（10分钟）', bv: 'BV1mv411C7cm', search: '欧阳春晓 斜方肌消除', note: '直角肩+少女背·消除斜方肌' };
+  function eveningPlanFor(d) {
+    const arr = EVENING_ITEMS.map(x => Object.assign({}, x));
+    if (isTrapeziusDay(d)) arr.push(Object.assign({}, EVENING_TRAPEZIUS));
+    return arr;
+  }
+  function openBili(bv) { if (bv) window.open('https://www.bilibili.com/video/' + bv, '_blank'); }
+  function renderEveningCard() {
+    const list = document.getElementById('eveningList');
+    if (!list) return;
+    const badge = document.getElementById('eveningBadge');
+    const tip = document.getElementById('eveningTip');
+    const d = new Date();
+    const items = eveningPlanFor(d);
+    const trape = isTrapeziusDay(d);
+    if (badge) {
+      badge.textContent = trape ? '今晚加斜方肌消除' : '今晚跟练';
+      badge.style.background = trape ? '#dc2626' : '#7c3aed';
+    }
+    list.innerHTML = items.map(it => {
+      const play = it.bv ? '<button class="wo-btn bili" onclick="openBili(\'' + it.bv + '\')">▶ 去B站跟练</button>' : '';
+      const more = '<button class="wo-btn dy" onclick="window.open(\'https://search.bilibili.com/all?keyword=' + encodeURIComponent(it.search || it.label) + '\',\'_blank\')">🔍 更多</button>';
+      return '<div class="workout-card"><div class="wo-icon">' + it.icon + '</div>' +
+        '<div class="wo-title">' + it.label + '</div>' +
+        '<div class="wo-meta">' + it.note + '</div>' +
+        '<div class="wo-actions">' + play + more + '</div></div>';
+    }).join('');
+    if (tip) tip.innerHTML = trape
+      ? '💡 今晚（隔日）加练 <b>欧阳春晓斜方肌消除</b>：肩背→HIIT→斜方肌，约40分钟。明晚恢复 肩背+HIIT（30分钟）。'
+      : '💡 今晚：肩背训练（20分钟）+ 帕梅拉HIIT（10分钟）≈30分钟。隔日会加欧阳春晓斜方肌消除。';
   }
 
   // ===== 三餐记录系统 =====
