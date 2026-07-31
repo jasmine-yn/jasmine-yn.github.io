@@ -1097,7 +1097,7 @@
   <div id="dataHealthBar" style="padding:6px 12px;font-size:9px;color:rgba(255,255,255,0.4);border-top:1px solid rgba(255,255,255,0.06);margin-top:auto;display:flex;align-items:center;gap:4px;">
       <span id="healthDot" style="width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
       <span id="healthLabel">正常</span>
-      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.24</span>
+      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.25</span>
       <span style="cursor:pointer;opacity:0.5;font-size:10px;" onclick="showDataManager()" title="数据管理">⚙</span>
     </div>
 </aside>
@@ -2510,11 +2510,16 @@
     </div>
 
     <div class="card">
-      <div class="card-header"><span class="card-title">📋 待办列表</span><span style="font-size:12px;color:var(--text-light);">点击文字即可切换完成状态</span></div>
+      <div class="card-header"><span class="card-title">📋 待办列表</span><span style="font-size:12px;color:var(--text-light);">点击文字即可切换完成状态 · ✅完成后自动划掉</span></div>
+      <div style="margin-bottom:10px;">
+        <button class="btn btn-sm" onclick="syncTodayPlanToTodos()" style="background:linear-gradient(135deg,#8b5cf6,#a855f7);color:#fff;border:none;font-weight:600;">📅 从今日计划同步</button>
+        <span style="font-size:11px;color:var(--text-light);margin-left:8px;">把每日计划每行自动变成待办，打勾即完成</span>
+      </div>
       <div class="todo-filter-bar">
         <button class="todo-filter-btn active" onclick="setTodoFilter('all',this)">全部</button>
         <button class="todo-filter-btn" onclick="setTodoFilter('pending',this)">⏳ 未完成</button>
         <button class="todo-filter-btn" onclick="setTodoFilter('done',this)">✅ 已完成</button>
+        <button class="todo-filter-btn" onclick="setTodoFilter('plan',this)">📅 计划</button>
         <button class="todo-filter-btn" onclick="setTodoFilter('study',this)">📚 学习</button>
         <button class="todo-filter-btn" onclick="setTodoFilter('sport',this)">💪 运动</button>
         <button class="todo-filter-btn" onclick="setTodoFilter('food',this)">🍱 饮食</button>
@@ -3014,10 +3019,87 @@
     const date = document.getElementById('planDate').value || localDateStr();
     const text = document.getElementById('planTextarea').value;
     localStorage.setItem('jasmine_plan_' + date, text);
+    syncPlanToTodos(date, text);     // 自动同步到待办清单
     renderDashPlan(); // 首页同步刷新
     const s = document.getElementById('planSaved');
     s.style.display = 'inline';
     setTimeout(() => s.style.display = 'none', 2000);
+  }
+
+  // 📋 把每日计划的每行自动同步为待办事项
+  function syncPlanToTodos(date, planText) {
+    if (!planText || !planText.trim()) return;
+    const lines = planText.split('\n')
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('📅') && !l.startsWith('━') && l.length > 2);
+
+    if (!lines.length) return;
+
+    const todos = getTodos();
+    // 找到当前日期的 plan-source 待办
+    const existingPlanTodos = todos.filter(t => t.source === 'plan' && t.planDate === date);
+    const nonPlanTodos = todos.filter(t => !(t.source === 'plan' && t.planDate === date));
+
+    // 为每行计划匹配或创建待办，保留已完成状态
+    const newPlanTodos = [];
+    lines.forEach(line => {
+      // 去掉前导时间和多余空格，提取核心内容做匹配键
+      const m = line.match(/^(\d{1,2}:\d{2}[-~至]?\d{1,2}:\d{2})\s*(.*)$/);
+      const timePart = m ? m[1] : '';
+      const contentPart = m ? (m[2] || '').trim() : line;
+      const matchKey = (timePart + contentPart).replace(/\s+/g, '');
+
+      // 在已有 plan 待办里找匹配（保留 done 状态）
+      const found = existingPlanTodos.find(t => {
+        const tM = (t.text || '').match(/^(\d{1,2}:\d{2}[-~至]?\d{1,2}:\d{2})\s*(.*)$/);
+        const tTime = tM ? tM[1] : '';
+        const tContent = tM ? (tM[2] || '').trim() : (t.text || '');
+        return (tTime + tContent).replace(/\s+/g, '') === matchKey;
+      });
+
+      if (found) {
+        // 保留原有状态，更新文字（可能用户微调了）
+        newPlanTodos.push({ ...found, text: line, date: date });
+      } else {
+        // 新建待办
+        newPlanTodos.push({
+          id: Date.now() + Math.random(),
+          text: line,
+          cat: autoDetectTodoCat(line),
+          date: date,
+          done: false,
+          source: 'plan',
+          planDate: date
+        });
+      }
+    });
+
+    // 合并：非plan待办 + 新plan待办
+    const merged = [...nonPlanTodos, ...newPlanTodos];
+    safeSetJSON(TODO_KEY, merged);
+    renderDashTodos();
+    renderTodoList();
+  }
+
+  // 智能识别待办分类
+  function autoDetectTodoCat(text) {
+    const t = text.toLowerCase();
+    if (/运动|跑步|无氧|舞蹈|跳舞|体能|健身|拉伸|热身|成品舞|基本功/.test(t)) return 'sport';
+    if (/早饭|早餐|午饭|午餐|晚饭|晚餐|吃饭|加餐|喝水|奶茶|零食/.test(t)) return 'food';
+    if (/睡觉|午休|午睡|休息|洗漱|洗澡|通勤|出门|回家/.test(t)) return 'life';
+    return 'study'; // 默认学习
+  }
+
+  // 待办页面按钮：把今日计划同步到待办
+  function syncTodayPlanToTodos() {
+    const today = localDateStr();
+    const planText = localStorage.getItem('jasmine_plan_' + today);
+    if (!planText || !planText.trim()) {
+      alert('今天还没有写计划哦～\n去「每日计划」页面写好计划后保存，或者点这里之前先写计划');
+      return;
+    }
+    syncPlanToTodos(today, planText);
+    alert('✅ 已把今日计划同步到待办清单！\n打勾即可完成，完成自动划掉～');
   }
 
   function loadPlan() {
@@ -3134,6 +3216,7 @@
     let todos = getTodos();
     if (todoFilter === 'pending') todos = todos.filter(x => !x.done);
     else if (todoFilter === 'done') todos = todos.filter(x => x.done);
+    else if (todoFilter === 'plan') todos = todos.filter(x => x.source === 'plan');
     else if (todoFilter !== 'all') todos = todos.filter(x => x.cat === todoFilter);
 
     const total = getTodos().length;
@@ -3148,6 +3231,7 @@
       <div class="todo-item${t.done ? ' completed' : ''}">
         <input type="checkbox" class="todo-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo(${t.id})">
         <span class="todo-text" onclick="toggleTodo(${t.id})">${t.text}</span>
+        ${t.source === 'plan' ? '<span style="font-size:10px;color:#8b5cf6;background:#f3e8ff;padding:1px 6px;border-radius:8px;">📅计划</span>' : ''}
         <span class="todo-cat ${t.cat}">${catNames[t.cat] || t.cat}</span>
         <button class="todo-del" onclick="deleteTodo(${t.id})" title="删除">×</button>
       </div>
@@ -3169,7 +3253,7 @@
     const today = localDateStr();
     const todos = getTodos();
     if (todos.length === 0) {
-      el.innerHTML = '<div class="todo-empty" style="padding:20px 0;">📝 还没有待办事项～<br>去「待办清单」添加吧</div>';
+      el.innerHTML = '<div class="todo-empty" style="padding:20px 0;">📝 还没有待办事项～<br>去「每日计划」写好计划保存，<br>或点「待办清单 → 从今日计划同步」</div>';
       if (statsEl) statsEl.textContent = '';
       return;
     }
@@ -3183,6 +3267,7 @@
         <div class="todo-item${t.done ? ' completed' : ''}" style="padding:6px 10px;">
           <input type="checkbox" class="todo-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo(${t.id})">
           <span class="todo-text" style="font-size:13px;" onclick="toggleTodo(${t.id})">${t.text}</span>
+          ${t.source === 'plan' ? '<span style="font-size:9px;color:#8b5cf6;background:#f3e8ff;padding:1px 5px;border-radius:6px;">📅</span>' : ''}
           <span class="todo-cat ${t.cat}">${catNames[t.cat] || t.cat}</span>
         </div>
       `).join('');
