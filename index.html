@@ -686,6 +686,12 @@
   .kb-generate-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px var(--shadow); }
   .kb-generate-btn:active { transform:translateY(0); }
   .kb-generate-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  /* 生成到 今日/明日 切换 */
+  .kb-date-btn {
+    padding:7px 16px; border:1.5px solid var(--border); background:#fff; color:var(--text-light);
+    border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s;
+  }
+  .kb-date-btn.active { border-color:var(--accent); background:linear-gradient(135deg,var(--accent),var(--sidebar-end)); color:#fff; box-shadow:0 4px 12px var(--shadow); }
 
   /* 章节输入 */
   .kb-chapter-input {
@@ -2503,12 +2509,12 @@
     <!-- 🌙 今晚计划 → ☀️ 明早知识点 -->
     <div class="card kb-card" style="margin-top:16px;">
       <div class="card-header">
-        <span class="card-title">🌙 明早知识点准备</span>
-        <span style="font-size:12px;color:var(--text-light);">选科目 → 写章节 → 生成框架 → 明早首页自动显示</span>
+        <span class="card-title">🌙 知识点准备</span>
+        <span style="font-size:12px;color:var(--text-light);">选科目 → 写章节 → 生成框架 → 首页自动显示</span>
       </div>
 
       <!-- 步骤1：选择科目 -->
-      <div style="margin:12px 0 4px;font-weight:600;font-size:13px;color:var(--text);">📌 第一步：勾选明天要复习的科目</div>
+      <div style="margin:12px 0 4px;font-weight:600;font-size:13px;color:var(--text);">📌 第一步：勾选要复习的科目</div>
       <div class="kb-subject-tags" id="kbSubjectTags">
         <span class="kb-tag" data-subj="血液系统" onclick="toggleKbTag(this)">🩸 血液系统</span>
         <span class="kb-tag" data-subj="内分泌系统" onclick="toggleKbTag(this)">🧪 内分泌</span>
@@ -2584,10 +2590,15 @@
         </div>
       </div>
 
-      <!-- 步骤3：生成按钮 -->
-      <div style="margin:16px 0;text-align:center;">
+      <!-- 步骤3：生成到 今日/明日 + 生成按钮 -->
+      <div style="margin:16px 0 10px;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:13px;color:var(--text);">生成到：</span>
+        <button type="button" class="kb-date-btn" id="kbDateToday" onclick="setKbTarget('today')">☀️ 今日（现在首页可见）</button>
+        <button type="button" class="kb-date-btn active" id="kbDateTomorrow" onclick="setKbTarget('tomorrow')">🌙 明日（明早可见）</button>
+      </div>
+      <div style="margin:0 0 16px;text-align:center;">
         <button class="kb-generate-btn" onclick="generateKnowledge()">
-          ✨ 锁定计划 & 生成明日知识点
+          ✨ 锁定计划 & 生成知识点
         </button>
         <span id="kbGenStatus" style="display:none;margin-left:10px;font-size:13px;color:#10b981;">✅ 已生成！</span>
       </div>
@@ -4721,19 +4732,27 @@
     }, 800);
   }
 
+  let kbTargetMode = 'tomorrow';
+  function setKbTarget(mode) {
+    kbTargetMode = (mode === 'today') ? 'today' : 'tomorrow';
+    const t = document.getElementById('kbDateToday');
+    const m = document.getElementById('kbDateTomorrow');
+    if (t) t.classList.toggle('active', kbTargetMode === 'today');
+    if (m) m.classList.toggle('active', kbTargetMode === 'tomorrow');
+  }
   function generateKnowledge() {
     if (selectedKbSubjects.length === 0) {
       alert('请至少选择一个科目哦～点一下上面的科目标签就行');
       return;
     }
     const chapter = document.getElementById('kbChapterInput').value.trim();
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+    const target = new Date();
+    if (kbTargetMode === 'tomorrow') target.setDate(target.getDate() + 1);
+    const targetStr = target.toISOString().slice(0, 10);
 
     // 生成知识点数据
     const knowledgeData = {
-      date: tomorrowStr,
+      date: targetStr,
       planDate: document.getElementById('planDate').value || localDateStr(),
       chapter: chapter,
       subjects: selectedKbSubjects.map(subj => {
@@ -4745,7 +4764,7 @@
 
     // 存储到 localStorage
     const allKb = safeGetJSON(KB_KEY, {});
-    allKb[tomorrowStr] = knowledgeData;
+    allKb[targetStr] = knowledgeData;
     safeSetJSON(KB_KEY, allKb);
     updateDataHealth();
 
@@ -4767,7 +4786,8 @@
     const dateEl = document.getElementById('kbPreviewDate');
 
     preview.classList.add('show');
-    dateEl.textContent = '📅 ' + data.date + ' 知识点（明早首页可看）';
+    const isTodayKb = data.date === localDateStr();
+    dateEl.textContent = '📅 ' + data.date + ' 知识点（' + (isTodayKb ? '首页今日可看' : '明早首页可看') + '）';
 
     let html = data.subjects.map(s => {
       const pointsHtml = s.points.map((p,i) =>
@@ -7608,6 +7628,12 @@
 
     // 加载今日知识点
     loadTodayKnowledge();
+
+    // 知识点生成目标默认：今天还没有则默认「今日」，方便忘记时补生成
+    try {
+      const _allKb = safeGetJSON(KB_KEY, {});
+      setKbTarget(_allKb[localDateStr()] ? 'tomorrow' : 'today');
+    } catch (e) {}
 
     // 加载艾宾浩斯复习
     initPastReviews();
