@@ -594,6 +594,15 @@
   }
   .ebbinghaus-panel .eb-subtitle { font-size: 12px; color: #7c3aed; margin-bottom: 12px; }
   .eb-review-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .eb-review-list.carousel {
+    flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: none; -ms-overflow-style: none; gap: 10px; padding: 4px 0;
+  }
+  .eb-review-list.carousel::-webkit-scrollbar { display: none; }
+  .eb-review-list.carousel .eb-review-tag {
+    flex: 0 0 auto; scroll-snap-align: start; min-width: 160px;
+    justify-content: center; padding: 8px 14px; font-size: 13px;
+  }
   .eb-review-tag {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
@@ -604,6 +613,14 @@
   .eb-review-tag.easy { color: #059669; border-color: #6ee7b7; background: #ecfdf5; }
   .eb-review-tag .eb-node { font-size: 10px; padding: 1px 6px; border-radius: 8px; background: #f3f0fa; }
   .eb-empty { font-size: 13px; color: var(--text-light); text-align: center; padding: 10px 0; }
+  .eb-carousel-dots {
+    display: flex; justify-content: center; gap: 6px; margin-top: 10px;
+  }
+  .eb-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #c4b5fd;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .eb-dot.active { background: #7c3aed; width: 16px; border-radius: 4px; }
   .eb-review-tag.eb-overdue {
     border-style: dashed !important;
     background: #fef2f2 !important;
@@ -4988,6 +5005,34 @@
     if (window._kbAutoTimer) { clearInterval(window._kbAutoTimer); window._kbAutoTimer = null; }
   }
 
+  // ===== 艾宾浩斯轮播控制 =====
+  function scrollToEbCard(idx) {
+    var track = document.getElementById('ebCarouselTrack');
+    if (!track) return;
+    var tagW = track.querySelector('.eb-review-tag')?.offsetWidth || 170;
+    track.scrollTo({ left: idx * (tagW + 10), behavior: 'smooth' });
+    window._ebCarouselIdx = idx;
+    updateEbDots(idx);
+  }
+  function updateEbDots(idx) {
+    document.querySelectorAll('.eb-dot').forEach(function(d, i) {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+  function startEbAutoScroll() {
+    stopEbAutoScroll();
+    window._ebAutoTimer = setInterval(function() {
+      var track = document.getElementById('ebCarouselTrack');
+      if (!track || !window._ebCarouselTotal) return;
+      var next = (window._ebCarouselIdx || 0) + 1;
+      if (next >= window._ebCarouselTotal) next = 0;
+      scrollToEbCard(next);
+    }, 3000);
+  }
+  function stopEbAutoScroll() {
+    if (window._ebAutoTimer) { clearInterval(window._ebAutoTimer); window._ebAutoTimer = null; }
+  }
+
   // 触摸/滚动时暂停自动轮播，停止滚动后恢复
   (function() {
     var _kbResumeTimer = null;
@@ -6628,19 +6673,48 @@
     const due = getTodayReviewSubjects();
 
     if (due.length === 0) {
+      stopEbAutoScroll();
       list.innerHTML = '<div class="eb-empty">✅ 今天没有到期的复习节点～享受专注的新学习吧！</div>';
       if (subtitle) subtitle.textContent = '暂无到期节点 · 今天可以全力攻克新内容';
       if (tDesc) tDesc.textContent = '✨ 今日暂无到期复习节点';
     } else {
       const overdue = due.filter(d => d.isOverdue);
-      const todayDue = due.filter(d => !d.isOverdue);
-      const html = due.map(d => {
+      const isCarousel = due.length > 2;
+      let html = '';
+
+      if (isCarousel) {
+        html += '<div class="eb-review-list carousel" id="ebCarouselTrack">';
+      } else {
+        html += '<div class="eb-review-list">';
+      }
+
+      html += due.map(function(d, i) {
         const diffClass = d.diff === 'hard' ? 'hard' : d.diff === 'medium' ? 'medium' : 'easy';
         const ovClass = d.isOverdue ? ' eb-overdue' : '';
-        return '<span class="eb-review-tag ' + diffClass + ovClass + '" onclick="markReviewNodeDone(\'' + d.subject + '\',' + d.node + ')" title="点击标记完成">' +
+        return '<span class="eb-review-tag ' + diffClass + ovClass + '" onclick="event.stopPropagation();markReviewNodeDone(\'' + d.subject + '\',' + d.node + ')" title="点击标记完成">' +
           d.subject + ' <span class="eb-node">' + d.nodeLabel + '</span></span>';
       }).join('');
+
+      html += '</div>';
+
+      if (isCarousel) {
+        html += '<div class="eb-carousel-dots" id="ebCarouselDots">';
+        html += due.map(function(_, i) {
+          return '<span class="eb-dot' + (i === 0 ? ' active' : '') + '" data-idx="' + i + '" onclick="event.stopPropagation();scrollToEbCard(' + i + ')"></span>';
+        }).join('');
+        html += '</div>';
+      }
+
       list.innerHTML = html;
+
+      if (isCarousel) {
+        window._ebCarouselIdx = 0;
+        window._ebCarouselTotal = due.length;
+        startEbAutoScroll();
+      } else {
+        stopEbAutoScroll();
+      }
+
       const hardCount = due.filter(d=>d.diff==='hard').length;
       const medCount = due.filter(d=>d.diff==='medium').length;
       const easyCount = due.filter(d=>d.diff==='easy').length;
