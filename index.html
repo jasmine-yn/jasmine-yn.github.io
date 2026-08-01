@@ -2400,13 +2400,20 @@
       </div>
       <!-- 网盘分享链接 -->
       <div style="background:#fff;border:1.5px dashed #93c5fd;border-radius:12px;padding:12px 14px;margin-bottom:12px;">
-        <div style="font-size:12px;color:#1e40af;font-weight:700;margin-bottom:6px;">📁 网盘分享链接（点右侧按钮复制）</div>
+        <div style="font-size:12px;color:#1e40af;font-weight:700;margin-bottom:6px;">📁 网盘分享链接（输入后自动保存，点按钮打开/复制）</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <input id="panShareLink" class="form-input" type="text" placeholder="粘贴网盘分享链接（带提取码会自动填到备注）" style="flex:1;min-width:200px;font-size:12px;">
-          <button class="btn btn-primary btn-sm" onclick="copyPanLink()" style="background:#3b82f6;white-space:nowrap;">📋 复制分享</button>
-          <button class="btn btn-outline btn-sm" onclick="openPanLink()" style="white-space:nowrap;">🚀 打开网盘</button>
+          <input id="panShareLink" class="form-input" type="text" placeholder="粘贴网盘分享链接（如 pan.baidu.com/s/xxxx）" style="flex:1;min-width:200px;font-size:12px;" oninput="autoSavePanMeta()">
+          <button class="btn btn-primary btn-sm" onclick="openPanLink()" style="background:#3b82f6;white-space:nowrap;font-weight:700;">🚀 打开网盘</button>
+          <button class="btn btn-outline btn-sm" onclick="copyPanLink()" style="white-space:nowrap;">📋 复制分享</button>
         </div>
-        <input id="panExtractCode" class="form-input" type="text" placeholder="提取码（如 1234）" style="font-size:12px;margin-top:6px;width:160px;">
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+          <input id="panExtractCode" class="form-input" type="text" placeholder="提取码（如 1234）" style="font-size:12px;width:160px;" oninput="autoSavePanMeta()">
+          <span id="panCodeTip" style="font-size:11px;color:#6b7280;"></span>
+        </div>
+        <!-- 可点击的直接链接（移动端兜底） -->
+        <div id="panLinkDisplay" style="margin-top:8px;display:none;">
+          <a id="panLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#3b82f6;text-decoration:underline;word-break:break-all;">👉 点这里直接打开网盘</a>
+        </div>
       </div>
       <!-- 进度筛选 -->
       <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
@@ -9075,6 +9082,31 @@
   function savePanMeta(meta) {
     safeSetJSON(PAN_META_KEY, meta);
   }
+  function autoSavePanMeta() {
+    var linkEl = document.getElementById('panShareLink');
+    var codeEl = document.getElementById('panExtractCode');
+    if (linkEl) savePanMeta({ link: linkEl.value, code: codeEl ? codeEl.value : '' });
+    updatePanLinkDisplay();
+  }
+  function updatePanLinkDisplay() {
+    var linkEl = document.getElementById('panShareLink');
+    var codeEl = document.getElementById('panExtractCode');
+    var displayEl = document.getElementById('panLinkDisplay');
+    var anchorEl = document.getElementById('panLinkAnchor');
+    var tipEl = document.getElementById('panCodeTip');
+    if (!linkEl || !displayEl || !anchorEl) return;
+    var url = linkEl.value.trim();
+    if (url) {
+      var fullUrl = /^https?:\/\//i.test(url) ? url : 'https://' + url;
+      anchorEl.href = fullUrl;
+      displayEl.style.display = 'block';
+    } else {
+      displayEl.style.display = 'none';
+    }
+    if (tipEl) {
+      tipEl.textContent = (codeEl && codeEl.value.trim()) ? '提取码: ' + codeEl.value.trim() : '';
+    }
+  }
 
   // 渲染课程列表
   function renderPanCourseList() {
@@ -9085,6 +9117,8 @@
     var codeInput = document.getElementById('panExtractCode');
     if (linkInput && !linkInput.value) linkInput.value = meta.link || '';
     if (codeInput && !codeInput.value) codeInput.value = meta.code || '';
+    // 更新链接显示区域
+    updatePanLinkDisplay();
 
     var filtered = list.slice();
     if (panCurrentFilter !== 'all') {
@@ -9214,8 +9248,25 @@
   }
   function openPanLink() {
     var linkEl = document.getElementById('panShareLink');
-    if (!linkEl || !linkEl.value) { showSceneTip('请先填入网盘分享链接'); return; }
-    window.open(linkEl.value, '_blank');
+    if (!linkEl || !linkEl.value.trim()) { showSceneTip('请先填入网盘分享链接'); return; }
+    var url = linkEl.value.trim();
+    // 补全协议
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    // 先保存链接
+    var codeEl = document.getElementById('panExtractCode');
+    savePanMeta({ link: linkEl.value.trim(), code: codeEl ? codeEl.value.trim() : '' });
+    // 优先用 <a> 标签点击，兼容移动端弹窗拦截
+    var a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // 兜底：如果 a.click() 没生效，尝试 window.open
+    setTimeout(function() {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }, 100);
   }
   function exportPanProgress() {
     var data = {
