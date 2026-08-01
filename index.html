@@ -1154,7 +1154,7 @@
     {title:'与其仰望星空，不如脚踏实地 🌟', sub:'一个考点一个考点啃，一道题一道题刷，上岸的路就是这样走的'},
     {title:'今天也要做闪闪发光的自己 ✨', sub:'天秤座的幸运，藏在每天的努力里'}
   ];
-  const qIdx = hash % dailyQuotes.length;
+  const qIdx = dayOfYear % dailyQuotes.length;
   window.__dailyQuote = dailyQuotes[qIdx];
 })();
 </script>
