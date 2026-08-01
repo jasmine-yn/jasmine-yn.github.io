@@ -99,6 +99,24 @@
   .mode-btn.active { background: rgba(255,255,255,0.18); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
   .mode-btn .mode-emoji { font-size: 15px; }
 
+  /* 首页三圆点模式切换器 */
+  .home-mode-switcher { user-select: none; }
+  .home-mode-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 2px solid var(--border); background: var(--card-bg);
+    color: var(--text-light); transition: all 0.25s;
+  }
+  .home-mode-btn:hover { border-color: var(--accent); color: var(--text); }
+  .home-mode-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(79,70,229,0.06); }
+  .home-mode-btn .hm-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .home-mode-btn.active .hm-dot { box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+
+  /* 优先级炸弹 */
+  .priority-bomb { animation: bombPulse 2s ease-in-out infinite; cursor: pointer; }
+  .priority-bomb:hover { background: #fee2e2; }
+  @keyframes bombPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.15); } 50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); } }
+
   /* 模式切换过渡动画 */
   .sidebar, .main, .card, .exam-countdown-card, .hero-banner, .ebbinghaus-panel, .weak-banner {
     transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
@@ -113,6 +131,13 @@
     animation: tipSlideIn 0.4s ease;
   }
   .scene-tip.show { display: flex; }
+
+  /* 拖拽排序 */
+  .drag-sort-list { position: relative; }
+  .drag-item { cursor: grab; transition: transform 0.15s, box-shadow 0.15s; }
+  .drag-item:active { cursor: grabbing; }
+  .drag-item.dragging { opacity: 0.6; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10; }
+  .drag-item.drag-over { border-top: 3px solid var(--accent); }
   .scene-tip .tip-close { cursor: pointer; opacity: 0.6; font-size: 16px; margin-left: auto; flex-shrink: 0; }
   .scene-tip .tip-close:hover { opacity: 1; }
   @keyframes tipSlideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -1220,14 +1245,9 @@
     </div>
   </div>
   <nav class="sidebar-nav">
-    <!-- 双模式切换器 -->
-    <div class="mode-switcher" id="modeSwitcher">
-      <button class="mode-btn active" data-mode="study" onclick="switchMode('study')">
-        <span class="mode-emoji">📚</span> 学习
-      </button>
-      <button class="mode-btn" data-mode="energy" onclick="switchMode('energy')">
-        <span class="mode-emoji">💃</span> 活力
-      </button>
+    <!-- 模式指示器 -->
+    <div id="modeIndicator" style="padding:8px 12px;font-size:12px;color:rgba(255,255,255,0.5);text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+      <span id="modeIndicatorText">📚 今日指挥官</span>
     </div>
 
     <div class="nav-group static" data-group="home">
@@ -1343,6 +1363,19 @@
       </div>
     </div>
 
+    <!-- 首页三模式切换器 -->
+    <div class="home-mode-switcher" id="homeModeSwitcher" style="display:flex;justify-content:center;gap:8px;margin:16px 0 8px;">
+      <button class="home-mode-btn active" data-mode="study" onclick="switchMode('study')" title="学习模式：只显示备考核心">
+        <span class="hm-dot" style="background:#4f46e5;"></span> 📚 学习
+      </button>
+      <button class="home-mode-btn" data-mode="energy" onclick="switchMode('energy')" title="运动模式：只显示体重/舞蹈/运动">
+        <span class="hm-dot" style="background:#f97316;"></span> 💃 运动
+      </button>
+      <button class="home-mode-btn" data-mode="overview" onclick="switchMode('overview')" title="总览模式：显示全部">
+        <span class="hm-dot" style="background:#10b981;"></span> 📊 总览
+      </button>
+    </div>
+
     <!-- 🎯 明日最重要一件事 -->
     <div class="card" id="dashTopTask" data-mode="study" style="margin-top:20px;border-left:4px solid var(--accent);">
       <div class="card-header">
@@ -1390,6 +1423,7 @@
       <div class="card-header">
         <span class="card-title">☀️ 今日知识点</span>
         <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
+        <span style="margin-left:auto;font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="showFullKnowledge()">📖 全文库</span>
       </div>
       <div class="kb-carousel" id="dashKbCarousel">
         <div id="dashKbContent"></div>
@@ -2490,22 +2524,22 @@
       <div class="timeline-wrap">
         <button class="timeline-arrow prev" onclick="scrollTimeline(-1)">‹</button>
         <div class="timeline-scroll" id="todayTimeline">
-          <div class="time-slot mechanical-time"><div class="ts-time">7:00-7:30</div><div class="ts-icon">☀️</div><div class="ts-label">起床+早餐</div><div class="ts-desc">控制在350kcal</div></div>
-          <div class="time-slot highlight-med gold-time"><div class="ts-time">7:30-9:30</div><div class="ts-icon">📖</div><div class="ts-label">早2h背诵</div><div class="ts-desc">医学·临床/基础轮换（昭昭）</div></div>
-          <div class="time-slot highlight-fixed gold-time"><div class="ts-time">9:30-10:00</div><div class="ts-icon">📊</div><div class="ts-label">资料分析2篇 🔒固定</div><div class="ts-desc">每天2篇，约30min（超格）</div></div>
-          <div class="time-slot highlight-fixed gold-time"><div class="ts-time">10:00-10:30</div><div class="ts-icon">🧮</div><div class="ts-label">分数默写+速算 🔒固定</div><div class="ts-desc">每天必做，约30min</div></div>
-          <div class="time-slot highlight-med gold-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">🩺</div><div class="ts-label">临床医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
-          <div class="time-slot mechanical-time"><div class="ts-time">12:00-12:30</div><div class="ts-icon">🍱</div><div class="ts-label">午餐</div><div class="ts-desc">控制在450kcal</div></div>
-          <div class="time-slot mechanical-time"><div class="ts-time">12:30-13:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进 + 回顾上午背诵</div></div>
-          <div class="time-slot highlight-dance mechanical-time"><div class="ts-time">13:00-14:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第1节</div><div class="ts-desc">仅2h日，1h日/体能日休息</div></div>
-          <div class="time-slot mechanical-time"><div class="ts-time">13:40-14:30</div><div class="ts-icon">😴</div><div class="ts-label">午睡约50min</div><div class="ts-desc">养足精神</div></div>
-          <div class="time-slot highlight-course mechanical-time"><div class="ts-time">14:30-17:30</div><div class="ts-icon">🎓</div><div class="ts-label">行测课程3h</div><div class="ts-desc">超格·当日科目视频课</div></div>
-          <div class="time-slot highlight-note mechanical-time"><div class="ts-time">17:30-18:30</div><div class="ts-icon">📝</div><div class="ts-label">整理行测笔记1h</div><div class="ts-desc">当天课程内容梳理+思维导图</div></div>
-          <div class="time-slot mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">🥗</div><div class="ts-label">晚餐</div><div class="ts-desc">控制在400kcal</div></div>
-          <div class="time-slot highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第2节/💪体能</div><div class="ts-desc">2h日+1h日均跳，体能日运动</div></div>
-          <div class="time-slot highlight-med gold-time"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
-          <div class="time-slot highlight-review gold-time"><div class="ts-time">🔄 21:30-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习 1.5h</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
-          <div class="time-slot mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min(绷带+哑铃)+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">7:00-7:30</div><div class="ts-icon">☀️</div><div class="ts-label">起床+早餐</div><div class="ts-desc">控制在350kcal</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">7:30-9:30</div><div class="ts-icon">📖</div><div class="ts-label">早2h背诵</div><div class="ts-desc">医学·临床/基础轮换（昭昭）</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">9:30-10:00</div><div class="ts-icon">📊</div><div class="ts-label">资料分析2篇 🔒固定</div><div class="ts-desc">每天2篇，约30min（超格）</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">10:00-10:30</div><div class="ts-icon">🧮</div><div class="ts-label">分数默写+速算 🔒固定</div><div class="ts-desc">每天必做，约30min</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">🩺</div><div class="ts-label">临床医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:00-12:30</div><div class="ts-icon">🍱</div><div class="ts-label">午餐</div><div class="ts-desc">控制在450kcal</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:30-13:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进 + 回顾上午背诵</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-dance mechanical-time"><div class="ts-time">13:00-14:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第1节</div><div class="ts-desc">仅2h日，1h日/体能日休息</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">13:40-14:30</div><div class="ts-icon">😴</div><div class="ts-label">午睡约50min</div><div class="ts-desc">养足精神</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-course mechanical-time"><div class="ts-time">14:30-17:30</div><div class="ts-icon">🎓</div><div class="ts-label">行测课程3h</div><div class="ts-desc">超格·当日科目视频课</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-note mechanical-time"><div class="ts-time">17:30-18:30</div><div class="ts-icon">📝</div><div class="ts-label">整理行测笔记1h</div><div class="ts-desc">当天课程内容梳理+思维导图</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">🥗</div><div class="ts-label">晚餐</div><div class="ts-desc">控制在400kcal</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第2节/💪体能</div><div class="ts-desc">2h日+1h日均跳，体能日运动</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-review gold-time"><div class="ts-time">🔄 21:30-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习 1.5h</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min(绷带+哑铃)+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
         </div>
         <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
       </div>
@@ -3212,14 +3246,14 @@
   // ========== 双工作台模式切换 ==========
   const modeThemes = {
     study: {
-      name: '学习Buddy', emoji: '📚',
+      name: '今日指挥官', emoji: '📚',
       start: '#4f46e5', end: '#1e1b4b', bg: '#eef2ff', accent: '#4f46e5',
       text: '#1e1b4b', textLight: '#6366f1', border: '#e0e7ff',
       shadow: 'rgba(79,70,229,0.08)', accentLight: '#e0e7ff',
       hue: '0deg', sat: 'saturate(1)'
     },
     energy: {
-      name: '活力Buddy', emoji: '💃',
+      name: '活力指挥官', emoji: '💃',
       start: '#f97316', end: '#7c2d12', bg: '#fff7ed', accent: '#f97316',
       text: '#431407', textLight: '#ea580c', border: '#ffedd5',
       shadow: 'rgba(249,115,22,0.08)', accentLight: '#ffedd5',
@@ -3228,7 +3262,8 @@
   };
   const modeGroups = {
     study: ['home', 'medical', 'xingce', 'manage'],
-    energy: ['home', 'life']
+    energy: ['home', 'life'],
+    overview: ['home', 'medical', 'xingce', 'manage', 'life']
   };
   window.__currentMode = 'study';
 
@@ -3237,8 +3272,12 @@
     localStorage.setItem('jasmine_mode', mode);
     window.__currentMode = mode;
 
-    // 更新按钮状态
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    // 更新按钮状态（侧边栏+首页）
+    document.querySelectorAll('.mode-btn, .home-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+
+    // 更新侧边栏模式指示器
+    const miText = document.getElementById('modeIndicatorText');
+    if (miText) miText.textContent = t.emoji + ' ' + t.name;
 
     // 切换配色
     const t = modeThemes[mode];
@@ -3274,10 +3313,14 @@
       if (g && g !== 'home') group.style.display = visibleGroups.includes(g) ? '' : 'none';
     });
 
-    // 首页卡片过滤
+    // 首页卡片过滤（overview显示全部）
     document.querySelectorAll('#page-dashboard [data-mode]').forEach(el => {
       const m = el.dataset.mode;
-      el.style.display = (m === 'both' || m === mode) ? '' : 'none';
+      if (mode === 'overview') {
+        el.style.display = '';
+      } else {
+        el.style.display = (m === 'both' || m === mode) ? '' : 'none';
+      }
     });
 
     // 如果当前页面不在可见范围内，切回首页
@@ -3299,6 +3342,45 @@
   function restoreMode() {
     const saved = localStorage.getItem('jasmine_mode') || 'study';
     switchMode(saved);
+  }
+
+  // ========== v4.29 优先级炸弹 ==========
+  function updatePriorityBomb() {
+    const bomb = document.getElementById('priorityBomb');
+    const text = document.getElementById('priorityBombText');
+    if (!bomb || !text) return;
+
+    const subjects = [
+      { name: '基础医学', key: '基础医学', weight: 1.2 },
+      { name: '临床医学', key: '临床医学', weight: 1.0 },
+      { name: '生理学', key: '生理学', weight: 1.0 },
+      { name: '药理学', key: '药理学', weight: 1.1 },
+      { name: '资料分析', key: '资料分析', weight: 1.3 },
+      { name: '判断推理', key: '判断推理', weight: 1.0 },
+      { name: '言语理解', key: '言语理解', weight: 0.9 },
+      { name: '数量关系', key: '数量关系', weight: 1.0 },
+      { name: '常识判断', key: '常识判断', weight: 1.1 },
+      { name: '中医', key: '中医', weight: 1.2 }
+    ];
+
+    const pk = JSON.parse(localStorage.getItem('jasmine_pk_status') || '{}');
+    const scored = subjects.map(s => {
+      const st = pk[s.key] || {};
+      const total = Object.keys(st).length;
+      const done = Object.values(st).filter(v => v === true).length;
+      const pct = total > 0 ? Math.round(done / total * 100) : 0;
+      return { name: s.name, pct: pct, weighted: pct * s.weight };
+    });
+
+    scored.sort((a, b) => a.weighted - b.weighted);
+    const w1 = scored[0], w2 = scored[1];
+    let msg = '';
+    if (w1.pct === 0) msg = w1.name + '（未开始）';
+    else msg = w1.name + '（' + w1.pct + '%完成）';
+    msg += ' · ';
+    if (w2.pct === 0) msg += w2.name + '（未开始）';
+    else msg += w2.name + '（' + w2.pct + '%完成）';
+    text.textContent = msg;
   }
 
   // ========== v4.28 新增功能 ==========
@@ -5261,7 +5343,139 @@
     if (kbTargetMode === 'tomorrow') target.setDate(target.getDate() + 1);
     const targetStr = target.toISOString().slice(0, 10);
 
-    // 生成知识点数据
+    // 先生成全部数据
+    const allSubjects = selectedKbSubjects.map(subj => {
+      const tmpl = kbTemplates[subj];
+      const pts = tmpl ? tmpl.points : ['暂无模板，请补充具体知识点'];
+      return { name: subj, points: pts };
+    });
+
+    // 展平所有知识点用于精选
+    const flatPoints = [];
+    allSubjects.forEach(s => {
+      s.points.forEach(p => flatPoints.push({ subject: s.name, point: p }));
+    });
+
+    // 显示精选弹窗
+    showKnowledgePicker(flatPoints, allSubjects, targetStr, chapter);
+  }
+
+  // v4.29: 知识点精选弹窗
+  function showKnowledgePicker(flatPoints, allSubjects, targetStr, chapter) {
+    // 去重
+    const seen = new Set();
+    const unique = flatPoints.filter(p => {
+      const key = p.subject + '::' + p.point;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    let html = '<div style="max-height:55vh;overflow-y:auto;">';
+    html += '<p style="margin:0 0 12px;font-size:13px;color:var(--text-light);">请勾选 <b style="color:var(--accent);">3条"今日必背"</b>，首页只显示这3条，其余在「全文库」查看。</p>';
+
+    let currentSub = '';
+    unique.forEach((p, i) => {
+      if (p.subject !== currentSub) {
+        currentSub = p.subject;
+        html += '<div style="font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px;padding-top:6px;border-top:1px solid var(--border);">' + p.subject + '</div>';
+      }
+      html += '<label class="kb-pick-row" style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;margin:2px 0;transition:background 0.15s;" onmouseover="this.style.background='rgba(79,70,229,0.04)'" onmouseout="this.style.background='transparent'">';
+      html += '<input type="checkbox" class="kb-pick-check" value="' + i + '" data-subject="' + p.subject + '" data-point="' + encodeURIComponent(p.point) + '" style="margin-top:3px;flex-shrink:0;">';
+      html += '<span style="font-size:13px;line-height:1.4;">' + p.point + '</span>';
+      html += '</label>';
+    });
+    html += '</div>';
+    html += '<div style="margin-top:12px;text-align:right;font-size:12px;color:var(--text-light);">已选 <span id="kbPickCount" style="font-weight:700;color:var(--accent);">0</span> / 3 条</div>';
+
+    showModal('☀️ 精选今日必背（最多3条）', html, function() {
+      const checks = document.querySelectorAll('.kb-pick-check:checked');
+      let picks = Array.from(checks).map(c => ({
+        subject: c.dataset.subject,
+        point: decodeURIComponent(c.dataset.point)
+      }));
+      // 如果没选，默认前3条
+      if (picks.length === 0) picks = unique.slice(0, 3).map(p => ({ subject: p.subject, point: p.point }));
+      else picks = picks.slice(0, 3);
+
+      savePickedKnowledge(picks, allSubjects, targetStr, chapter);
+    }, '✅ 确认精选');
+
+    setTimeout(() => {
+      document.querySelectorAll('.kb-pick-check').forEach(cb => {
+        cb.addEventListener('change', function() {
+          const checked = document.querySelectorAll('.kb-pick-check:checked').length;
+          const el = document.getElementById('kbPickCount');
+          if (el) el.textContent = Math.min(checked, 3);
+          if (checked > 3) {
+            alert('最多只能选3条哦！专注才能记住 💪');
+            this.checked = false;
+            if (el) el.textContent = 3;
+          }
+        });
+      });
+    }, 50);
+  }
+
+  function savePickedKnowledge(picks, allSubjects, targetStr, chapter) {
+    // 构建精选版数据（只含3条）
+    const pickedMap = {};
+    picks.forEach(p => {
+      if (!pickedMap[p.subject]) pickedMap[p.subject] = [];
+      pickedMap[p.subject].push(p.point);
+    });
+    const pickedSubjects = Object.keys(pickedMap).map(s => ({ name: s, points: pickedMap[s] }));
+
+    const pickedData = {
+      date: targetStr,
+      planDate: document.getElementById('planDate').value || localDateStr(),
+      chapter: chapter,
+      subjects: pickedSubjects,
+      picked: true,
+      pickedAt: new Date().toISOString()
+    };
+
+    // 保存精选版
+    const allKb = safeGetJSON(KB_KEY, {});
+    allKb[targetStr] = pickedData;
+    safeSetJSON(KB_KEY, allKb);
+
+    // 保存全文库
+    const fullData = {
+      date: targetStr,
+      planDate: document.getElementById('planDate').value || localDateStr(),
+      chapter: chapter,
+      subjects: allSubjects,
+      generatedAt: new Date().toISOString()
+    };
+    const fullKey = KB_KEY + '_full';
+    const allFull = safeGetJSON(fullKey, {});
+    allFull[targetStr] = fullData;
+    safeSetJSON(fullKey, allFull);
+
+    updateDataHealth();
+    renderKbPreview(pickedData);
+
+    const status = document.getElementById('kbGenStatus');
+    if (status) { status.style.display = 'inline'; setTimeout(() => { status.style.display = 'none'; }, 3000); }
+    updateKbHistory();
+
+    alert('☀️ 已保存 ' + picks.length + ' 条"今日必背"！
+首页只显示精选内容，点击「全文库」查看全部。');
+    loadTodayKnowledge();
+  }
+
+  // 传统模式：生成全部（不精选）
+  function generateKnowledgeLegacy() {
+    if (selectedKbSubjects.length === 0) {
+      alert('请至少选择一个科目哦～点一下上面的科目标签就行');
+      return;
+    }
+    const chapter = document.getElementById('kbChapterInput').value.trim();
+    const target = new Date();
+    if (kbTargetMode === 'tomorrow') target.setDate(target.getDate() + 1);
+    const targetStr = target.toISOString().slice(0, 10);
+
     const knowledgeData = {
       date: targetStr,
       planDate: document.getElementById('planDate').value || localDateStr(),
@@ -5273,21 +5487,15 @@
       generatedAt: new Date().toISOString()
     };
 
-    // 存储到 localStorage
     const allKb = safeGetJSON(KB_KEY, {});
     allKb[targetStr] = knowledgeData;
     safeSetJSON(KB_KEY, allKb);
     updateDataHealth();
 
-    // 显示预览
     renderKbPreview(knowledgeData);
 
-    // 显示成功状态
     const status = document.getElementById('kbGenStatus');
-    status.style.display = 'inline';
-    setTimeout(() => { status.style.display = 'none'; }, 3000);
-
-    // 更新历史提示
+    if (status) { status.style.display = 'inline'; setTimeout(() => { status.style.display = 'none'; }, 3000); }
     updateKbHistory();
   }
 
@@ -5385,9 +5593,10 @@
 
       var html = '';
       var isAuto = flatPoints.length > 3;
+      var isPicked = todayKb.picked === true;
       html = '<div class="kb-carousel-track' + (isAuto ? ' auto' : '') + '" id="kbCarouselTrack">';
       html += flatPoints.map(function(fp, i) {
-        return buildFlashCard(fp.subject, fp.point, i + 1, flatPoints.length);
+        return buildFlashCard(fp.subject, fp.point, i + 1, flatPoints.length, isPicked);
       }).join('');
       html += '</div>';
       // 导航点
