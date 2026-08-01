@@ -175,6 +175,16 @@
   .card-badge.green { background: #d1fae5; color: #065f46; }
   .card-badge.purple { background: #ede9fe; color: #5b21b6; }
 
+  /* ====== 精简预览卡片（默认收起，点击展开） ====== */
+  .card-collapsible { cursor: pointer; position: relative; }
+  .card-collapsible .card-preview { display: block; }
+  .card-collapsible .card-detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, opacity 0.3s ease; opacity: 0; }
+  .card-collapsible.expanded .card-detail { max-height: 2000px; opacity: 1; }
+  .card-collapsible.expanded .card-preview .preview-hint::after { content: ' ▲收起'; }
+  .card-collapsible .preview-hint::after { content: ' ▼展开'; }
+  .card-collapsible .preview-hint { font-size: 12px; color: var(--accent); font-weight: 600; margin-left: auto; white-space: nowrap; }
+  .card-collapsible .card-detail > * { margin-top: 12px; }
+
   /* 可点击卡片 — 首页各模块点击跳转 */
   .clickable-card { cursor: pointer; transition: all 0.2s; position: relative; }
   .clickable-card:hover {
@@ -865,6 +875,10 @@
     .pamela-card .pm-header { flex-direction: column; text-align: center; }
     .pamela-card .pm-video-btn { width: 100%; justify-content: center; }
     .sb-workout-item .sbw-icon { font-size: 28px; }
+    /* 精简卡片移动端适配 */
+    .card-collapsible { padding: 16px; }
+    .card-collapsible .card-preview { font-size: 12px; }
+    .card-collapsible.expanded .card-detail { max-height: 3000px; }
     #dance-player-wrap video { max-height: 40vh; }
     #videoRecPreview, #videoRecPlayback { max-height: 40vh; }
     .dy-account-grid { grid-template-columns: 1fr !important; }
@@ -1242,6 +1256,17 @@
   .todo-filter-btn.active { background:var(--accent); color:#fff; border-color:var(--accent); }
   .todo-stats { font-size:12px; color:var(--text-light); margin-top:10px; text-align:right; }
   .todo-empty { text-align:center; padding:30px 0; color:#d1d5db; font-size:14px; }
+  /* 脑力能耗标记 */
+  .energy-badge { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; white-space:nowrap; flex-shrink:0; }
+  .energy-badge.high { background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; }
+  .energy-badge.mid { background:#fffbeb; color:#d97706; border:1px solid #fcd34d; }
+  .energy-badge.low { background:#ecfdf5; color:#059669; border:1px solid #6ee7b7; }
+  .energy-select { padding:8px 10px; border:1.5px solid var(--border); border-radius:10px; font-size:13px; background:#faf9fc; outline:none; min-width:90px; }
+  .todo-item.high-energy { border-left:3px solid #ef4444; }
+  .todo-item.mid-energy { border-left:3px solid #f59e0b; }
+  .todo-item.low-energy { border-left:3px solid #10b981; }
+  .energy-section-title { font-size:13px; font-weight:700; margin:14px 0 6px; display:flex; align-items:center; gap:6px; }
+  .energy-section-title .count { font-size:11px; color:var(--text-light); font-weight:400; }
 
   /* 首页计划卡片 */
   .plan-preview-item { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
@@ -1709,42 +1734,15 @@
       </div>
     </div>
 
-    <!-- ☀️ 今日知识点卡片（轮播） -->
-    <div class="card kb-card" id="dashKnowledgeCard" data-mode="study" style="margin-top:20px;">
-      <div class="card-header">
-        <span class="card-title">☀️ 今日知识点</span>
-        <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
-        <span style="margin-left:auto;font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="showFullKnowledge()">📖 全文库</span>
-      </div>
-      <div class="kb-carousel" id="dashKbCarousel">
-        <div id="dashKbContent"></div>
-      </div>
-    </div>
-
-    <!-- 薄弱科目提醒 -->
-    <div class="weak-banner clickable-card" data-mode="study" onclick="switchPage('basic', document.querySelector('[data-page=basic]'))" title="点击跳转薄弱科目：基础医学">
-      <span style="font-size:18px">⚠️</span>
-      <span>你的薄弱科目：<b>基础医学 · 中医 · 资料分析 · 常识判断</b> — 建议每天优先攻克1-2个薄弱点，今天先从 <b>基础医学·药理学</b> 或 <b>资料分析·速算技巧</b> 开始？</span>
-    </div>
-
-    <!-- 核心任务区（≤3项） -->
-    <div class="card" id="dashCoreTasks" data-mode="study" style="margin-top:20px;">
-      <div class="card-header">
-        <span class="card-title">🎯 今日核心任务</span>
-        <span style="font-size:12px;color:var(--text-light);">优先完成🔴高耗能项</span>
-      </div>
-      <div id="dashCoreTasksList" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">
-          📝 去「待办清单」添加今日任务，首页将自动显示最重要的3项
-        </div>
-      </div>
-    </div>
-
-    <!-- 每日一坑：昨日最难错题 -->
+    <!-- 🕳️ 每日一坑：昨日最难错题 + 记忆口诀 -->
     <div class="card" id="dashDailyPit" data-mode="study" style="margin-top:20px;border-left:4px solid #ef4444;">
       <div class="card-header">
         <span class="card-title">🕳️ 每日一坑</span>
         <span style="font-size:12px;color:#ef4444;font-weight:600;">昨日最难1道 · 必不再错</span>
+        <span style="margin-left:auto;display:flex;gap:10px;">
+          <span style="font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="showFullKnowledge()">📖 全文库</span>
+          <span style="font-size:11px;color:#f59e0b;cursor:pointer;text-decoration:underline;" onclick="showWeakSubjects()">⚠️ 薄弱科目</span>
+        </span>
       </div>
       <div id="dashDailyPitContent" style="padding:0 4px;">
         <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">
@@ -1753,67 +1751,104 @@
       </div>
     </div>
 
-    <!-- 😴 午休计时器（学习Buddy专属） -->
-    <div class="nap-timer-card ws-component" data-mode="study" style="margin-top:20px;">
+    <!-- 薄弱科目提醒（精简为一行可点击） -->
+    <div class="weak-banner clickable-card" data-mode="study" onclick="showWeakSubjects()" title="点击查看薄弱科目详情">
+      <span style="font-size:18px">⚠️</span>
+      <span>薄弱科目：<b>基础医学 · 中医 · 资料分析 · 常识判断</b> — 点击查看详情</span>
+    </div>
+
+    <!-- 核心任务区（≤3项，按脑力排序） -->
+    <div class="card" id="dashCoreTasks" data-mode="study" style="margin-top:20px;">
+      <div class="card-header">
+        <span class="card-title">🎯 今日核心任务</span>
+        <span style="font-size:12px;color:var(--text-light);">🔴高耗能优先完成</span>
+      </div>
+      <div id="dashCoreTasksList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">
+          📝 去「待办清单」添加今日任务，首页将自动按脑力排序显示
+        </div>
+      </div>
+    </div>
+
+    <!-- 😴 午休计时器（学习Buddy专属）- 精简预览 -->
+    <div class="nap-timer-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">😴 午休计时器</span>
-        <span style="font-size:12px;color:#6366f1;">科学午休20-30分钟·恢复下午精力</span>
+        <span class="preview-hint"></span>
       </div>
-      <div class="nap-timer-display" id="napTimerDisplay">25:00</div>
-      <div class="nap-timer-presets">
-        <button class="nap-preset" onclick="setNapPreset(15, this)">15分钟</button>
-        <button class="nap-preset active" onclick="setNapPreset(25, this)">25分钟</button>
-        <button class="nap-preset" onclick="setNapPreset(30, this)">30分钟</button>
-        <button class="nap-preset" onclick="setNapPreset(45, this)">45分钟</button>
+      <div class="card-preview">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-light);">
+          <span style="font-size:24px;">⏰</span>
+          <span>科学午休25分钟 · 恢复下午精力 · <b style="color:var(--accent);">点击展开计时器</b></span>
+        </div>
       </div>
-      <div class="nap-controls">
-        <button class="nap-btn nap-btn-start" id="napStartBtn" onclick="napTimerStart()">▶ 开始午休</button>
-        <button class="nap-btn nap-btn-stop" id="napStopBtn" onclick="napTimerStop()" disabled>⏹ 结束</button>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div class="nap-timer-display" id="napTimerDisplay">25:00</div>
+        <div class="nap-timer-presets">
+          <button class="nap-preset" onclick="setNapPreset(15, this)">15分钟</button>
+          <button class="nap-preset active" onclick="setNapPreset(25, this)">25分钟</button>
+          <button class="nap-preset" onclick="setNapPreset(30, this)">30分钟</button>
+          <button class="nap-preset" onclick="setNapPreset(45, this)">45分钟</button>
+        </div>
+        <div class="nap-controls">
+          <button class="nap-btn nap-btn-start" id="napStartBtn" onclick="napTimerStart()">▶ 开始午休</button>
+          <button class="nap-btn nap-btn-stop" id="napStopBtn" onclick="napTimerStop()" disabled>⏹ 结束</button>
+        </div>
+        <div class="nap-status" id="napStatus">选择时长，开始你的午休充电</div>
       </div>
-      <div class="nap-status" id="napStatus">选择时长，开始你的午休充电</div>
     </div>
 
-    <!-- 📝 行测申论打卡（学习Buddy专属） -->
-    <div class="exam-checkin-card ws-component" data-mode="study" style="margin-top:20px;">
+    <!-- 📝 行测申论打卡（学习Buddy专属）- 精简预览 -->
+    <div class="exam-checkin-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">📝 行测申论每日打卡</span>
-        <span style="font-size:12px;color:var(--text-light);">点击完成今日打卡</span>
+        <span class="preview-hint"></span>
       </div>
-      <div class="exam-checkin-grid" id="examCheckinGrid">
-        <div class="ec-checkin-item" onclick="toggleExamCheckin('verbal', this)">
-          <div class="eci-icon">📖</div>
-          <div class="eci-name">言语理解</div>
-          <div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckin('reasoning', this)">
-          <div class="eci-icon">🧩</div>
-          <div class="eci-name">判断推理</div>
-          <div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckin('data_analysis', this)">
-          <div class="eci-icon">📊</div>
-          <div class="eci-name">资料分析</div>
-          <div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckin('shenlun', this)">
-          <div class="eci-icon">✍️</div>
-          <div class="eci-name">申论练习</div>
-          <div class="eci-status">未打卡</div>
+      <div class="card-preview">
+        <div style="font-size:13px;color:var(--text-light);">言语理解 · 判断推理 · 资料分析 · 申论练习 — <b style="color:var(--accent);">点击展开打卡</b></div>
+      </div>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div class="exam-checkin-grid" id="examCheckinGrid">
+          <div class="ec-checkin-item" onclick="toggleExamCheckin('verbal', this)">
+            <div class="eci-icon">📖</div>
+            <div class="eci-name">言语理解</div>
+            <div class="eci-status">未打卡</div>
+          </div>
+          <div class="ec-checkin-item" onclick="toggleExamCheckin('reasoning', this)">
+            <div class="eci-icon">🧩</div>
+            <div class="eci-name">判断推理</div>
+            <div class="eci-status">未打卡</div>
+          </div>
+          <div class="ec-checkin-item" onclick="toggleExamCheckin('data_analysis', this)">
+            <div class="eci-icon">📊</div>
+            <div class="eci-name">资料分析</div>
+            <div class="eci-status">未打卡</div>
+          </div>
+          <div class="ec-checkin-item" onclick="toggleExamCheckin('shenlun', this)">
+            <div class="eci-icon">✍️</div>
+            <div class="eci-name">申论练习</div>
+            <div class="eci-status">未打卡</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 🎯 模考规划（学习Buddy专属） -->
-    <div class="mock-plan-card ws-component" data-mode="study" style="margin-top:20px;">
+    <!-- 🎯 模考规划（学习Buddy专属）- 精简预览 -->
+    <div class="mock-plan-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">🎯 模考规划</span>
-        <span style="font-size:12px;color:var(--text-light);">按周排布·考前冲刺</span>
+        <span class="preview-hint"></span>
       </div>
-      <div id="mockPlanList"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <input type="text" id="mockPlanInput" class="form-input" placeholder="模考名称（如：行测全真模考五）" style="flex:1;font-size:13px;">
-        <input type="date" id="mockPlanDate" class="form-input" style="width:140px;font-size:13px;">
-        <button class="btn btn-primary" onclick="addMockPlan()" style="padding:8px 16px;font-size:12px;white-space:nowrap;">➕ 添加</button>
+      <div class="card-preview">
+        <div style="font-size:13px;color:var(--text-light);">按周排布 · 考前冲刺 — <b style="color:var(--accent);">点击展开管理模考</b></div>
+      </div>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div id="mockPlanList"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <input type="text" id="mockPlanInput" class="form-input" placeholder="模考名称（如：行测全真模考五）" style="flex:1;font-size:13px;">
+          <input type="date" id="mockPlanDate" class="form-input" style="width:140px;font-size:13px;">
+          <button class="btn btn-primary" onclick="addMockPlan()" style="padding:8px 16px;font-size:12px;white-space:nowrap;">➕ 添加</button>
+        </div>
       </div>
     </div>
 
@@ -1857,73 +1892,90 @@
     </div>
 
     <!-- 📅 周期课表（活力Buddy专属） -->
-    <div class="cycle-schedule-card ws-component" data-mode="energy" style="margin-top:20px;">
+    <div class="cycle-schedule-card ws-component card-collapsible" data-mode="energy" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">📅 周期课表</span>
-        <span style="font-size:12px;color:#c2410c;">舞蹈·运动·体能·休息轮换</span>
+        <span class="preview-hint"></span>
       </div>
-      <div class="cycle-tabs" id="cycleTabs">
-        <div class="cycle-tab active" onclick="switchCycleWeek('current', this)">本周</div>
-        <div class="cycle-tab" onclick="switchCycleWeek('next', this)">下周</div>
-        <div class="cycle-tab" onclick="switchCycleWeek('custom', this)">自定义</div>
+      <div class="card-preview">
+        <div style="font-size:13px;color:var(--text-light);">舞蹈·运动·体能·休息轮换 — <b style="color:#c2410c;">点击展开课表</b></div>
       </div>
-      <div class="cycle-day-grid" id="cycleDayGrid"></div>
-      <div style="font-size:11px;color:#9a3412;margin-top:10px;line-height:1.5;">💡 2h日=两节舞蹈课 · 1h日=一节舞蹈课 · 体能日=无氧+有氧 · 休息日=拉伸放松</div>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div class="cycle-tabs" id="cycleTabs">
+          <div class="cycle-tab active" onclick="switchCycleWeek('current', this)">本周</div>
+          <div class="cycle-tab" onclick="switchCycleWeek('next', this)">下周</div>
+          <div class="cycle-tab" onclick="switchCycleWeek('custom', this)">自定义</div>
+        </div>
+        <div class="cycle-day-grid" id="cycleDayGrid"></div>
+        <div style="font-size:11px;color:#9a3412;margin-top:10px;line-height:1.5;">💡 2h日=两节舞蹈课 · 1h日=一节舞蹈课 · 体能日=无氧+有氧 · 休息日=拉伸放松</div>
+      </div>
     </div>
 
-    <!-- 📔 课堂笔记（活力Buddy专属） -->
-    <div class="class-notes-card ws-component" data-mode="energy" style="margin-top:20px;">
+    <!-- 📔 课堂笔记（活力Buddy专属）- 精简预览 -->
+    <div class="class-notes-card ws-component card-collapsible" data-mode="energy" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">📔 课堂笔记</span>
-        <span style="font-size:12px;color:var(--text-light);">舞蹈课·运动课笔记记录</span>
+        <span class="preview-hint"></span>
       </div>
-      <div id="classNotesList">
-        <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">📝 还没有课堂笔记，添加第一条吧</div>
+      <div class="card-preview">
+        <div style="font-size:13px;color:var(--text-light);">舞蹈课·运动课笔记记录 — <b style="color:var(--accent);">点击展开记录</b></div>
       </div>
-      <div style="margin-top:12px;">
-        <input type="text" id="noteTitleInput" class="form-input" placeholder="笔记标题（如：胸部isolation要点）" style="font-size:13px;margin-bottom:8px;width:100%;">
-        <textarea id="noteBodyInput" class="form-textarea" placeholder="详细笔记内容..." rows="3" style="font-size:13px;width:100%;"></textarea>
-        <button class="btn btn-primary" onclick="addClassNote()" style="margin-top:8px;padding:8px 16px;font-size:12px;">💾 保存笔记</button>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div id="classNotesList">
+          <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">📝 还没有课堂笔记，添加第一条吧</div>
+        </div>
+        <div style="margin-top:12px;">
+          <input type="text" id="noteTitleInput" class="form-input" placeholder="笔记标题（如：胸部isolation要点）" style="font-size:13px;margin-bottom:8px;width:100%;">
+          <textarea id="noteBodyInput" class="form-textarea" placeholder="详细笔记内容..." rows="3" style="font-size:13px;width:100%;"></textarea>
+          <button class="btn btn-primary" onclick="addClassNote()" style="margin-top:8px;padding:8px 16px;font-size:12px;">💾 保存笔记</button>
+        </div>
       </div>
     </div>
 
-    <!-- 🔥 运动与减脂记录（活力Buddy专属） -->
-    <div class="fat-loss-card ws-component" data-mode="energy" style="margin-top:20px;">
+    <!-- 🔥 运动与减脂记录（活力Buddy专属）- 精简预览 -->
+    <div class="fat-loss-card ws-component card-collapsible" data-mode="energy" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
       <div class="card-header">
         <span class="card-title">🔥 运动与减脂记录</span>
-        <span style="font-size:12px;color:#c2410c;">目标46kg · 健康减脂</span>
+        <span class="preview-hint"></span>
       </div>
-      <div class="fat-loss-stats" id="fatLossStats">
-        <div class="fl-stat">
-          <div class="fls-val" id="flCurrentWeight">55.0</div>
-          <div class="fls-label">当前体重(kg)</div>
-          <div class="fls-trend down" id="flWeightTrend">↓ 本周-0.8kg</div>
-        </div>
-        <div class="fl-stat">
-          <div class="fls-val" id="flWeeklyBurn">2,100</div>
-          <div class="fls-label">本周消耗(kcal)</div>
-          <div class="fls-trend up" id="flBurnTrend">↑ 比上周+300</div>
-        </div>
-        <div class="fl-stat">
-          <div class="fls-val" id="flDanceMin">0</div>
-          <div class="fls-label">舞蹈时长(min)</div>
-          <div class="fls-trend" id="flDanceTrend">本周0次</div>
-        </div>
-        <div class="fl-stat">
-          <div class="fls-val" id="flGoalGap">9.0</div>
-          <div class="fls-label">距目标(kg)</div>
-          <div class="fls-trend down" id="flGapTrend">↓ 已减0.0kg</div>
+      <div class="card-preview">
+        <div style="font-size:13px;color:var(--text-light);">
+          当前体重 <b id="flPreviewWeight" style="color:#c2410c;">55.0kg</b> · 目标46kg · <b style="color:var(--accent);">点击展开记录</b>
         </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:12px;">
-        <input type="number" id="flWeightInput" class="form-input" placeholder="今日体重" step="0.1" style="flex:1;font-size:13px;">
-        <select id="flExerciseType" class="form-select" style="width:120px;font-size:13px;">
-          <option>爵士舞</option><option>有氧</option><option>无氧</option><option>拉伸</option><option>体能</option>
-        </select>
-        <input type="number" id="flDurationInput" class="form-input" placeholder="时长(分)" style="width:80px;font-size:13px;">
-        <button class="btn btn-primary" onclick="addFatLossRecord()" style="padding:8px 16px;font-size:12px;white-space:nowrap;">💾 记录</button>
+      <div class="card-detail" onclick="event.stopPropagation()">
+        <div class="fat-loss-stats" id="fatLossStats">
+          <div class="fl-stat">
+            <div class="fls-val" id="flCurrentWeight">55.0</div>
+            <div class="fls-label">当前体重(kg)</div>
+            <div class="fls-trend down" id="flWeightTrend">↓ 本周-0.8kg</div>
+          </div>
+          <div class="fl-stat">
+            <div class="fls-val" id="flWeeklyBurn">2,100</div>
+            <div class="fls-label">本周消耗(kcal)</div>
+            <div class="fls-trend up" id="flBurnTrend">↑ 比上周+300</div>
+          </div>
+          <div class="fl-stat">
+            <div class="fls-val" id="flDanceMin">0</div>
+            <div class="fls-label">舞蹈时长(min)</div>
+            <div class="fls-trend" id="flDanceTrend">本周0次</div>
+          </div>
+          <div class="fl-stat">
+            <div class="fls-val" id="flGoalGap">9.0</div>
+            <div class="fls-label">距目标(kg)</div>
+            <div class="fls-trend down" id="flGapTrend">↓ 已减0.0kg</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:12px;">
+          <input type="number" id="flWeightInput" class="form-input" placeholder="今日体重" step="0.1" style="flex:1;font-size:13px;">
+          <select id="flExerciseType" class="form-select" style="width:120px;font-size:13px;">
+            <option>爵士舞</option><option>有氧</option><option>无氧</option><option>拉伸</option><option>体能</option>
+          </select>
+          <input type="number" id="flDurationInput" class="form-input" placeholder="时长(分)" style="width:80px;font-size:13px;">
+          <button class="btn btn-primary" onclick="addFatLossRecord()" style="padding:8px 16px;font-size:12px;white-space:nowrap;">💾 记录</button>
+        </div>
+        <div id="fatLossLog" style="margin-top:12px;max-height:200px;overflow-y:auto;"></div>
       </div>
-      <div id="fatLossLog" style="margin-top:12px;max-height:200px;overflow-y:auto;"></div>
     </div>
 
     <!-- 形象插画双卡片 -->
@@ -1974,16 +2026,24 @@
         <div id="dashTodoStats" style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:right;"></div>
       </div>
 
-      <div class="card" data-mode="study">
-        <div class="card-header"><span class="card-title">📊 最近模考</span><span class="card-badge purple">07-29 模考四</span></div>
-        <table>
-          <tr><th>学科</th><th>得分</th><th>得分率</th><th>目标</th></tr>
-          <tr><td>基础医学</td><td>25/30</td><td>83%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">90%</span></td></tr>
-          <tr><td>临床医学</td><td>18/30</td><td>60%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">85%</span></td></tr>
-          <tr><td>言语理解</td><td>22/30</td><td>73%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
-          <tr><td>判断推理</td><td>20/30</td><td>67%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
-          <tr style="font-weight:700;background:#faf9fc;"><td><b>总分</b></td><td><b>72/100</b></td><td><b>72%</b></td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;"><b>80%</b></span></td></tr>
-        </table>
+      <div class="card card-collapsible" data-mode="study" onclick="toggleCardExpand(this, event)">
+        <div class="card-header"><span class="card-title">📊 最近模考</span><span style="display:flex;gap:8px;align-items:center;"><span class="card-badge purple">72/100</span><span class="preview-hint"></span></span></div>
+        <div class="card-preview">
+          <div style="font-size:13px;color:var(--text-light);line-height:1.6;">
+            📊 07-29 模考四 · 总分 <b style="color:var(--accent);">72/100</b>（72%）· 目标80%<br>
+            基础医学83% · 临床医学60% · 言语理解73% · 判断推理67%
+          </div>
+        </div>
+        <div class="card-detail" onclick="event.stopPropagation()">
+          <table>
+            <tr><th>学科</th><th>得分</th><th>得分率</th><th>目标</th></tr>
+            <tr><td>基础医学</td><td>25/30</td><td>83%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">90%</span></td></tr>
+            <tr><td>临床医学</td><td>18/30</td><td>60%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">85%</span></td></tr>
+            <tr><td>言语理解</td><td>22/30</td><td>73%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
+            <tr><td>判断推理</td><td>20/30</td><td>67%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
+            <tr style="font-weight:700;background:#faf9fc;"><td><b>总分</b></td><td><b>72/100</b></td><td><b>72%</b></td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;"><b>80%</b></span></td></tr>
+          </table>
+        </div>
       </div>
     </div>
     </div><!-- /dash-main -->
@@ -3247,7 +3307,7 @@
     <!-- 今日时间表 -->
     <div class="card">
       <div class="card-header"><span class="card-title">📅 今日时间表（7:00-23:00）</span><span class="card-badge purple">距E类89天</span></div>
-      <div class="timeline-hint">👈 左右滑动查看全天安排，或在电脑上拖动滚动条 👉</div>
+      <div class="timeline-hint">🧠 黄金时段（8-10点/19-21点）= 大脑巅峰，优先做高耗能任务 · ⚙️ 其余为机械时间 · 左右滑动查看全天</div>
       <div class="timeline-wrap">
         <button class="timeline-arrow prev" onclick="scrollTimeline(-1)">‹</button>
         <div class="timeline-scroll" id="todayTimeline">
@@ -3255,7 +3315,7 @@
           <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">7:30-9:30</div><div class="ts-icon">📖</div><div class="ts-label">早2h背诵</div><div class="ts-desc">医学·临床/基础轮换（昭昭）</div></div>
           <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">9:30-10:00</div><div class="ts-icon">📊</div><div class="ts-label">资料分析2篇 🔒固定</div><div class="ts-desc">每天2篇，约30min（超格）</div></div>
           <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">10:00-10:30</div><div class="ts-icon">🧮</div><div class="ts-label">分数默写+速算 🔒固定</div><div class="ts-desc">每天必做，约30min</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">🩺</div><div class="ts-label">临床医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">🩺</div><div class="ts-label">临床医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
           <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:00-12:30</div><div class="ts-icon">🍱</div><div class="ts-label">午餐</div><div class="ts-desc">控制在450kcal</div></div>
           <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:30-13:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进 + 回顾上午背诵</div></div>
           <div draggable="true" class="time-slot drag-item highlight-dance mechanical-time"><div class="ts-time">13:00-14:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第1节</div><div class="ts-desc">仅2h日，1h日/体能日休息</div></div>
@@ -3265,7 +3325,7 @@
           <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">🥗</div><div class="ts-label">晚餐</div><div class="ts-desc">控制在400kcal</div></div>
           <div draggable="true" class="time-slot drag-item highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第2节/💪体能</div><div class="ts-desc">2h日+1h日均跳，体能日运动</div></div>
           <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-review gold-time"><div class="ts-time">🔄 21:30-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习 1.5h</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-review mechanical-time"><div class="ts-time">🔄 21:30-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习 1.5h</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
           <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min(绷带+哑铃)+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
         </div>
         <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
@@ -3580,6 +3640,11 @@
           <option value="life">🏠 生活</option>
           <option value="other">📌 其他</option>
         </select>
+        <select class="energy-select" id="todoEnergy">
+          <option value="high">🔴 高耗能</option>
+          <option value="mid">🟡 中耗能</option>
+          <option value="low">🟢 低耗能</option>
+        </select>
         <button class="btn btn-primary" onclick="addTodo()">添加</button>
       </div>
     </div>
@@ -3634,6 +3699,13 @@
   </div>
 
 </main>
+
+<!-- 薄弱科目详情弹窗 -->
+<div id="weakSubjectsOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;padding:20px;box-sizing:border-box;" onclick="if(event.target===this)hideWeakSubjects()">
+  <div style="background:#fff;border-radius:16px;padding:20px;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2);box-sizing:border-box;" onclick="event.stopPropagation()">
+    <div id="weakSubjectsContent"></div>
+  </div>
+</div>
 
 <!-- 数据管理弹窗 -->
 <div id="dataMgrOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;" onclick="if(event.target===this)hideDataManager()">
@@ -4246,48 +4318,113 @@
 
   // 🕳️ 每日一坑：渲染昨日最难错题
   function renderDailyPit() {
-    const box = document.getElementById('dashDailyPitContent');
-    if (!box) return;
-    // 获取昨日错题
-    var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    var yStr = yesterday.toISOString().slice(0,10);
-    var wrongs = safeGetJSON('jasmine_wrongs', []);
-    var yWrongs = wrongs.filter(function(w) {
-      return (w.date || w.addedAt || '').slice(0,10) === yStr;
-    });
-    if (yWrongs.length === 0) {
-      box.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-light);font-size:13px;">📭 昨天没有记录错题～继续保持！</div>';
+    var content = document.getElementById('dashDailyPitContent');
+    if (!content) return;
+    var book = getWrongBook();
+    if (!book || book.length === 0) {
+      content.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">📝 去「错题本」添加昨日错题，首页将自动提取最难1道+记忆口诀</div>';
       return;
     }
-    // 找"最难"的：优先找标记了hard的，或知识点最复杂的
-    var hardest = yWrongs[0];
-    yWrongs.forEach(function(w) {
-      if ((w.difficulty || '') === 'hard') hardest = w;
+    var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    var yStr = localDateStr(yesterday);
+    var yItems = book.filter(function(w) { return w.date === yStr; });
+    var pool = yItems.length > 0 ? yItems : book.slice(0, 5);
+    var reasonPriority = { '概念不清/混淆': 5, '知识点遗忘': 4, '审题错误': 3, '计算错误': 2, '时间不够': 2, '粗心': 1, '选项看错': 1, '其他': 0 };
+    pool.sort(function(a, b) {
+      var pa = reasonPriority[a.reason] || 0;
+      var pb = reasonPriority[b.reason] || 0;
+      if (pb !== pa) return pb - pa;
+      return (b.count || 0) - (a.count || 0);
     });
-    var q = hardest.question || hardest.q || '（题目内容未记录）';
-    var a = hardest.answer || hardest.a || '';
-    var kp = hardest.knowledgePoint || hardest.kp || '';
-    var tip = hardest.mnemonic || '';
-    if (!tip) {
-      // 自动生成简单口诀提示
-      var tips = {
-        '贫血':'铁贫小低染，再障全血少',
-        '缺铁':'缺铁小细胞，MCV低于80',
-        '白血病':'急淋儿童好，急粒成人多',
-        '药理':'青霉G+球，红霉G-杆',
-        '速算':'百化分要熟，截位直除快',
-        '比重':'比重变化看增速，部分大于整体升'
-      };
-      for (var k in tips) {
-        if ((q + ' ' + kp).indexOf(k) !== -1) { tip = tips[k]; break; }
-      }
+    var pit = pool[0];
+    if (!pit) { content.innerHTML = '<div style="padding:12px;text-align:center;color:var(--text-light);font-size:13px;">📭 暂无错题记录</div>'; return; }
+    var mnemonic = generateMnemonic(pit);
+    var esc = function(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var html = '<div style="padding:14px 16px;">';
+    html += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">';
+    html += '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;">' + esc(pit.subject||'未分类') + '</span>';
+    if (pit.knowledgePoint) html += '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:#fef3c7;color:#92400e;">🎯 ' + esc(pit.knowledgePoint) + '</span>';
+    html += '<span style="font-size:11px;padding:2px 10px;border-radius:10px;background:#fee2e2;color:#dc2626;font-weight:600;">' + esc(pit.reason||'未标记') + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:14px;font-weight:600;line-height:1.6;margin-bottom:10px;color:var(--text);">📝 ' + esc(pit.question||'(无题目描述)') + '</div>';
+    html += '<div style="font-size:13px;color:#10b981;margin-bottom:4px;">✅ 正确答案：' + esc(pit.answer||'未记录') + '</div>';
+    if (pit.wrongAnswer) html += '<div style="font-size:13px;color:#ef4444;margin-bottom:4px;">❌ 你选了：' + esc(pit.wrongAnswer) + '</div>';
+    html += '<div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1.5px solid #fbbf24;border-radius:10px;padding:10px 14px;margin-top:10px;">';
+    html += '<div style="font-size:12px;color:#b45309;font-weight:700;margin-bottom:4px;">🧠 记忆口诀</div>';
+    html += '<div style="font-size:13px;color:#92400e;line-height:1.6;">' + esc(mnemonic) + '</div>';
+    html += '</div>';
+    html += '<div style="display:flex;gap:8px;margin-top:10px;">';
+    html += '<button onclick="reviewWrong(' + book.indexOf(pit) + ')" style="padding:5px 14px;font-size:12px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">📖 复习+1</button>';
+    html += '<button onclick="switchPage(\'wrong\',document.querySelector(\'[data-page=wrong]\'))" style="padding:5px 14px;font-size:12px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;cursor:pointer;">查看全部错题</button>';
+    html += '</div>';
+    html += '</div>';
+    content.innerHTML = html;
+  }
+
+  // 生成记忆口诀
+  function generateMnemonic(pit) {
+    var subj = (pit.subject || '').toLowerCase();
+    var reason = pit.reason || '';
+    var kp = pit.knowledgePoint || '';
+    var ans = pit.answer || '';
+    var templates = {
+      '概念不清/混淆': '【辨概念】先抓关键词，再排相似项；' + (kp || '此知识点') + '易混处：记特征、记反例、记口诀。',
+      '知识点遗忘': '【勤回忆】' + (kp || '此题考点') + ' → 早晚各背1遍 × 3天 → 第7天默写检验。答案选' + ans + '是因核心条件未记牢。',
+      '审题错误': '【审题三步】①圈主体 ②圈否定词 ③圈数值范围。答案' + ans + '的关键在题干某个限定词。',
+      '计算错误': '【算得稳】先估算量级再精算，尾数验证法兜底。' + (kp || '此题') + '答案' + ans + '需分步验算。',
+      '粗心': '【防粗心】做完倒着检查1遍，专看选项和填涂位置是否对应。',
+      '其他': '【记核心】' + (kp || '此题考点') + ' → 答案' + ans + '。建议制作一句话口诀贴在错题旁。'
+    };
+    var mn = templates[reason] || templates['其他'];
+    if (subj.indexOf('药理') >= 0) mn += ' 药理记：药物名→机制→适应症→不良反应，四步连记。';
+    else if (subj.indexOf('生理') >= 0) mn += ' 生理记：结构→功能→调节，三环紧扣。';
+    else if (subj.indexOf('病理') >= 0) mn += ' 病理记：病因→病变→临床表现，因果链不断。';
+    else if (subj.indexOf('生化') >= 0) mn += ' 生化记：代谢途径画通路图，关键酶标红。';
+    else if (subj.indexOf('资料') >= 0) mn += ' 资料分析记：先看问题再找数据，速算用估算法。';
+    else if (subj.indexOf('言语') >= 0) mn += ' 言语记：抓关联词判逻辑关系，主题句找首尾。';
+    else if (subj.indexOf('判断') >= 0) mn += ' 判断推理记：画逻辑链条，找矛盾/包容/递推。';
+    return mn;
+  }
+
+  // 薄弱科目详情弹窗
+  function showWeakSubjects() {
+    var overlay = document.getElementById('weakSubjectsOverlay');
+    var content = document.getElementById('weakSubjectsContent');
+    if (!overlay || !content) return;
+    var book = getWrongBook();
+    var reasonCount = {}, subjCount = {};
+    book.forEach(function(w) {
+      var r = w.reason || '其他'; reasonCount[r] = (reasonCount[r]||0)+1;
+      var s = w.subject || '未分类'; subjCount[s] = (subjCount[s]||0)+1;
+    });
+    var subjSorted = Object.keys(subjCount).sort(function(a,b){return subjCount[b]-subjCount[a];});
+    var reasonSorted = Object.keys(reasonCount).sort(function(a,b){return reasonCount[b]-reasonCount[a];});
+    var esc = function(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+    var reasonColors = {'概念不清/混淆':'#f59e0b','知识点遗忘':'#8b5cf6','审题错误':'#ef4444','计算错误':'#f97316','时间不够':'#64748b','粗心':'#06b6d4','选项看错':'#ec4899','其他':'#6b7280'};
+    var html = '<div style="font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;">⚠️ 薄弱科目详情</div>';
+    if (book.length === 0) {
+      html += '<div style="padding:30px;text-align:center;color:var(--text-light);">还没有错题记录<br>去「错题本」添加后这里会自动统计薄弱分布</div>';
+    } else {
+      html += '<div style="font-weight:600;font-size:14px;margin-bottom:10px;">📊 错题科目分布</div>';
+      html += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">';
+      subjSorted.forEach(function(s){
+        var cnt=subjCount[s], pct=Math.round(cnt/book.length*100);
+        html += '<div style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;min-width:80px;">'+esc(s)+'</span><div style="flex:1;height:22px;background:#f3f4f6;border-radius:11px;overflow:hidden;"><div style="width:'+pct+'%;height:100%;background:var(--accent);border-radius:11px;"></div></div><span style="font-size:12px;color:var(--text-light);min-width:50px;text-align:right;">'+cnt+'题('+pct+'%)</span></div>';
+      });
+      html += '</div>';
+      html += '<div style="font-weight:600;font-size:14px;margin-bottom:10px;">🎯 错因分析</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;">';
+      reasonSorted.forEach(function(r){var c=reasonColors[r]||'#6b7280';html+='<span style="font-size:12px;padding:4px 12px;border-radius:14px;background:'+c+'22;color:'+c+';border:1px solid '+c+'44;font-weight:600;">'+esc(r)+' ×'+reasonCount[r]+'</span>';});
+      html += '</div>';
+      html += '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;font-size:13px;color:#92400e;line-height:1.6;"><b>💡 建议：</b>每天优先攻克排名前2的薄弱科目，配合"每日一坑"反复记忆。高频错因（'+esc(reasonSorted[0])+'）需针对性训练。</div>';
     }
-    box.innerHTML = '<div style="padding:8px 4px;">' +
-      '<div style="font-size:13px;color:var(--text);margin-bottom:8px;font-weight:600;">📌 ' + (kp || '知识点') + '</div>' +
-      '<div style="font-size:13px;color:var(--text);background:#fef2f2;padding:10px 12px;border-radius:8px;margin-bottom:8px;border-left:3px solid #ef4444;">' + q + '</div>' +
-      (a ? '<div style="font-size:12px;color:#10b981;margin-bottom:8px;"><b>✅ 正确答案：</b>' + a + '</div>' : '') +
-      (tip ? '<div style="font-size:12px;color:#f59e0b;background:#fffbeb;padding:8px 10px;border-radius:6px;font-weight:600;">💡 记忆口诀：' + tip + '</div>' : '') +
-    '</div>';
+    html += '<div style="margin-top:16px;text-align:right;"><button onclick="hideWeakSubjects()" style="padding:8px 20px;background:#f3f4f6;color:#374151;border:none;border-radius:10px;cursor:pointer;">关闭</button></div>';
+    content.innerHTML = html;
+    overlay.style.display = 'flex';
+  }
+  function hideWeakSubjects() {
+    var overlay = document.getElementById('weakSubjectsOverlay');
+    if (overlay) overlay.style.display = 'none';
   }
 
   // 🎯 明日最重要一件事
@@ -4777,11 +4914,14 @@
     const text = input.value.trim();
     if (!text) { input.focus(); return; }
     const cat = document.getElementById('todoCat').value;
+    const energyEl = document.getElementById('todoEnergy');
+    const energy = energyEl ? energyEl.value : 'mid';
     const todos = getTodos();
     todos.unshift({
       id: Date.now(),
       text: text,
       cat: cat,
+      energy: energy,
       date: localDateStr(),
       done: false
     });
@@ -4806,6 +4946,8 @@
   }
 
   const catNames = { study:'📚 学习', sport:'💪 运动', food:'🍱 饮食', life:'🏠 生活', other:'📌 其他' };
+  const energyNames = { high:'🔴 高耗能', mid:'🟡 中耗能', low:'🟢 低耗能' };
+  const energyOrder = { high: 0, mid: 1, low: 2 };
 
   function renderTodoList() {
     const el = document.getElementById('todoList');
@@ -4825,15 +4967,50 @@
       el.innerHTML = '<div class="todo-empty">📝 没有符合条件的待办～</div>';
       return;
     }
-    el.innerHTML = todos.map(t => `
-      <div class="todo-item${t.done ? ' completed' : ''}">
-        <input type="checkbox" class="todo-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo(${t.id})">
-        <span class="todo-text" onclick="toggleTodo(${t.id})">${t.text}</span>
-        ${t.source === 'plan' ? '<span style="font-size:10px;color:#8b5cf6;background:#f3e8ff;padding:1px 6px;border-radius:8px;">📅计划</span>' : ''}
-        <span class="todo-cat ${t.cat}">${catNames[t.cat] || t.cat}</span>
-        <button class="todo-del" onclick="deleteTodo(${t.id})" title="删除">×</button>
-      </div>
-    `).join('');
+
+    // 按能耗排序：🔴高 → 🟡中 → 🟢低
+    todos.sort(function(a, b) {
+      const ea = energyOrder[a.energy] ?? 1;
+      const eb = energyOrder[b.energy] ?? 1;
+      if (ea !== eb) return ea - eb;
+      // 同能耗内未完成排前
+      if (a.done !== b.done) return a.done ? 1 : -1;
+      return 0;
+    });
+
+    // 分组渲染
+    const groups = { high: [], mid: [], low: [] };
+    todos.forEach(function(t) {
+      const key = t.energy || 'mid';
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(t);
+    });
+
+    let html = '';
+    const groupOrder = [
+      { key: 'high', label: '🔴 高耗能任务', desc: '医学刷题/行测速算等需高度专注' },
+      { key: 'mid', label: '🟡 中耗能任务', desc: '整理笔记/复盘等中等专注' },
+      { key: 'low', label: '🟢 低耗能任务', desc: '常识/运动/生活等轻松任务' }
+    ];
+
+    groupOrder.forEach(function(g) {
+      const items = groups[g.key] || [];
+      if (items.length === 0) return;
+      html += '<div class="energy-section-title">' + g.label + ' <span class="count">(' + items.length + '项 · ' + g.desc + ')</span></div>';
+      html += items.map(function(t) {
+        const energyClass = t.energy || 'mid';
+        return '<div class="todo-item ' + energyClass + '-energy' + (t.done ? ' completed' : '') + '">'
+          + '<input type="checkbox" class="todo-checkbox" ' + (t.done ? 'checked' : '') + ' onchange="toggleTodo(' + t.id + ')">'
+          + '<span class="todo-text" onclick="toggleTodo(' + t.id + ')">' + t.text + '</span>'
+          + (t.source === 'plan' ? '<span style="font-size:10px;color:#8b5cf6;background:#f3e8ff;padding:1px 6px;border-radius:8px;">📅计划</span>' : '')
+          + '<span class="energy-badge ' + energyClass + '">' + (energyNames[energyClass]||'🟡中') + '</span>'
+          + '<span class="todo-cat ' + t.cat + '">' + (catNames[t.cat] || t.cat) + '</span>'
+          + '<button class="todo-del" onclick="deleteTodo(' + t.id + ')" title="删除">×</button>'
+          + '</div>';
+      }).join('');
+    });
+
+    el.innerHTML = html;
   }
 
   function setTodoFilter(f, btn) {
@@ -4843,7 +5020,7 @@
     renderTodoList();
   }
 
-  // 首页 — 今日待办（只显示今天的 + 未完成的排前面）
+  // 首页 — 今日待办（按脑力能耗排序，高耗能优先）
   function renderDashTodos() {
     const el = document.getElementById('dashTodoList');
     const statsEl = document.getElementById('dashTodoStats');
@@ -4855,22 +5032,28 @@
       if (statsEl) statsEl.textContent = '';
       return;
     }
-    const pending = todos.filter(x => !x.done);
+    // 按能耗排序
+    const eOrder = { high: 0, mid: 1, low: 2 };
+    const pending = todos.filter(x => !x.done).sort(function(a, b) {
+      return (eOrder[a.energy] ?? 1) - (eOrder[b.energy] ?? 1);
+    });
     const done = todos.filter(x => x.done);
-    const display = [...pending, ...done].slice(0, 7); // 首页最多显示7条
+    const display = [...pending, ...done].slice(0, 7);
     if (display.length === 0) {
       el.innerHTML = '<div class="todo-empty" style="padding:20px 0;">🎉 全都完成啦！</div>';
     } else {
-      el.innerHTML = display.map(t => `
-        <div class="todo-item${t.done ? ' completed' : ''}" style="padding:6px 10px;">
-          <input type="checkbox" class="todo-checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo(${t.id})">
-          <span class="todo-text" style="font-size:13px;" onclick="toggleTodo(${t.id})">${t.text}</span>
-          ${t.source === 'plan' ? '<span style="font-size:9px;color:#8b5cf6;background:#f3e8ff;padding:1px 5px;border-radius:6px;">📅</span>' : ''}
-          <span class="todo-cat ${t.cat}">${catNames[t.cat] || t.cat}</span>
-        </div>
-      `).join('');
+      el.innerHTML = display.map(function(t) {
+        const energyClass = t.energy || 'mid';
+        return '<div class="todo-item ' + energyClass + '-energy' + (t.done ? ' completed' : '') + '" style="padding:6px 10px;">'
+          + '<input type="checkbox" class="todo-checkbox" ' + (t.done ? 'checked' : '') + ' onchange="toggleTodo(' + t.id + ')">'
+          + '<span class="todo-text" style="font-size:13px;" onclick="toggleTodo(' + t.id + ')">' + t.text + '</span>'
+          + (t.source === 'plan' ? '<span style="font-size:9px;color:#8b5cf6;background:#f3e8ff;padding:1px 5px;border-radius:6px;">📅</span>' : '')
+          + '<span class="energy-badge ' + energyClass + '" style="font-size:9px;padding:1px 5px;">' + (energyClass === 'high' ? '🔴' : energyClass === 'low' ? '🟢' : '🟡') + '</span>'
+          + '<span class="todo-cat ' + t.cat + '">' + (catNames[t.cat] || t.cat) + '</span>'
+          + '</div>';
+      }).join('');
     }
-    if (statsEl) statsEl.textContent = `共 ${todos.length} 条 · ${done.length} 已完成`;
+    if (statsEl) statsEl.textContent = '共 ' + todos.length + ' 条 · ' + done.length + ' 已完成';
   }
 
   // 首页 — 今日日程（可收缩：收起只显示当前时刻计划，点开看全部）
@@ -6520,6 +6703,12 @@
     el.classList.toggle('expanded');
   }
 
+  // 精简卡片展开/收起
+  function toggleCardExpand(el, event) {
+    if (event) event.stopPropagation();
+    el.classList.toggle('expanded');
+  }
+
   // 轮播滑动控制
   function kbSlide(dir) {
     var track = document.getElementById('kbCarouselTrack');
@@ -6796,6 +6985,7 @@
   function saveWrongBook(book) {
     safeSetJSON(WRONG_KEY, book);
     updateDataHealth();
+    try { renderDailyPit(); } catch(e) {}
   }
 
   function renderWrong() {
