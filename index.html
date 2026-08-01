@@ -1925,7 +1925,7 @@
 
     <!-- 🔍 搜你想学的舞 -->
     <div class="card" style="background:linear-gradient(135deg, #faf5ff, #fdf2f8);">
-      <div class="card-header"><span class="card-title">🔍 告诉我想学什么舞，AI 帮你搜</span></div>
+      <div class="card-header"><span class="card-title">🔍 告诉我想学什么舞，帮你搜</span></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <input id="dance-search-input" class="form-input" type="text" placeholder="例如：Dance On 分解教学 / river 爵士 / Trouble Maker 保姆教程…" style="flex:1;min-width:200px;">
         <button class="btn btn-primary btn-sm" onclick="searchDanceDouyin()" style="white-space:nowrap;background:linear-gradient(135deg,#ff0050,#ff6b81);">🎵 搜抖音</button>
@@ -4293,7 +4293,7 @@
     if (input && !input.value) input.value = kcal;
     if (hintEl) {
       hintEl.style.display = 'block';
-      hintEl.textContent = '🤖 AI估算: ' + kcal + ' kcal（可手动修改）';
+      hintEl.textContent = '🤖 智能估算: ' + kcal + ' kcal（可手动修改）';
     }
   }
 
@@ -6676,7 +6676,7 @@
     html += '<button class="btn" onclick="copySummaryToDoubao(\'' + tab + '\')" style="font-size:15px;background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;border:none;font-weight:700;padding:14px 28px;border-radius:12px;box-shadow:0 4px 16px rgba(249,115,22,0.35);">';
     html += '🤖 复制汇总 → 去豆包分析';
     html += '</button>';
-    html += '<div style="font-size:12px;color:var(--text-light);margin-top:6px;">复制后打开豆包App粘贴发送，AI会逐条分析你的错题</div>';
+    html += '<div style="font-size:12px;color:var(--text-light);margin-top:6px;">复制后打开豆包App粘贴发送，会逐条分析你的错题</div>';
     html += '</div>';
 
     // 🎯 第三步：粘贴豆包分析结果
@@ -6927,17 +6927,17 @@
 
     // 操作按钮
     html += '<div class="summary-actions">';
-    html += '<button class="btn btn-sm" onclick="copyDoubaoPrompt()" style="background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;border:none;font-weight:600;">🤖 复制Prompt请求AI深度分析</button>';
+    html += '<button class="btn btn-sm" onclick="copyDoubaoPrompt()" style="background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;border:none;font-weight:600;">🤖 复制Prompt请求深度分析</button>';
     html += '<button class="btn btn-sm" onclick="copySummaryToClipboard()" style="background:#10b981;color:#fff;border:none;">📋 复制分析文本</button>';
     html += '<button class="btn btn-sm" onclick="copySummaryToPlan()" style="background:#3b82f6;color:#fff;border:none;">📅 追加到今日计划</button>';
-    html += '<button class="btn btn-sm" onclick="togglePasteAiResponse()" style="background:#8b5cf6;color:#fff;border:none;">📥 粘贴AI分析结果</button>';
+    html += '<button class="btn btn-sm" onclick="togglePasteAiResponse()" style="background:#8b5cf6;color:#fff;border:none;">📥 粘贴分析结果</button>';
     html += '<button class="btn btn-sm" onclick="document.getElementById(\'todaySummary\').style.display=\'none\'">✕ 收起</button>';
     html += '</div>';
 
     // AI 回传粘贴区（默认隐藏）
     html += '<div id="aiPasteArea" style="display:none;margin-top:12px;border:2px dashed #c084fc;border-radius:10px;padding:12px;background:#faf5ff;">';
-    html += '<div style="font-size:13px;color:#5b21b6;margin-bottom:8px;">📥 把豆包/AI的分析结果粘贴到下面，会自动追加到总结中：</div>';
-    html += '<textarea id="aiPasteTextarea" style="width:100%;height:100px;border:1px solid #e9d5ff;border-radius:8px;padding:8px;font-size:13px;" placeholder="在这里粘贴AI返回的分析结果..."></textarea>';
+    html += '<div style="font-size:13px;color:#5b21b6;margin-bottom:8px;">📥 把分析结果粘贴到下面，会自动追加到总结中：</div>';
+    html += '<textarea id="aiPasteTextarea" style="width:100%;height:100px;border:1px solid #e9d5ff;border-radius:8px;padding:8px;font-size:13px;" placeholder="在这里粘贴返回的分析结果..."></textarea>';
     html += '<button class="btn btn-sm" onclick="appendAiAnalysis()" style="margin-top:8px;background:#7c3aed;color:#fff;border:none;">💾 保存分析结果</button>';
     html += '</div>';
 
@@ -7074,13 +7074,13 @@
   function appendAiAnalysis() {
     const ta = document.getElementById('aiPasteTextarea');
     const text = ta ? ta.value.trim() : '';
-    if (!text) { alert('请先粘贴AI分析结果~'); return; }
+    if (!text) { alert('请先粘贴分析结果~'); return; }
     const container = document.getElementById('todaySummary');
     // 在操作按钮之前插入AI分析区块
     const actionsDiv = container.querySelector('.summary-actions');
     const aiBlock = document.createElement('div');
     aiBlock.className = 'ai-response-block';
-    aiBlock.innerHTML = '<div class="ai-response-title">🤖 AI深度分析</div><div class="ai-response-body">' + text.replace(/\n/g, '<br>') + '</div>';
+    aiBlock.innerHTML = '<div class="ai-response-title">🤖 深度分析</div><div class="ai-response-body">' + text.replace(/\n/g, '<br>') + '</div>';
     if (actionsDiv) {
       container.insertBefore(aiBlock, actionsDiv);
     } else {
@@ -7090,7 +7090,7 @@
     const area = document.getElementById('aiPasteArea');
     if (area) area.style.display = 'none';
     ta.value = '';
-    alert('✅ AI分析已追加到总结中！');
+    alert('✅ 分析已追加到总结中！');
   }
 
   function buildTextSummary(top10, remaining, dateLabel, topReasons) {
@@ -7210,7 +7210,7 @@
     if (!prompt) return;
 
     navigator.clipboard.writeText(prompt).then(() => {
-      alert('✅ 已复制！现在去豆包App里粘贴，就能得到真正的AI总结啦~\n\n💡 提示：在豆包里直接粘贴发送即可');
+      alert('✅ 已复制！现在去豆包App里粘贴，就能得到详细的分析总结啦~\n\n💡 提示：在豆包里直接粘贴发送即可');
     }).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = prompt;
