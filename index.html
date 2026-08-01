@@ -260,6 +260,14 @@
   .search-result-item:hover { border-color:var(--accent); }
   @media(max-width:768px) { .card-row { grid-template-columns:1fr; } }
 
+  /* 首页双栏：主栏 + 右侧知识点侧边栏 */
+  .dash-grid { display:block; }
+  @media(min-width: 960px) {
+    .dash-grid { display:grid; grid-template-columns: minmax(0,1fr) 340px; gap:20px; align-items:start; }
+    .dash-aside { position:sticky; top:20px; }
+    .dash-aside .kb-card { margin-bottom:0; }
+  }
+
   /* 餐饮卡片 */
   .meal-card { display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--border); }
   .meal-card:last-child { border-bottom:none; }
@@ -1243,6 +1251,8 @@
       </div>
     </div>
 
+    <div class="dash-grid"><div class="dash-main">
+
     <!-- 双考试倒计时 -->
     <div class="exam-countdown-card">
       <div class="ec-box ec-primary" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击打开每日计划备考">
@@ -1330,16 +1340,7 @@
     </div>
 
     <!-- 形象插画双卡片 -->
-    <!-- ☀️ 今日知识点卡片（轮播） -->
-    <div class="card kb-card" id="dashKnowledgeCard" style="margin-bottom:20px;">
-      <div class="card-header">
-        <span class="card-title">☀️ 今日知识点</span>
-        <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
-      </div>
-      <div class="kb-carousel" id="dashKbCarousel">
-        <div id="dashKbContent"></div>
-      </div>
-    </div>
+    <!-- ☀️ 今日知识点卡片已移至右侧 dash-aside 侧边栏 -->
 
     <!-- 🔄 艾宾浩斯复习面板 -->
     <div class="ebbinghaus-panel clickable-card" id="ebbinghausPanel" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面打卡艾宾浩斯复习">
@@ -1398,7 +1399,21 @@
         </table>
       </div>
     </div>
-  </div>
+    </div><!-- /dash-main -->
+    <div class="dash-aside">
+      <!-- ☀️ 今日知识点卡片（轮播·侧边栏） -->
+      <div class="card kb-card" id="dashKnowledgeCard" style="margin-bottom:20px;">
+        <div class="card-header">
+          <span class="card-title">☀️ 今日知识点</span>
+          <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
+        </div>
+        <div class="kb-carousel" id="dashKbCarousel">
+          <div id="dashKbContent"></div>
+        </div>
+      </div>
+    </div><!-- /dash-aside -->
+  </div><!-- /dash-grid -->
+  </div><!-- /page-dashboard -->
 
   <!-- ========== 添加试卷记录 ========== -->
   <div class="page" id="page-add_exam">
