@@ -84,6 +84,39 @@
   .nav-item.active { background: rgba(255,255,255,0.15); opacity: 1; border-left-color: #fff; font-weight: 600; }
   .nav-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
 
+  /* 双模式切换器 */
+  .mode-switcher {
+    display: flex; gap: 4px; padding: 6px; margin: 10px 12px 6px;
+    background: rgba(255,255,255,0.08); border-radius: 12px;
+  }
+  .mode-btn {
+    flex: 1; padding: 9px 6px; border-radius: 9px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; background: transparent; color: rgba(255,255,255,0.45);
+    transition: all 0.25s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    white-space: nowrap;
+  }
+  .mode-btn:hover { color: rgba(255,255,255,0.7); }
+  .mode-btn.active { background: rgba(255,255,255,0.18); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .mode-btn .mode-emoji { font-size: 15px; }
+
+  /* 模式切换过渡动画 */
+  .sidebar, .main, .card, .exam-countdown-card, .hero-banner, .ebbinghaus-panel, .weak-banner {
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  /* 场景化提示气泡 */
+  .scene-tip {
+    position: fixed; bottom: 20px; right: 20px; z-index: 300;
+    background: var(--accent); color: #fff; padding: 14px 20px; border-radius: 14px;
+    font-size: 14px; max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    display: none; align-items: flex-start; gap: 10px; line-height: 1.5;
+    animation: tipSlideIn 0.4s ease;
+  }
+  .scene-tip.show { display: flex; }
+  .scene-tip .tip-close { cursor: pointer; opacity: 0.6; font-size: 16px; margin-left: auto; flex-shrink: 0; }
+  .scene-tip .tip-close:hover { opacity: 1; }
+  @keyframes tipSlideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
   /* 汉堡菜单按钮（移动端浮动按钮） */
   .menu-toggle {
     display: none; position: fixed; bottom: 28px; left: 20px; z-index: 200;
@@ -1189,6 +1222,16 @@
     </div>
   </div>
   <nav class="sidebar-nav">
+    <!-- 双模式切换器 -->
+    <div class="mode-switcher" id="modeSwitcher">
+      <button class="mode-btn active" data-mode="study" onclick="switchMode('study')">
+        <span class="mode-emoji">📚</span> 学习
+      </button>
+      <button class="mode-btn" data-mode="energy" onclick="switchMode('energy')">
+        <span class="mode-emoji">💃</span> 活力
+      </button>
+    </div>
+
     <div class="nav-group static" data-group="home">
       <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard',this)">
         <span class="nav-icon">🏠</span> 首页总览
@@ -1238,7 +1281,11 @@
   <div id="dataHealthBar" style="padding:6px 12px;font-size:9px;color:rgba(255,255,255,0.4);border-top:1px solid rgba(255,255,255,0.06);margin-top:auto;display:flex;align-items:center;gap:4px;">
       <span id="healthDot" style="width:5px;height:5px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
       <span id="healthLabel">正常</span>
-      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.26</span>
+      <span style="margin-left:auto;opacity:0.5;font-size:8px;">v4.27</span>
+      <span style="cursor:pointer;opacity:0.5;font-size:10px;" onclick="exportAllData()" title="导出数据备份">📤</span>
+      <span style="cursor:pointer;opacity:0.5;font-size:10px;position:relative;overflow:hidden;" title="导入数据恢复">
+        📥<input type="file" accept=".json" style="position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;cursor:pointer;" onchange="importAllData(this)">
+      </span>
       <span style="cursor:pointer;opacity:0.5;font-size:10px;" onclick="showDataManager()" title="数据管理">⚙</span>
     </div>
 </aside>
@@ -1267,7 +1314,7 @@
     <div class="dash-grid"><div class="dash-main">
 
     <!-- 双考试倒计时 -->
-    <div class="exam-countdown-card">
+    <div class="exam-countdown-card" data-mode="study">
       <div class="ec-box ec-primary" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击打开每日计划备考">
         <div class="ec-tag">🔴 第一场</div>
         <div class="ec-name">云南E类联考 · 医学医师</div>
@@ -1285,7 +1332,7 @@
     </div>
 
     <!-- 学习计时钟 -->
-    <div class="card" id="dashStudyTimerCard" style="margin-top:20px;">
+    <div class="card" id="dashStudyTimerCard" data-mode="study" style="margin-top:20px;">
       <div class="card-header">
         <span class="card-title">⏱️ 学习计时</span>
         <span style="font-size:12px;color:var(--text-light);">选科目开始 → 结束时自动计入今日总时长</span>
@@ -1313,7 +1360,7 @@
     </div>
 
     <!-- ☀️ 今日知识点卡片（轮播） -->
-    <div class="card kb-card" id="dashKnowledgeCard" style="margin-top:20px;">
+    <div class="card kb-card" id="dashKnowledgeCard" data-mode="study" style="margin-top:20px;">
       <div class="card-header">
         <span class="card-title">☀️ 今日知识点</span>
         <span style="font-size:12px;color:var(--text-light);" id="dashKbDate"></span>
@@ -1324,39 +1371,39 @@
     </div>
 
     <!-- 薄弱科目提醒 -->
-    <div class="weak-banner clickable-card" onclick="switchPage('basic', document.querySelector('[data-page=basic]'))" title="点击跳转薄弱科目：基础医学">
+    <div class="weak-banner clickable-card" data-mode="study" onclick="switchPage('basic', document.querySelector('[data-page=basic]'))" title="点击跳转薄弱科目：基础医学">
       <span style="font-size:18px">⚠️</span>
       <span>你的薄弱科目：<b>基础医学 · 中医 · 资料分析 · 常识判断</b> — 建议每天优先攻克1-2个薄弱点，今天先从 <b>基础医学·药理学</b> 或 <b>资料分析·速算技巧</b> 开始？</span>
     </div>
 
     <!-- 小数据卡片 -->
     <div class="mini-grid">
-      <div class="mini-card" onclick="switchPage('add_exam', document.querySelector('[data-page=add_exam]'))" title="查看模考记录">
+      <div class="mini-card" data-mode="study" onclick="switchPage('add_exam', document.querySelector('[data-page=add_exam]'))" title="查看模考记录">
         <div class="mc-icon">📝</div>
         <div class="mc-value">72<span style="font-size:18px;color:var(--text-light)">/100</span></div>
         <div class="mc-label">最近模考得分</div>
       </div>
-      <div class="mini-card" onclick="switchPage('time_stat', document.querySelector('[data-page=time_stat]'))" title="查看学习时长统计">
+      <div class="mini-card" data-mode="study" onclick="switchPage('time_stat', document.querySelector('[data-page=time_stat]'))" title="查看学习时长统计">
         <div class="mc-icon">📚</div>
         <div class="mc-value" id="dashStudyTimeVal">0<span style="font-size:18px;color:var(--text-light)">m</span></div>
         <div class="mc-label">今日学习时长</div>
       </div>
-      <div class="mini-card" onclick="switchPage('weight', document.querySelector('[data-page=weight]'))" title="管理体重数据">
+      <div class="mini-card" data-mode="energy" onclick="switchPage('weight', document.querySelector('[data-page=weight]'))" title="管理体重数据">
         <div class="mc-icon">⚖️</div>
         <div class="mc-value"><span id="dashWeightVal">55.0</span><span style="font-size:18px;color:var(--text-light)">kg</span></div>
         <div class="mc-label" id="dashWeightLabel">今日体重 · 目标46kg · <span style="color:#ef4444;font-size:14px">还差9.0kg</span></div>
       </div>
-      <div class="mini-card" onclick="switchPage('exercise', document.querySelector('[data-page=exercise]'))" title="记录运动消耗">
+      <div class="mini-card" data-mode="energy" onclick="switchPage('exercise', document.querySelector('[data-page=exercise]'))" title="记录运动消耗">
         <div class="mc-icon">🔥</div>
         <div class="mc-value">320<span style="font-size:18px;color:var(--text-light)">kcal</span></div>
         <div class="mc-label">今日运动消耗</div>
       </div>
-      <div class="mini-card" onclick="switchPage('meals', document.querySelector('[data-page=meals]'))" title="记录三餐饮食">
+      <div class="mini-card" data-mode="energy" onclick="switchPage('meals', document.querySelector('[data-page=meals]'))" title="记录三餐饮食">
         <div class="mc-icon">🍱</div>
         <div class="mc-value">1,180<span style="font-size:18px;color:var(--text-light)">kcal</span></div>
         <div class="mc-label">今日摄入 &nbsp;<span style="font-size:14px">/目标1200</span></div>
       </div>
-      <div class="mini-card" onclick="switchPage('dance', document.querySelector('[data-page=dance]'))" title="学习舞蹈">
+      <div class="mini-card" data-mode="energy" onclick="switchPage('dance', document.querySelector('[data-page=dance]'))" title="学习舞蹈">
         <div class="mc-icon">💃</div>
         <div class="mc-value"><span id="dashDanceVal">0</span><span style="font-size:18px;color:var(--text-light)">min</span></div>
         <div class="mc-label" id="dashDanceLabel">舞蹈练习 &nbsp;<span style="font-size:14px">今日未练</span></div>
@@ -1367,7 +1414,7 @@
     <!-- ☀️ 今日知识点卡片已在上方计时器下方 -->
 
     <!-- 🔄 艾宾浩斯复习面板 -->
-    <div class="ebbinghaus-panel clickable-card" id="ebbinghausPanel" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面打卡艾宾浩斯复习">
+    <div class="ebbinghaus-panel clickable-card" id="ebbinghausPanel" data-mode="study" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面打卡艾宾浩斯复习">
       <div class="eb-title">🔄 今晚艾宾浩斯复习 · 21:30-23:00</div>
       <div class="eb-subtitle" id="ebSubtitle">根据复习规则自动计算今日需复习的节点</div>
       <div class="eb-review-list" id="ebReviewList">
@@ -1411,7 +1458,7 @@
         <div id="dashTodoStats" style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:right;"></div>
       </div>
 
-      <div class="card">
+      <div class="card" data-mode="study">
         <div class="card-header"><span class="card-title">📊 最近模考</span><span class="card-badge purple">07-29 模考四</span></div>
         <table>
           <tr><th>学科</th><th>得分</th><th>得分率</th><th>趋势</th></tr>
@@ -3103,6 +3150,224 @@
     html += '</div></div>';
 
     el.innerHTML = html;
+  }
+
+  // ========== 双工作台模式切换 ==========
+  const modeThemes = {
+    study: {
+      name: '学习Buddy', emoji: '📚',
+      start: '#4f46e5', end: '#1e1b4b', bg: '#eef2ff', accent: '#4f46e5',
+      text: '#1e1b4b', textLight: '#6366f1', border: '#e0e7ff',
+      shadow: 'rgba(79,70,229,0.08)', accentLight: '#e0e7ff',
+      hue: '0deg', sat: 'saturate(1)'
+    },
+    energy: {
+      name: '活力Buddy', emoji: '💃',
+      start: '#f97316', end: '#7c2d12', bg: '#fff7ed', accent: '#f97316',
+      text: '#431407', textLight: '#ea580c', border: '#ffedd5',
+      shadow: 'rgba(249,115,22,0.08)', accentLight: '#ffedd5',
+      hue: '6deg', sat: 'saturate(1.05)'
+    }
+  };
+  const modeGroups = {
+    study: ['home', 'medical', 'xingce', 'manage'],
+    energy: ['home', 'life']
+  };
+  window.__currentMode = 'study';
+
+  function switchMode(mode) {
+    if (!modeThemes[mode]) return;
+    localStorage.setItem('jasmine_mode', mode);
+    window.__currentMode = mode;
+
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+
+    const t = modeThemes[mode];
+    const root = document.documentElement;
+    root.style.setProperty('--sidebar-start', t.start);
+    root.style.setProperty('--sidebar-end', t.end);
+    root.style.setProperty('--bg', t.bg);
+    root.style.setProperty('--accent', t.accent);
+    root.style.setProperty('--accent-light', t.accentLight);
+    root.style.setProperty('--text', t.text);
+    root.style.setProperty('--text-light', t.textLight);
+    root.style.setProperty('--border', t.border);
+    root.style.setProperty('--shadow', t.shadow);
+    root.style.setProperty('--sidebar', t.start);
+    root.style.setProperty('--sidebar-hover', t.end);
+    root.style.setProperty('--sidebar-active', t.end);
+    root.style.setProperty('--sidebar-dark', t.end);
+
+    const emojiEl = document.getElementById('luckyEmoji');
+    const nameEl = document.getElementById('luckyName');
+    if (emojiEl) emojiEl.textContent = t.emoji;
+    if (nameEl) nameEl.textContent = t.name;
+
+    const visibleGroups = modeGroups[mode];
+    document.querySelectorAll('.nav-group-title').forEach(title => {
+      const g = title.dataset.group;
+      if (g) title.style.display = visibleGroups.includes(g) ? '' : 'none';
+    });
+    document.querySelectorAll('.nav-group[data-group]').forEach(group => {
+      const g = group.dataset.group;
+      if (g && g !== 'home') group.style.display = visibleGroups.includes(g) ? '' : 'none';
+    });
+
+    document.querySelectorAll('#page-dashboard [data-mode]').forEach(el => {
+      const m = el.dataset.mode;
+      el.style.display = (m === 'both' || m === mode) ? '' : 'none';
+    });
+
+    const currentPage = document.querySelector('.page.active');
+    if (currentPage) {
+      const pageId = currentPage.id.replace('page-', '');
+      const pageGroup = pageGroupMap[pageId];
+      if (pageGroup && !visibleGroups.includes(pageGroup) && pageId !== 'dashboard') {
+        switchPage('dashboard', document.querySelector('[data-page=dashboard]'));
+      }
+    }
+
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute('content', t.start);
+  }
+
+  function restoreMode() {
+    const saved = localStorage.getItem('jasmine_mode') || 'study';
+    switchMode(saved);
+  }
+
+  // ========== 场景化温馨提示 ==========
+  let _sceneTipTimer = null;
+  function showSceneTip(text) {
+    let tip = document.getElementById('sceneTip');
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.id = 'sceneTip';
+      tip.className = 'scene-tip';
+      document.body.appendChild(tip);
+    }
+    tip.innerHTML = '<span>' + text + '</span><span class="tip-close" onclick="this.parentElement.classList.remove(\'show\')">×</span>';
+    tip.classList.add('show');
+    if (_sceneTipTimer) clearTimeout(_sceneTipTimer);
+    _sceneTipTimer = setTimeout(function() { tip.classList.remove('show'); }, 8000);
+  }
+
+  function checkSceneTip() {
+    const h = new Date().getHours();
+    const mode = window.__currentMode || 'study';
+    const todayStr = localDateStr();
+    const lastTipDate = localStorage.getItem('jasmine_lastTipDate');
+    const lastTipHour = localStorage.getItem('jasmine_lastTipHour');
+    const currentHour = String(h);
+
+    if (lastTipDate === todayStr && lastTipHour === currentHour) return;
+    localStorage.setItem('jasmine_lastTipDate', todayStr);
+    localStorage.setItem('jasmine_lastTipHour', currentHour);
+
+    const checkin = JSON.parse(localStorage.getItem('jasmine_daily_checkin') || '{}');
+    const todayCheckin = checkin[todayStr] || {};
+
+    if (mode === 'study') {
+      if (h >= 7 && h < 9 && !todayCheckin.study) {
+        showSceneTip('🌅 早安 jasmine！清晨记忆力最好，该开始背诵了～');
+      } else if (h >= 12 && h < 14) {
+        showSceneTip('😴 学了一上午辛苦了！记得午睡13:40-14:30，大脑需要休息才能高效吸收');
+      } else if (h >= 14 && h < 17 && !todayCheckin.questions) {
+        showSceneTip('📊 下午刷题时间到！目标250道，资料分析薄弱记得优先练～');
+      } else if (h >= 21 && h < 23 && !todayCheckin.review) {
+        showSceneTip('🔄 21:30了！艾宾浩斯复习时间（1.5h），今晚该复习的节点已准备好');
+      } else if (h >= 23) {
+        showSceneTip('🌙 23:00了！该做肩背训练然后休息了，明天继续加油～');
+      }
+    } else {
+      if (h >= 18 && h < 20 && !todayCheckin.dance) {
+        showSceneTip('💃 晚上19:00舞蹈课时间！记得穿舒适的衣服，先热身再练～');
+      } else if (h >= 20 && h < 22 && !todayCheckin.dance) {
+        showSceneTip('🔥 今天还没练舞哦！基本功 or 成品舞，选一个开始吧～');
+      } else if (h >= 7 && h < 10 && !todayCheckin.weight) {
+        showSceneTip('⚖️ 早上空腹称重最准！记得打卡今日体重～');
+      } else if (h >= 23) {
+        showSceneTip('🌙 23:00了！肩背训练+帕梅拉HIIT，练完好好休息～');
+      }
+    }
+  }
+
+  // ========== 数据导出/导入 ==========
+  function exportAllData() {
+    const allData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('jasmine_')) {
+        try {
+          allData[key] = JSON.parse(localStorage.getItem(key));
+        } catch(e) {
+          allData[key] = localStorage.getItem(key);
+        }
+      }
+    }
+    allData['_exportTime'] = new Date().toISOString();
+    allData['_version'] = 'v4.27';
+    const blob = new Blob([JSON.stringify(allData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jasmine_backup_' + localDateStr() + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function importAllData(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!confirm('确定导入数据吗？这将覆盖当前的本地数据（不可撤销）。')) return;
+        Object.keys(data).forEach(function(key) {
+          if (key.startsWith('jasmine_')) {
+            const val = typeof data[key] === 'string' ? data[key] : JSON.stringify(data[key]);
+            localStorage.setItem(key, val);
+          }
+        });
+        alert('✅ 数据导入成功！页面将刷新...');
+        location.reload();
+      } catch(err) {
+        alert('❌ 文件格式错误，无法导入：' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ========== 任务顺延容错 ==========
+  function checkTaskCarryover() {
+    const todayStr = localDateStr();
+    const yesterdayStr = (function() {
+      const d = new Date(); d.setDate(d.getDate() - 1);
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    })();
+    const carryoverKey = 'jasmine_carryover';
+    let carryover = JSON.parse(localStorage.getItem(carryoverKey) || '{}');
+
+    if (carryover[todayStr]) return;
+
+    const checkin = JSON.parse(localStorage.getItem('jasmine_daily_checkin') || '{}');
+    const yesterdayCheckin = checkin[yesterdayStr] || {};
+    const undone = [];
+    if (!yesterdayCheckin.study) undone.push('📚 早背诵');
+    if (!yesterdayCheckin.questions) undone.push('📊 下午刷题');
+    if (!yesterdayCheckin.review) undone.push('🔄 艾宾浩斯复习');
+
+    if (undone.length > 0) {
+      carryover[todayStr] = { undone: undone, from: yesterdayStr };
+      localStorage.setItem(carryoverKey, JSON.stringify(carryover));
+      setTimeout(function() {
+        showSceneTip('📌 昨天有' + undone.length + '项未完成：' + undone.join('、') + '。今天继续加油，顺延任务不丢不漏！');
+      }, 3000);
+    } else {
+      carryover[todayStr] = { undone: [], from: yesterdayStr };
+      localStorage.setItem(carryoverKey, JSON.stringify(carryover));
+    }
   }
 
   function switchPage(pageId, el) {
@@ -7747,6 +8012,17 @@
 
     // 数据健康检查
     updateDataHealth();
+
+    // 恢复双模式
+    restoreMode();
+
+    // 任务顺延检查
+    try { checkTaskCarryover(); } catch(e) { console.error('carryover error:', e); }
+
+    // 场景化提示（延迟5秒弹出，避免和加载竞争）
+    setTimeout(function() { try { checkSceneTip(); } catch(e) {} }, 5000);
+    // 每小时检查一次
+    setInterval(function() { try { checkSceneTip(); } catch(e) {} }, 3600000);
 
     // 📅 日期自动更新：每分钟检测，跨天自动刷新所有日期相关内容
     var _lastDateStr = localDateStr();
