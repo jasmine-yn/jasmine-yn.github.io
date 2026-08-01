@@ -5380,7 +5380,7 @@
         currentSub = p.subject;
         html += '<div style="font-size:12px;font-weight:700;color:var(--accent);margin:10px 0 4px;padding-top:6px;border-top:1px solid var(--border);">' + p.subject + '</div>';
       }
-      html += '<label class="kb-pick-row" style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;margin:2px 0;transition:background 0.15s;" onmouseover="this.style.background='rgba(79,70,229,0.04)'" onmouseout="this.style.background='transparent'">';
+      html += '<label class="kb-pick-row" style="display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;margin:2px 0;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(79,70,229,0.04)\'" onmouseout="this.style.background=\'transparent\'">';
       html += '<input type="checkbox" class="kb-pick-check" value="' + i + '" data-subject="' + p.subject + '" data-point="' + encodeURIComponent(p.point) + '" style="margin-top:3px;flex-shrink:0;">';
       html += '<span style="font-size:13px;line-height:1.4;">' + p.point + '</span>';
       html += '</label>';
@@ -5460,8 +5460,7 @@
     if (status) { status.style.display = 'inline'; setTimeout(() => { status.style.display = 'none'; }, 3000); }
     updateKbHistory();
 
-    alert('☀️ 已保存 ' + picks.length + ' 条"今日必背"！
-首页只显示精选内容，点击「全文库」查看全部。');
+    alert('☀️ 已保存 ' + picks.length + ' 条"今日必背"！\n首页只显示精选内容，点击「全文库」查看全部。');
     loadTodayKnowledge();
   }
 
