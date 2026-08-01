@@ -3275,13 +3275,13 @@
     // 更新按钮状态（侧边栏+首页）
     document.querySelectorAll('.mode-btn, .home-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
 
-    // 更新侧边栏模式指示器
-    const miText = document.getElementById('modeIndicatorText');
-    if (miText) miText.textContent = t.emoji + ' ' + t.name;
-
     // 切换配色
     const t = modeThemes[mode];
     const root = document.documentElement;
+
+    // 更新侧边栏模式指示器
+    const miText = document.getElementById('modeIndicatorText');
+    if (miText) miText.textContent = t.emoji + ' ' + t.name;
     root.style.setProperty('--sidebar-start', t.start);
     root.style.setProperty('--sidebar-end', t.end);
     root.style.setProperty('--bg', t.bg);
