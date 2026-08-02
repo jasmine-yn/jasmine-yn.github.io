@@ -1583,11 +1583,15 @@
       <div class="nav-item" data-page="shenlun" onclick="switchPage('shenlun',this)"><span class="nav-icon">✍️</span> 申论</div>
     </div>
 
+    <div class="nav-group-title" onclick="toggleNavGroup('wrongbook')" data-group="wrongbook">❌ 错题本</div>
+    <div class="nav-group" data-group="wrongbook">
+      <div class="nav-item" data-page="wrong" onclick="switchPage('wrong',this)"><span class="nav-icon">❌</span> 错题记录</div>
+      <div class="nav-item" data-page="summary" onclick="switchPage('summary',this)"><span class="nav-icon">📝</span> 每日总结</div>
+    </div>
+
     <div class="nav-group-title" onclick="toggleNavGroup('manage')" data-group="manage">📊 备考管理</div>
     <div class="nav-group" data-group="manage">
       <div class="nav-item" data-page="add_exam" onclick="switchPage('add_exam',this)"><span class="nav-icon">➕</span> 添加试卷</div>
-      <div class="nav-item" data-page="wrong" onclick="switchPage('wrong',this)"><span class="nav-icon">❌</span> 错题记录</div>
-      <div class="nav-item" data-page="summary" onclick="switchPage('summary',this)"><span class="nav-icon">📝</span> 每日总结</div>
       <div class="nav-item" data-page="plan" onclick="switchPage('plan',this)"><span class="nav-icon">📋</span> 每日计划</div>
       <div class="nav-item" data-page="todo" onclick="switchPage('todo',this)"><span class="nav-icon">✅</span> 待办清单</div>
       <div class="nav-item" data-page="calendar" onclick="switchPage('calendar',this)"><span class="nav-icon">📅</span> 打卡日历</div>
@@ -2411,8 +2415,8 @@
           <span id="panCodeTip" style="font-size:11px;color:#6b7280;"></span>
         </div>
         <!-- 可点击的直接链接（移动端兜底） -->
-        <div id="panLinkDisplay" style="margin-top:8px;display:none;">
-          <a id="panLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:#3b82f6;text-decoration:underline;word-break:break-all;">👉 点这里直接打开网盘</a>
+        <div id="panLinkDisplay" style="margin-top:10px;display:none;">
+          <a id="panLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" style="display:block;text-align:center;padding:10px 16px;font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:10px;text-decoration:none;">👉 点这里打开百度网盘</a>
         </div>
       </div>
       <!-- 进度筛选 -->
@@ -3998,9 +4002,9 @@
     }
   };
   const modeGroups = {
-    study: ['home', 'medical', 'xingce', 'manage', 'life'],
-    energy: ['home', 'life', 'medical', 'xingce', 'manage'],
-    overview: ['home', 'medical', 'xingce', 'manage', 'life']
+    study: ['home', 'medical', 'xingce', 'wrongbook', 'manage', 'life'],
+    energy: ['home', 'life', 'wrongbook', 'medical', 'xingce', 'manage'],
+    overview: ['home', 'medical', 'xingce', 'wrongbook', 'manage', 'life']
   };
   window.__currentMode = 'study';
 
@@ -4562,7 +4566,8 @@
     dashboard:'home', basic:'medical', clinical:'medical', preventive:'medical',
     tcm:'medical', humanities:'medical', verbal:'xingce', reasoning:'xingce',
     math:'xingce', data_analysis:'xingce', common_sense:'xingce', politics:'xingce',
-    shenlun:'xingce', add_exam:'manage', wrong:'manage', summary:'manage',
+    shenlun:'xingce', add_exam:'manage',
+    wrong:'wrongbook', summary:'wrongbook',
     plan:'manage', todo:'manage', calendar:'manage', time_stat:'manage', analysis:'manage',
     nap_timer:'manage', exam_checkin:'manage', mock_plan:'manage',
     weight:'life', meals:'life', exercise:'life', dance:'life',
@@ -9095,16 +9100,20 @@
     var anchorEl = document.getElementById('panLinkAnchor');
     var tipEl = document.getElementById('panCodeTip');
     if (!linkEl || !displayEl || !anchorEl) return;
-    var url = linkEl.value.trim();
-    if (url) {
-      var fullUrl = /^https?:\/\//i.test(url) ? url : 'https://' + url;
-      anchorEl.href = fullUrl;
+    var raw = linkEl.value.trim();
+    if (raw) {
+      // 提取纯URL
+      var url = raw;
+      var m = raw.match(/(https?:\/\/[^\s，。、\u4e00-\u9fa5]+)/i);
+      if (m) { url = m[1]; } else if (!/^https?:\/\//i.test(url)) { url = 'https://' + url; }
+      url = url.replace(/[，。、；;）)\]】>]+$/, '');
+      anchorEl.href = url;
       displayEl.style.display = 'block';
     } else {
       displayEl.style.display = 'none';
     }
     if (tipEl) {
-      tipEl.textContent = (codeEl && codeEl.value.trim()) ? '提取码: ' + codeEl.value.trim() : '';
+      tipEl.textContent = (codeEl && codeEl.value.trim()) ? '提取码: ' + codeEl.value.trim() + '（打开网盘后输入）' : '';
     }
   }
 
@@ -9249,24 +9258,19 @@
   function openPanLink() {
     var linkEl = document.getElementById('panShareLink');
     if (!linkEl || !linkEl.value.trim()) { showSceneTip('请先填入网盘分享链接'); return; }
-    var url = linkEl.value.trim();
-    // 补全协议
-    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-    // 先保存链接
+    var raw = linkEl.value.trim();
+    // 从输入内容中提取纯URL（去除提取码等附加文字）
+    var url = raw;
+    var m = raw.match(/(https?:\/\/[^\s，。、\u4e00-\u9fa5]+)/i);
+    if (m) { url = m[1]; } else if (!/^https?:\/\//i.test(url)) { url = 'https://' + url; }
+    // 去除末尾可能粘连的标点
+    url = url.replace(/[，。、；;）)\]】>]+$/, '');
+    // 保存链接
     var codeEl = document.getElementById('panExtractCode');
     savePanMeta({ link: linkEl.value.trim(), code: codeEl ? codeEl.value.trim() : '' });
-    // 优先用 <a> 标签点击，兼容移动端弹窗拦截
-    var a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    // 兜底：如果 a.click() 没生效，尝试 window.open
-    setTimeout(function() {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }, 100);
+    showSceneTip('🚀 正在打开网盘…');
+    // 直接跳转当前页（手机端最可靠，按返回键回到应用）
+    window.location.href = url;
   }
   function exportPanProgress() {
     var data = {
