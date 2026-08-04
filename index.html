@@ -1309,6 +1309,105 @@
     .st-clock-center { font-size:19px; }
   }
 
+  /* ====== 自由排课行 ====== */
+  .plan-row {
+    display: flex; align-items: center; gap: 6px; padding: 6px 8px;
+    background: #f8fafc; border-radius: 8px; margin-bottom: 6px;
+    border: 1px solid #e2e8f0; transition: all .2s; flex-wrap: wrap;
+  }
+  .plan-row:hover { border-color: var(--accent); box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .plan-row .pr-time { display: flex; align-items: center; gap: 3px; }
+  .plan-row .pr-time input { width: 62px; text-align: center; font-size: 12px; }
+  .plan-row .pr-task { flex: 1; min-width: 120px; }
+  .plan-row .pr-note { flex: 1; min-width: 80px; }
+  .plan-row .pr-cat { font-size: 11px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+  .plan-row .pr-cat.study { background:#dbeafe; color:#1d4ed8; }
+  .plan-row .pr-cat.sport { background:#fce7f3; color:#be185d; }
+  .plan-row .pr-cat.food { background:#fef3c7; color:#92400e; }
+  .plan-row .pr-cat.life { background:#dcfce7; color:#166534; }
+  .plan-row .pr-del { background: none; border: none; color: #ef4444; cursor: pointer;
+    font-size: 16px; padding: 2px 6px; border-radius: 4px; }
+  .plan-row .pr-del:hover { background: #fef2f2; }
+  .plan-row .pr-handle { cursor: grab; color: #cbd5e1; font-size: 14px; }
+  .plan-row.dragging { opacity: 0.5; }
+  .plan-add-btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; padding: 8px; border: 2px dashed var(--border); border-radius: 8px;
+    background: transparent; cursor: pointer; font-size: 13px; color: var(--text-light);
+    transition: all .2s;
+  }
+  .plan-add-btn:hover { border-color: var(--accent); color: var(--accent); background: #f5f3ff; }
+
+  /* ====== 舞蹈视频跟跳播放器 ====== */
+  .dance-player-card {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border-radius: 16px; padding: 16px; margin-bottom: 16px;
+    border: 1px solid #0f3460;
+  }
+  .dance-player-card .dp-title { color: #e2e8f0; font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .dance-video-wrap { position: relative; background: #000; border-radius: 12px; overflow: hidden; }
+  .dance-video-wrap video { width: 100%; max-height: 45vh; display: block; }
+  .dp-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .dp-btn {
+    padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 12px; font-weight: 600; transition: all .15s;
+    background: #334155; color: #e2e8f0;
+  }
+  .dp-btn:hover { background: #475569; }
+  .dp-btn.active { background: #6366f1; color: #fff; }
+  .dp-btn.ab-mark { background: #7c3aed; color: #fff; }
+  .dp-btn.ab-mark:hover { background: #6d28d9; }
+  .dp-btn.ab-loop { background: #dc2626; color: #fff; }
+  .dp-btn.ab-loop:hover { background: #b91c1c; }
+  .dp-btn.ab-loop.active { background: #f97316; animation: pulse-ab 1s infinite; }
+  @keyframes pulse-ab { 0%,100%{opacity:1;} 50%{opacity:.7;} }
+  .dp-speed-row { display: flex; gap: 4px; flex-wrap: wrap; }
+  .dp-speed-btn {
+    padding: 4px 8px; border-radius: 6px; border: 1px solid #475569;
+    background: transparent; color: #94a3b8; cursor: pointer; font-size: 11px;
+    transition: all .15s;
+  }
+  .dp-speed-btn:hover { border-color: #818cf8; color: #c7d2fe; }
+  .dp-speed-btn.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+  .dp-ab-display {
+    font-size: 12px; color: #94a3b8; font-family: monospace;
+    background: #0f172a; padding: 6px 10px; border-radius: 6px; flex: 1; min-width: 200px;
+  }
+  .dp-ab-display b { color: #a78bfa; }
+  .dp-section-label { font-size: 11px; color: #64748b; margin: 8px 0 4px; font-weight: 600; }
+
+  /* 喊拍节拍器 */
+  .dp-metronome {
+    background: #0f172a; border-radius: 10px; padding: 12px; margin-top: 8px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .dp-metro-dot {
+    width: 32px; height: 32px; border-radius: 50%; background: #334155;
+    transition: all .1s; flex-shrink: 0;
+  }
+  .dp-metro-dot.beat { background: #f97316; box-shadow: 0 0 12px rgba(249,115,22,.6); }
+  .dp-metro-dot.downbeat { background: #ef4444; box-shadow: 0 0 16px rgba(239,68,68,.7); }
+  .dp-metro-count { font-size: 24px; font-weight: 800; color: #f97316; min-width: 30px; text-align: center; }
+  .dp-metro-bpm { display: flex; align-items: center; gap: 4px; }
+  .dp-metro-bpm input { width: 50px; text-align: center; font-size: 14px; background: #1e293b; color: #e2e8f0;
+    border: 1px solid #475569; border-radius: 6px; padding: 3px; }
+
+  /* 书签标记 */
+  .dp-bookmark-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .dp-bookmark {
+    padding: 3px 8px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    background: #1e293b; color: #64748b; border: 1px solid #334155; transition: all .15s;
+  }
+  .dp-bookmark:hover { background: #3730a3; color: #c7d2fe; border-color: #6366f1; }
+
+  @media(max-width:768px) {
+    .plan-row { padding: 4px 6px; }
+    .plan-row .pr-time input { width: 52px; }
+    .plan-row .pr-note { display: none; }
+    .dp-controls { gap: 4px; }
+    .dp-btn { padding: 5px 8px; font-size: 11px; }
+  }
+
 </style>
 
 <!-- 天秤座每日幸运色 · 自动换肤系统 -->
@@ -2297,6 +2396,97 @@
         <span style="font-size:28px;">📹</span>
         <div><div style="font-size:15px;font-weight:800;">拍自己的视频</div><div style="font-size:11px;opacity:0.85;">摄像头录制 · 打卡</div></div>
       </div>
+      <div onclick="document.getElementById('dancePlayerSection').scrollIntoView({behavior:'smooth',block:'start'})" style="flex:1;min-width:140px;cursor:pointer;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:10px;transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 16px rgba(99,102,241,0.3)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-size:28px;">🎬</span>
+        <div><div style="font-size:15px;font-weight:800;">视频跟跳播放器</div><div style="font-size:11px;opacity:0.85;">倍速·AB循环·喊拍</div></div>
+      </div>
+    </div>
+
+    <!-- 🎬 视频跟跳播放器 -->
+    <div class="dance-player-card" id="dancePlayerSection">
+      <div class="dp-title">🎬 视频跟跳播放器 · 倍速 / A-B循环 / 喊拍</div>
+      <!-- 加载视频 -->
+      <div id="dpLoadZone" style="text-align:center;padding:20px;border:2px dashed #475569;border-radius:12px;">
+        <div style="font-size:36px;margin-bottom:8px;">📁</div>
+        <div style="color:#94a3b8;font-size:13px;margin-bottom:12px;">选择下载好的老师教学视频<br>支持 MP4 / WebM / MOV 等格式</div>
+        <label style="display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;">
+          📂 选择视频文件
+          <input type="file" id="dpFileInput" accept="video/*" style="display:none;" onchange="dpLoadVideo(this)">
+        </label>
+      </div>
+      <!-- 视频播放器 -->
+      <div id="dpPlayerWrap" style="display:none;">
+        <div class="dance-video-wrap">
+          <video id="dpVideo" playsinline></video>
+        </div>
+        <!-- 控制面板 -->
+        <div class="dp-controls">
+          <button class="dp-btn" onclick="dpTogglePlay()" id="dpPlayBtn">▶ 播放</button>
+          <button class="dp-btn" onclick="dpSkip(-5)">⏪ 5s</button>
+          <button class="dp-btn" onclick="dpSkip(5)">5s ⏩</button>
+          <button class="dp-btn" onclick="dpRestart()">🔄 重头</button>
+        </div>
+        <!-- 倍速 -->
+        <div class="dp-section-label">⚡ 倍速控制</div>
+        <div class="dp-speed-row">
+          <button class="dp-speed-btn" onclick="dpSetSpeed(0.25,this)">0.25x</button>
+          <button class="dp-speed-btn" onclick="dpSetSpeed(0.5,this)">0.5x</button>
+          <button class="dp-speed-btn" onclick="dpSetSpeed(0.75,this)">0.75x</button>
+          <button class="dp-speed-btn active" onclick="dpSetSpeed(1,this)">1.0x</button>
+          <button class="dp-speed-btn" onclick="dpSetSpeed(1.25,this)">1.25x</button>
+          <button class="dp-speed-btn" onclick="dpSetSpeed(1.5,this)">1.5x</button>
+          <button class="dp-speed-btn" onclick="dpSetSpeed(2,this)">2.0x</button>
+        </div>
+        <!-- A-B 循环 -->
+        <div class="dp-section-label">🔁 A-B 循环反复跟跳</div>
+        <div class="dp-controls">
+          <button class="dp-btn ab-mark" onclick="dpMarkA()">🅰️ 标记A点</button>
+          <button class="dp-btn ab-mark" onclick="dpMarkB()">🅱️ 标记B点</button>
+          <button class="dp-btn ab-loop" id="dpABLoopBtn" onclick="dpToggleABLoop()">🔁 开始A-B循环</button>
+          <button class="dp-btn" onclick="dpClearAB()">✕ 清除AB</button>
+        </div>
+        <div class="dp-ab-display" id="dpABDisplay">A: --:-- | B: --:-- | 循环: 关闭</div>
+        <!-- 书签 -->
+        <div class="dp-section-label">📌 书签标记（点数字跳转）</div>
+        <div class="dp-bookmark-row" id="dpBookmarks"></div>
+        <div style="display:flex;gap:6px;margin-top:6px;">
+          <button class="dp-btn" onclick="dpAddBookmark()">📌 添加书签</button>
+          <button class="dp-btn" onclick="dpClearBookmarks()">🗑️ 清除书签</button>
+        </div>
+        <!-- 喊拍节拍器 -->
+        <div class="dp-section-label">🎵 喊拍节拍器（教你数拍子）</div>
+        <div class="dp-metronome">
+          <div class="dp-metro-dot" id="dpMetroDot"></div>
+          <div class="dp-metro-count" id="dpMetroCount">-</div>
+          <div class="dp-metro-bpm">
+            <span style="color:#94a3b8;font-size:12px;">BPM</span>
+            <input type="number" id="dpBPM" value="100" min="40" max="240" onchange="dpMetroRestart()">
+            <button class="dp-btn" onclick="dpBPMAdjust(-5)">-5</button>
+            <button class="dp-btn" onclick="dpBPMAdjust(5)">+5</button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <span style="color:#94a3b8;font-size:12px;">拍号</span>
+            <select id="dpBeats" onchange="dpMetroRestart()" style="background:#1e293b;color:#e2e8f0;border:1px solid #475569;border-radius:6px;padding:3px;font-size:12px;">
+              <option value="4">4/4</option>
+              <option value="8">8/8</option>
+              <option value="3">3/4</option>
+              <option value="2">2/4</option>
+            </select>
+          </div>
+          <button class="dp-btn" id="dpMetroBtn" onclick="dpToggleMetro()">🎵 开启喊拍</button>
+          <button class="dp-btn" onclick="dpMetroRestart()">🔄 重置</button>
+        </div>
+        <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5;">
+          💡 <b>使用方法</b>：选视频 → 调倍速慢放分解 → 标A/B点反复练 → 开喊拍器跟着数拍子 → 加书签快速定位<br>
+          🎵 喊拍器：红点=重拍(第1拍) 橙点=其他拍 BPM=每分钟拍数（爵士常用 90-120）
+        </div>
+        <!-- 听音乐模式 -->
+        <div class="dp-section-label">🎧 听音乐模式</div>
+        <div class="dp-controls">
+          <button class="dp-btn" id="dpAudioOnlyBtn" onclick="dpToggleAudioOnly()">🎧 听音乐（画面关闭）</button>
+          <span style="color:#64748b;font-size:11px;">省电模式，只播放音频，适合反复听音乐找拍子</span>
+        </div>
+      </div>
     </div>
 
     <!-- 🎯 30天协调·基本功·记动作训练 -->
@@ -3234,6 +3424,23 @@
         <span style="font-size:11px;color:#94a3b8;">写好记得点 💾保存</span>
       </div>
       <textarea id="planTextarea" class="form-textarea" style="min-height:200px;width:100%;font-size:14px;line-height:1.8;" placeholder="在上面勾选时间槽，点「填入模板」自动生成...&#10;也可以自由写，怎么舒服怎么来~"></textarea>
+    </div>
+
+    <!-- 🎯 自由排课（时间和任务分开排） -->
+    <div class="card" style="border-left:4px solid #6366f1;margin-top:12px;">
+      <div class="card-header">
+        <span class="card-title">🎯 自由排课</span>
+        <span style="font-size:12px;color:var(--text-light);">时间、任务独立设置 · 随意增删行 · 自动同步到上方文本框和待办</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;">
+        <input type="date" class="form-input" id="planRowDate" style="width:140px;" onchange="loadPlanRows()">
+        <button class="btn btn-primary" onclick="savePlanRows()" style="padding:6px 14px;font-size:13px;background:#6366f1;">💾 保存排课</button>
+        <button class="btn btn-outline" onclick="addPlanRow()" style="font-size:13px;">➕ 添加一行</button>
+        <button class="btn btn-outline" onclick="loadPresetToRows()" style="font-size:13px;">📋 载入模板</button>
+        <button class="btn btn-outline" onclick="clearPlanRows()" style="font-size:13px;background:#fef2f2;border:1px solid #fca5a5;color:#dc2626;">🗑️ 清空</button>
+        <span id="planRowSaved" style="font-size:12px;color:#10b981;display:none;">✅ 已保存</span>
+      </div>
+      <div id="planRowList" style="display:flex;flex-direction:column;gap:4px;"></div>
     </div>
 
     <!-- 🌙 今晚计划 → ☀️ 明早知识点 -->
@@ -4595,6 +4802,9 @@
     const date = dateInput ? dateInput.value : localDateStr(now);
     const saved = localStorage.getItem('jasmine_plan_' + date);
     if (saved && textarea) textarea.value = saved;
+    // sync plan row date and load rows
+    var rowDate = document.getElementById('planRowDate');
+    if (rowDate) { rowDate.value = date; loadPlanRows(); }
   }
 
   function clearPlan() {
@@ -4628,6 +4838,165 @@
     textarea.value = lines.join('\n');
     textarea.focus();
   }
+
+  // ====== 🎯 自由排课（时间和任务分开排） ======
+  var PLAN_ROWS_KEY = 'jasmine_plan_rows';
+
+  function getPlanRows() {
+    var date = (document.getElementById('planRowDate') || {}).value || localDateStr();
+    return safeGetJSON(PLAN_ROWS_KEY + '_' + date, []);
+  }
+  function setPlanRows(rows) {
+    var date = (document.getElementById('planRowDate') || {}).value || localDateStr();
+    safeSetJSON(PLAN_ROWS_KEY + '_' + date, rows);
+  }
+
+  function addPlanRow(data) {
+    var list = document.getElementById('planRowList');
+    if (!list) return;
+    data = data || { start: '', end: '', task: '', note: '', cat: '' };
+    var cat = data.cat || autoDetectTodoCat(data.task || '');
+    var catLabels = { study: '📖学习', sport: '💃运动', food: '🍱饮食', life: '😴生活' };
+    var div = document.createElement('div');
+    div.className = 'plan-row';
+    div.draggable = true;
+    div.innerHTML =
+      '<span class="pr-handle">⠿</span>' +
+      '<div class="pr-time">' +
+        '<input type="time" class="form-input pr-start" value="' + (data.start || '') + '">' +
+        '<span style="font-size:11px;color:#94a3b8;">→</span>' +
+        '<input type="time" class="form-input pr-end" value="' + (data.end || '') + '">' +
+      '</div>' +
+      '<input type="text" class="form-input pr-task" placeholder="任务内容" value="' + escapeHtml(data.task || '') + '" style="font-size:13px;">' +
+      '<input type="text" class="form-input pr-note" placeholder="备注（可选）" value="' + escapeHtml(data.note || '') + '" style="font-size:12px;">' +
+      '<span class="pr-cat ' + cat + '">' + (catLabels[cat] || '📖') + '</span>' +
+      '<button class="pr-del" onclick="this.parentElement.remove()">✕</button>';
+    // auto-update category on task change
+    var taskInput = div.querySelector('.pr-task');
+    taskInput.addEventListener('input', function() {
+      var c = autoDetectTodoCat(this.value);
+      var catEl = div.querySelector('.pr-cat');
+      catEl.className = 'pr-cat ' + c;
+      catEl.textContent = catLabels[c] || '📖';
+    });
+    // drag reorder
+    div.addEventListener('dragstart', function() { this.classList.add('dragging'); });
+    div.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+    div.addEventListener('dragover', function(e) { e.preventDefault(); });
+    div.addEventListener('drop', function(e) {
+      e.preventDefault();
+      var dragging = list.querySelector('.dragging');
+      if (dragging && dragging !== this) {
+        var rect = this.getBoundingClientRect();
+        if (e.clientY < rect.top + rect.height / 2) {
+          list.insertBefore(dragging, this);
+        } else {
+          list.insertBefore(dragging, this.nextSibling);
+        }
+      }
+    });
+    list.appendChild(div);
+  }
+
+  function collectPlanRows() {
+    var rows = [];
+    document.querySelectorAll('#planRowList .plan-row').forEach(function(r) {
+      var start = r.querySelector('.pr-start').value;
+      var end = r.querySelector('.pr-end').value;
+      var task = r.querySelector('.pr-task').value.trim();
+      var note = r.querySelector('.pr-note').value.trim();
+      var cat = (r.querySelector('.pr-cat').className.match(/pr-cat\s+(\w+)/) || [])[1] || 'study';
+      if (task || start) rows.push({ start: start, end: end, task: task, note: note, cat: cat });
+    });
+    return rows;
+  }
+
+  function savePlanRows() {
+    var rows = collectPlanRows();
+    setPlanRows(rows);
+    // sync to textarea format
+    var date = (document.getElementById('planRowDate') || {}).value || localDateStr();
+    var dateEl = document.getElementById('planDate');
+    if (dateEl) dateEl.value = date;
+    var ta = document.getElementById('planTextarea');
+    if (ta) {
+      var lines = [];
+      rows.forEach(function(r) {
+        var time = (r.start && r.end) ? r.start + '-' + r.end : (r.start || '');
+        var line = time ? (time + '  ' + r.task) : r.task;
+        if (r.note) line += '（' + r.note + '）';
+        lines.push(line);
+      });
+      ta.value = lines.join('\n');
+      // save textarea too
+      localStorage.setItem('jasmine_plan_' + date, ta.value);
+    }
+    // sync to todos
+    var planText = ta ? ta.value : '';
+    syncPlanToTodos(date, planText);
+    renderDashPlan();
+    var s = document.getElementById('planRowSaved');
+    if (s) { s.style.display = 'inline'; setTimeout(function() { s.style.display = 'none'; }, 2000); }
+  }
+
+  function loadPlanRows() {
+    var list = document.getElementById('planRowList');
+    if (!list) return;
+    list.innerHTML = '';
+    var rows = getPlanRows();
+    if (rows.length) {
+      rows.forEach(function(r) { addPlanRow(r); });
+    } else {
+      // try to parse from textarea format
+      var date = (document.getElementById('planRowDate') || {}).value || localDateStr();
+      var text = localStorage.getItem('jasmine_plan_' + date) || '';
+      if (text.trim()) {
+        text.split('\n').forEach(function(line) {
+          line = line.trim();
+          if (!line || line.startsWith('📅') || line.startsWith('━')) return;
+          var m = line.match(/^(\d{1,2}:\d{2})\s*[-~至]\s*(\d{1,2}:\d{2})\s*(.*)$/);
+          if (m) {
+            var rest = m[3] || '';
+            var noteMatch = rest.match(/（(.+?)）/);
+            addPlanRow({ start: m[1], end: m[2], task: rest.replace(/（.+?）/, '').trim(), note: noteMatch ? noteMatch[1] : '' });
+          }
+        });
+      }
+    }
+  }
+
+  function clearPlanRows() {
+    if (!confirm('确定清空排课吗？')) return;
+    var list = document.getElementById('planRowList');
+    if (list) list.innerHTML = '';
+    setPlanRows([]);
+  }
+
+  function loadPresetToRows() {
+    var presets = [
+      { start:'07:00', end:'07:30', task:'起床+早餐', note:'控制在350kcal', cat:'food' },
+      { start:'07:30', end:'09:30', task:'早2h背诵', note:'医学临床/基础轮换', cat:'study' },
+      { start:'09:30', end:'10:00', task:'资料分析2篇', note:'每天2篇', cat:'study' },
+      { start:'10:00', end:'10:30', task:'分数默写+速算', note:'每天必做', cat:'study' },
+      { start:'10:30', end:'12:00', task:'临床刷题1.5h', note:'约150道', cat:'study' },
+      { start:'12:00', end:'12:30', task:'午餐', note:'控制在450kcal', cat:'food' },
+      { start:'12:30', end:'13:00', task:'言语/常识碎片积累', note:'', cat:'study' },
+      { start:'13:00', end:'14:00', task:'舞蹈第1节', note:'仅2h日', cat:'sport' },
+      { start:'13:40', end:'14:30', task:'午睡', note:'约50min', cat:'life' },
+      { start:'14:30', end:'17:30', task:'行测课程3h', note:'当日科目视频课', cat:'study' },
+      { start:'17:30', end:'18:30', task:'整理行测笔记1h', note:'思维导图', cat:'study' },
+      { start:'18:30', end:'19:00', task:'晚餐', note:'控制在400kcal', cat:'food' },
+      { start:'19:00', end:'20:00', task:'舞蹈第2节/体能', note:'2h日+1h日均跳', cat:'sport' },
+      { start:'20:00', end:'21:30', task:'医学刷题1.5h', note:'约150道', cat:'study' },
+      { start:'21:30', end:'23:00', task:'艾宾浩斯复习1.5h', note:'自动计算复习节点', cat:'study' },
+      { start:'23:00', end:'23:40', task:'晚间肩背训练+HIIT', note:'哑铃+拉力器', cat:'sport' }
+    ];
+    var list = document.getElementById('planRowList');
+    if (list) list.innerHTML = '';
+    presets.forEach(function(p) { addPlanRow(p); });
+  }
+
+  // ====== /自由排课 ======
 
   // ⏰ 可滑动时间表左右箭头
   function scrollTimeline(dir) {
@@ -8070,6 +8439,218 @@
         '<button class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 6px;margin-left:6px;flex-shrink:0;" onclick="event.stopPropagation();deleteDanceFromPlaylist(' + i + ')">✕</button>' +
         '</div>').join('');
   }
+
+  // ===== 🎬 舞蹈视频跟跳播放器 =====
+  var dpVideo = null;
+  var dpAB = { a: null, b: null, looping: false };
+  var dpBookmarks = [];
+  var dpMetro = { timer: null, beat: 0, running: false };
+  var dpAudioOnly = false;
+
+  function dpLoadVideo(input) {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    var url = URL.createObjectURL(file);
+    dpVideo = document.getElementById('dpVideo');
+    dpVideo.src = url;
+    dpVideo.playbackRate = 1;
+    document.getElementById('dpLoadZone').style.display = 'none';
+    document.getElementById('dpPlayerWrap').style.display = 'block';
+    // update play button on play/pause
+    dpVideo.addEventListener('play', function() { document.getElementById('dpPlayBtn').textContent = '⏸ 暂停'; });
+    dpVideo.addEventListener('pause', function() { document.getElementById('dpPlayBtn').textContent = '▶ 播放'; });
+    // AB loop check
+    dpVideo.addEventListener('timeupdate', function() {
+      if (dpAB.looping && dpAB.a !== null && dpAB.b !== null) {
+        if (dpVideo.currentTime >= dpAB.b) {
+          dpVideo.currentTime = dpAB.a;
+        }
+      }
+    });
+    // load saved bookmarks
+    dpBookmarks = safeGetJSON('jasmine_dp_bookmarks', []);
+    dpRenderBookmarks();
+    dpVideo.play();
+  }
+
+  function dpTogglePlay() {
+    if (!dpVideo) return;
+    if (dpVideo.paused) dpVideo.play(); else dpVideo.pause();
+  }
+
+  function dpSkip(sec) {
+    if (!dpVideo) return;
+    dpVideo.currentTime = Math.max(0, Math.min(dpVideo.duration || 0, dpVideo.currentTime + sec));
+  }
+
+  function dpRestart() {
+    if (!dpVideo) return;
+    dpVideo.currentTime = 0;
+    dpVideo.play();
+  }
+
+  function dpSetSpeed(rate, btn) {
+    if (!dpVideo) return;
+    dpVideo.playbackRate = rate;
+    document.querySelectorAll('.dp-speed-btn').forEach(function(b) { b.classList.remove('active'); });
+    if (btn) btn.classList.add('active');
+  }
+
+  function dpFormatTime(sec) {
+    if (sec === null || sec === undefined || isNaN(sec)) return '--:--';
+    var m = Math.floor(sec / 60);
+    var s = Math.floor(sec % 60);
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function dpMarkA() {
+    if (!dpVideo) return;
+    dpAB.a = dpVideo.currentTime;
+    dpUpdateABDisplay();
+  }
+
+  function dpMarkB() {
+    if (!dpVideo) return;
+    dpAB.b = dpVideo.currentTime;
+    dpUpdateABDisplay();
+  }
+
+  function dpToggleABLoop() {
+    if (!dpVideo) return;
+    if (dpAB.a === null || dpAB.b === null) { showSceneTip('请先标记A点和B点'); return; }
+    if (dpAB.a >= dpAB.b) { showSceneTip('B点必须在A点之后'); return; }
+    dpAB.looping = !dpAB.looping;
+    var btn = document.getElementById('dpABLoopBtn');
+    if (dpAB.looping) {
+      btn.classList.add('active');
+      btn.textContent = '⏸ 停止A-B循环';
+      dpVideo.currentTime = dpAB.a;
+      dpVideo.play();
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = '🔁 开始A-B循环';
+    }
+    dpUpdateABDisplay();
+  }
+
+  function dpClearAB() {
+    dpAB = { a: null, b: null, looping: false };
+    var btn = document.getElementById('dpABLoopBtn');
+    if (btn) { btn.classList.remove('active'); btn.textContent = '🔁 开始A-B循环'; }
+    dpUpdateABDisplay();
+  }
+
+  function dpUpdateABDisplay() {
+    var el = document.getElementById('dpABDisplay');
+    if (!el) return;
+    el.innerHTML = 'A: <b>' + dpFormatTime(dpAB.a) + '</b> | B: <b>' + dpFormatTime(dpAB.b) + '</b> | 循环: ' + (dpAB.looping ? '✅ 开启' : '关闭');
+  }
+
+  function dpAddBookmark() {
+    if (!dpVideo) return;
+    var t = dpVideo.currentTime;
+    dpBookmarks.push({ time: t, label: '书签' + (dpBookmarks.length + 1) });
+    safeSetJSON('jasmine_dp_bookmarks', dpBookmarks);
+    dpRenderBookmarks();
+  }
+
+  function dpClearBookmarks() {
+    dpBookmarks = [];
+    safeSetJSON('jasmine_dp_bookmarks', []);
+    dpRenderBookmarks();
+  }
+
+  function dpRenderBookmarks() {
+    var el = document.getElementById('dpBookmarks');
+    if (!el) return;
+    if (!dpBookmarks.length) { el.innerHTML = '<span style="color:#64748b;font-size:11px;">暂无书签，播放时点「添加书签」记录关键位置</span>'; return; }
+    el.innerHTML = dpBookmarks.map(function(b, i) {
+      return '<span class="dp-bookmark" onclick="dpGotoBookmark(' + i + ')">📌 ' + dpFormatTime(b.time) + ' ' + escapeHtml(b.label) + ' ✕</span>';
+    }).join('');
+  }
+
+  function dpGotoBookmark(i) {
+    if (!dpVideo || !dpBookmarks[i]) return;
+    dpVideo.currentTime = dpBookmarks[i].time;
+    dpVideo.play();
+  }
+
+  // 喊拍节拍器
+  function dpToggleMetro() {
+    if (dpMetro.running) {
+      dpStopMetro();
+    } else {
+      dpStartMetro();
+    }
+  }
+
+  function dpStartMetro() {
+    var bpm = parseInt(document.getElementById('dpBPM').value) || 100;
+    var beats = parseInt(document.getElementById('dpBeats').value) || 4;
+    var interval = 60000 / bpm; // ms per beat
+    dpMetro.beat = 0;
+    dpMetro.running = true;
+    var btn = document.getElementById('dpMetroBtn');
+    btn.textContent = '⏹ 停止喊拍';
+    btn.classList.add('active');
+
+    function tick() {
+      var dot = document.getElementById('dpMetroDot');
+      var count = document.getElementById('dpMetroCount');
+      var isDownbeat = (dpMetro.beat % beats === 0);
+      dot.className = 'dp-metro-dot ' + (isDownbeat ? 'downbeat' : 'beat');
+      count.textContent = (dpMetro.beat % beats) + 1;
+      count.style.color = isDownbeat ? '#ef4444' : '#f97316';
+      dpMetro.beat++;
+    }
+    tick();
+    dpMetro.timer = setInterval(tick, interval);
+  }
+
+  function dpStopMetro() {
+    if (dpMetro.timer) { clearInterval(dpMetro.timer); dpMetro.timer = null; }
+    dpMetro.running = false;
+    var btn = document.getElementById('dpMetroBtn');
+    btn.textContent = '🎵 开启喊拍';
+    btn.classList.remove('active');
+    var dot = document.getElementById('dpMetroDot');
+    if (dot) dot.className = 'dp-metro-dot';
+    var count = document.getElementById('dpMetroCount');
+    if (count) { count.textContent = '-'; count.style.color = '#f97316'; }
+  }
+
+  function dpMetroRestart() {
+    if (dpMetro.running) { dpStopMetro(); dpStartMetro(); }
+  }
+
+  function dpBPMAdjust(delta) {
+    var input = document.getElementById('dpBPM');
+    var v = parseInt(input.value) + delta;
+    v = Math.max(40, Math.min(240, v));
+    input.value = v;
+    dpMetroRestart();
+  }
+
+  // 听音乐模式
+  function dpToggleAudioOnly() {
+    if (!dpVideo) return;
+    var btn = document.getElementById('dpAudioOnlyBtn');
+    var wrap = document.querySelector('.dance-video-wrap');
+    if (!dpAudioOnly) {
+      dpAudioOnly = true;
+      if (wrap) wrap.style.display = 'none';
+      btn.textContent = '📺 恢复画面';
+      btn.classList.add('active');
+      dpVideo.play();
+    } else {
+      dpAudioOnly = false;
+      if (wrap) wrap.style.display = 'block';
+      btn.textContent = '🎧 听音乐（画面关闭）';
+      btn.classList.remove('active');
+    }
+  }
+
+  // ===== /舞蹈视频跟跳播放器 =====
 
   // ===== 舞蹈练习按日记录（同步首页预览） =====
   const DANCE_LOG_KEY = 'jasmine_dance_logs';
