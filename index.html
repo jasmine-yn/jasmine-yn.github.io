@@ -885,44 +885,67 @@
     .bili-ep { font-size: 11px !important; padding: 6px 8px !important; }
   }
 
-  /* ====== 可滑动时间表 ====== */
-  .timeline-wrap { position: relative; }
-  .timeline-scroll {
-    display: flex; gap: 12px; overflow-x: auto;
-    scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
-    padding: 12px 4px 16px; scrollbar-width: thin;
-    scroll-behavior: smooth;
+  /* ====== 竖版今日时间表 ====== */
+  .vt-list { position: relative; margin: 8px 2px 2px; }
+  .vt-list::before {
+    content:''; position:absolute; left:92px; top:18px; bottom:18px; width:2px; border-radius:2px;
+    background:linear-gradient(180deg,#f59e0b 0%,#3b82f6 20%,#10b981 45%,#f97316 68%,#cbd5e1 100%);
+    opacity:.7;
   }
-  .timeline-scroll::-webkit-scrollbar { height: 6px; }
-  .timeline-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-  .timeline-scroll::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
-  .time-slot {
-    flex: 0 0 170px; scroll-snap-align: start;
-    border-radius: 14px; padding: 14px 12px;
-    background: var(--card); border: 1px solid var(--border);
-    box-shadow: var(--shadow); min-height: 160px;
-    display: flex; flex-direction: column; justify-content: space-between;
+  .vt-item { position:relative; display:flex; margin-bottom:10px; }
+  .vt-item:last-child { margin-bottom:0; }
+  .vt-time {
+    flex:0 0 80px; text-align:right; padding:12px 10px 0 0;
+    font-size:13px; font-weight:800; color:var(--text); line-height:1.2;
   }
-  .time-slot .ts-time {
-    font-size: 13px; font-weight: 700; color: var(--accent);
-    background: var(--accent-light); padding: 4px 10px; border-radius: 20px;
-    display: inline-block; margin-bottom: 10px; width: fit-content;
+  .vt-time b { display:block; }
+  .vt-time span { display:block; font-size:10px; font-weight:500; color:var(--text-light); margin-top:3px; }
+  .vt-node { flex:0 0 24px; position:relative; }
+  .vt-dot {
+    position:absolute; left:6px; top:15px; width:12px; height:12px; border-radius:50%;
+    background:#fff; border:3px solid var(--accent); box-shadow:0 0 0 3px var(--card); z-index:1;
   }
-  .time-slot .ts-icon { font-size: 22px; margin-bottom: 6px; }
-  .time-slot .ts-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
-  .time-slot .ts-desc { font-size: 12px; color: var(--text-light); line-height: 1.5; flex:1; }
-  /* 时间槽颜色标记 */
-  .time-slot.highlight-fixed { background: #fffdf0; border-color: #ffc107; }
-  .time-slot.highlight-course { background: #eff6ff; border-color: #3b82f6; }
-  .time-slot.highlight-note { background: #f0fdf4; border-color: #10b981; }
-  .time-slot.highlight-med { background: #faf5ff; border-color: #a855f7; }
-  .time-slot.highlight-review { background: #ede9fe; border: 2px solid #7c3aed; animation: reviewPulse 3s ease-in-out infinite; }
-  .time-slot.highlight-dance { background: #fdf2f8; border-color: #ec4899; }
-  /* 黄金时段高亮 */
-  .time-slot.gold-time { border: 2px solid #fbbf24 !important; background: linear-gradient(135deg,#fffbeb,#fef3c7) !important; position: relative; }
-  .time-slot.gold-time::after { content:'🧠大脑巅峰'; position:absolute; top:4px; right:4px; font-size:9px; color:#b45309; font-weight:700; background:#fff; padding:1px 5px; border-radius:4px; border:1px solid #fbbf24; }
-  .time-slot.mechanical-time { background:#f3f4f6 !important; border-color:#d1d5db !important; opacity:0.85; position:relative; }
-  .time-slot.mechanical-time::after { content:'⚙️机械时间'; position:absolute; top:4px; right:4px; font-size:9px; color:#6b7280; background:#fff; padding:1px 5px; border-radius:4px; border:1px solid #d1d5db; }
+  .vt-card {
+    flex:1; min-width:0; margin-left:6px; padding:10px 14px; border-radius:12px;
+    background:var(--card); border:1px solid var(--border); border-left:4px solid var(--accent);
+    box-shadow:0 1px 3px rgba(0,0,0,.04); transition:transform .15s, box-shadow .15s;
+  }
+  .vt-card:hover { transform:translateX(2px); box-shadow:0 4px 12px rgba(0,0,0,.09); }
+  .vt-card-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .vt-emoji { font-size:18px; line-height:1; }
+  .vt-title { font-size:14px; font-weight:700; color:var(--text); }
+  .vt-dur {
+    margin-left:auto; font-size:11px; font-weight:800; padding:2px 8px;
+    border-radius:10px; background:var(--accent-light); color:var(--accent); white-space:nowrap;
+  }
+  .vt-badge { font-size:10px; font-weight:700; padding:2px 7px; border-radius:8px; white-space:nowrap; }
+  .vt-detail { font-size:12px; color:var(--text-light); line-height:1.6; margin-top:5px; }
+  /* 分类配色：黄金记忆 / RPSGT / E类 / 雅思 / 舞蹈 / 生活 */
+  .vt-item.cat-gold .vt-dot { border-color:#f59e0b; }
+  .vt-item.cat-gold .vt-card { background:linear-gradient(135deg,#fffbeb,#fffdf6); border-left-color:#f59e0b; }
+  .vt-item.cat-gold .vt-dur,.vt-item.cat-gold .vt-badge { background:#fef3c7; color:#b45309; }
+  .vt-item.cat-rpsgt .vt-dot { border-color:#3b82f6; }
+  .vt-item.cat-rpsgt .vt-card { background:#f5f9ff; border-left-color:#3b82f6; }
+  .vt-item.cat-rpsgt .vt-dur { background:#dbeafe; color:#1d4ed8; }
+  .vt-item.cat-e .vt-dot { border-color:#10b981; }
+  .vt-item.cat-e .vt-card { background:#f3fdf7; border-left-color:#10b981; }
+  .vt-item.cat-e .vt-dur { background:#d1fae5; color:#047857; }
+  .vt-item.cat-ielts .vt-dot { border-color:#f97316; }
+  .vt-item.cat-ielts .vt-card { background:#fff8f3; border-left-color:#f97316; }
+  .vt-item.cat-ielts .vt-dur { background:#ffedd5; color:#c2410c; }
+  .vt-item.cat-dance .vt-dot { border-color:#ec4899; }
+  .vt-item.cat-dance .vt-card { background:#fff5f9; border-left-color:#ec4899; }
+  .vt-item.cat-dance .vt-dur { background:#fce7f3; color:#be185d; }
+  .vt-item.cat-life .vt-dot { border-color:#cbd5e1; }
+  .vt-item.cat-life .vt-card { background:#f8f9fb; border-left-color:#cbd5e1; }
+  .vt-item.cat-life .vt-dur { background:#eef2f6; color:#64748b; }
+  @media (max-width: 640px) {
+    .vt-list::before { left:66px; }
+    .vt-time { flex-basis:56px; font-size:11px; padding-right:6px; }
+    .vt-node { flex-basis:18px; }
+    .vt-dot { left:3px; }
+    .vt-card { padding:9px 11px; }
+  }
   @keyframes reviewPulse {
     0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.2); }
     50% { box-shadow: 0 0 0 8px rgba(124,58,237,0); }
@@ -3001,26 +3024,22 @@
     <!-- 今日时间表 -->
     <div class="card">
       <div class="card-header"><span class="card-title">📅 今日时间表（7:00-23:00）</span><span class="card-badge purple">11/23起新版 · RPSGT4h/E类3.5h/雅思2h</span></div>
-      <div class="timeline-hint">🎯 11/23起新版：RPSGT 4h（蓝）/ E类 3.5h（绿）/ 雅思 2h（橙）· 周二至六19点舞蹈，周一补漏，周日休息 · 左右滑动查看全天</div>
-      <div class="timeline-wrap">
-        <button class="timeline-arrow prev" onclick="scrollTimeline(-1)">‹</button>
-        <div class="timeline-scroll" id="todayTimeline">
-          <div draggable="true" class="time-slot drag-item highlight-review gold-time"><div class="ts-time">07:00-08:00</div><div class="ts-icon">🧠</div><div class="ts-label">黄金记忆</div><div class="ts-desc">RPSGT术语/数值卡30-40张 + 雅思词40-50个</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">08:00-08:20</div><div class="ts-icon">☀️</div><div class="ts-label">早餐活动</div><div class="ts-desc">离开书桌、晒太阳</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-course gold-time"><div class="ts-time">08:20-10:20</div><div class="ts-icon">🛌</div><div class="ts-label">RPSGT主攻① · 2h</div><div class="ts-desc">教材一章精读/板块新知+当场章节题</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">📋</div><div class="ts-label">E类主攻① · 1.5h</div><div class="ts-desc">职测六模块轮换，限时小套+错因归档</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:00-13:00</div><div class="ts-icon">🍱</div><div class="ts-label">午饭+午休 · 1h</div><div class="ts-desc">吃完休息20-30分钟</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-course mechanical-time"><div class="ts-time">13:00-14:30</div><div class="ts-icon">🛌</div><div class="ts-label">RPSGT主攻② · 1.5h</div><div class="ts-desc">章节题40-60道/数值表默写/错题回填</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">14:45-16:15</div><div class="ts-icon">🩺</div><div class="ts-label">E类主攻② · 1.5h</div><div class="ts-desc">医学综合：基础四科/多选保分/岗位案例实务</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-note gold-time"><div class="ts-time">16:30-17:30</div><div class="ts-icon">🌍</div><div class="ts-label">雅思专项① · 1h</div><div class="ts-desc">听力/阅读/写作/口语按周几轮换</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">17:30-18:30</div><div class="ts-icon">🥗</div><div class="ts-label">晚饭休息</div><div class="ts-desc">缓一缓</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">❌</div><div class="ts-label">E类错题档 · 0.5h</div><div class="ts-desc">当天错题重做</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈/机动</div><div class="ts-desc">周二至六舞蹈；周一补漏；周日休息</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-note gold-time"><div class="ts-time">20:00-20:30</div><div class="ts-icon">🌍</div><div class="ts-label">雅思专项② · 0.5h</div><div class="ts-desc">同义替换/口语录音/写作改写</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">20:30-21:00</div><div class="ts-icon">🔄</div><div class="ts-label">轮换+收尾</div><div class="ts-desc">周二四省考常识；其余错题回填+明日清单</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min + 帕梅拉HIIT10min</div></div>
-        </div>
-        <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
+      <div class="timeline-hint">🎯 11/23起新版 · <b style="color:#1d4ed8;">RPSGT 4h</b>（蓝）｜ <b style="color:#047857;">E类 3.5h</b>（绿）｜ <b style="color:#c2410c;">雅思 2h</b>（橙）· 周二至六19点舞蹈，周一补漏，周日休息</div>
+      <div class="vt-list" id="todayTimeline">
+        <div class="vt-item cat-gold"><div class="vt-time"><b>07:00</b><span>至 08:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🧠</span><span class="vt-title">黄金记忆</span><span class="vt-badge">🧠 大脑巅峰</span><span class="vt-dur">1h</span></div><div class="vt-detail">RPSGT术语/数值卡30-40张 + 雅思词40-50个</div></div></div>
+        <div class="vt-item cat-life"><div class="vt-time"><b>08:00</b><span>至 08:20</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">☀️</span><span class="vt-title">早餐活动</span><span class="vt-dur">20min</span></div><div class="vt-detail">离开书桌、晒太阳</div></div></div>
+        <div class="vt-item cat-rpsgt"><div class="vt-time"><b>08:20</b><span>至 10:20</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🛌</span><span class="vt-title">RPSGT主攻①</span><span class="vt-badge">🧠 大脑巅峰</span><span class="vt-dur">2h</span></div><div class="vt-detail">教材一章精读 / 板块新知 + 当场章节题</div></div></div>
+        <div class="vt-item cat-e"><div class="vt-time"><b>10:30</b><span>至 12:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">📋</span><span class="vt-title">E类主攻① · 职测</span><span class="vt-dur">1.5h</span></div><div class="vt-detail">职测六模块轮换，限时小套 + 错因归档</div></div></div>
+        <div class="vt-item cat-life"><div class="vt-time"><b>12:00</b><span>至 13:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🍱</span><span class="vt-title">午饭 + 午休</span><span class="vt-dur">1h</span></div><div class="vt-detail">吃完休息 20-30 分钟</div></div></div>
+        <div class="vt-item cat-rpsgt"><div class="vt-time"><b>13:00</b><span>至 14:30</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🛌</span><span class="vt-title">RPSGT主攻②</span><span class="vt-dur">1.5h</span></div><div class="vt-detail">章节题 40-60 道 / 数值表默写 / 错题回填</div></div></div>
+        <div class="vt-item cat-e"><div class="vt-time"><b>14:45</b><span>至 16:15</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🩺</span><span class="vt-title">E类主攻② · 医学综合</span><span class="vt-dur">1.5h</span></div><div class="vt-detail">基础四科 / 多选保分 / 岗位案例实务（西医临床52）</div></div></div>
+        <div class="vt-item cat-ielts"><div class="vt-time"><b>16:30</b><span>至 17:30</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🌍</span><span class="vt-title">雅思专项①</span><span class="vt-badge">🧠 大脑巅峰</span><span class="vt-dur">1h</span></div><div class="vt-detail">听力 / 阅读 / 写作 / 口语按周几轮换</div></div></div>
+        <div class="vt-item cat-life"><div class="vt-time"><b>17:30</b><span>至 18:30</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🥗</span><span class="vt-title">晚饭休息</span><span class="vt-dur">1h</span></div><div class="vt-detail">缓一缓</div></div></div>
+        <div class="vt-item cat-e"><div class="vt-time"><b>18:30</b><span>至 19:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">❌</span><span class="vt-title">E类错题档</span><span class="vt-dur">0.5h</span></div><div class="vt-detail">当天错题重做</div></div></div>
+        <div class="vt-item cat-dance"><div class="vt-time"><b>19:00</b><span>至 20:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">💃</span><span class="vt-title">舞蹈 / 机动</span><span class="vt-badge">🧠 大脑巅峰</span><span class="vt-dur">1h</span></div><div class="vt-detail">周二至六舞蹈；周一补漏；周日休息</div></div></div>
+        <div class="vt-item cat-ielts"><div class="vt-time"><b>20:00</b><span>至 20:30</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🌍</span><span class="vt-title">雅思专项②</span><span class="vt-badge">🧠 大脑巅峰</span><span class="vt-dur">0.5h</span></div><div class="vt-detail">同义替换 / 口语录音 / 写作改写</div></div></div>
+        <div class="vt-item cat-life"><div class="vt-time"><b>20:30</b><span>至 21:00</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">🔄</span><span class="vt-title">轮换 + 收尾</span><span class="vt-dur">0.5h</span></div><div class="vt-detail">周二四省考常识；其余错题回填 + 明日清单</div></div></div>
+        <div class="vt-item cat-life"><div class="vt-time"><b>23:00</b><span>至 23:40</span></div><div class="vt-node"><span class="vt-dot"></span></div><div class="vt-card"><div class="vt-card-top"><span class="vt-emoji">💪</span><span class="vt-title">晚间肩背训练 + HIIT</span><span class="vt-dur">40min</span></div><div class="vt-detail">肩背 20min + 帕梅拉 HIIT 10min</div></div></div>
       </div>
     </div>
 
