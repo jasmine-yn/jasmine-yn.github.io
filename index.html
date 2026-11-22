@@ -1618,6 +1618,8 @@
       <div class="nav-item" data-page="nap_timer" onclick="switchPage('nap_timer',this)"><span class="nav-icon">😴</span> 午休计时器</div>
       <div class="nav-item" data-page="exam_checkin" onclick="switchPage('exam_checkin',this)"><span class="nav-icon">📝</span> 行测申论打卡</div>
       <div class="nav-item" data-page="mock_plan" onclick="switchPage('mock_plan',this)"><span class="nav-icon">🎯</span> 模考规划</div>
+      <div class="nav-item" onclick="window.open('资料中心.html','_blank')"><span class="nav-icon">📂</span> 资料中心 <span style="font-size:9px;opacity:.6;">↗</span></div>
+      <div class="nav-item" onclick="window.open('明日资料包_2026-11-23_手机版.html','_blank')"><span class="nav-icon">📦</span> 明日资料包 <span style="font-size:9px;opacity:.6;">↗</span></div>
     </div>
 
     <div class="nav-group-title" onclick="toggleNavGroup('life')" data-group="life">🧘 生活管理</div>
@@ -1650,7 +1652,7 @@
   <div class="page active" id="page-dashboard">
     <div class="main-header">
       <div class="main-title" id="dashGreeting">👋 早上好，jasmine</div>
-      <div class="main-subtitle">云南省 · 医学医师(E类) · 临床背诵4/15科 · 行测资料分析一轮完成</div>
+      <div class="main-subtitle">诊断补做周 11/23–11/29 · RPSGT 4h / E类 3.5h / 雅思 2h · 云南省 · 西医临床52</div>
     </div>
 
     <!-- 奔跑女孩 Hero -->
@@ -1662,6 +1664,22 @@
       <div class="hero-img">
         <img src="girls-banner-0.png" alt="奔跑·爵士·学习三合一插画" loading="lazy" id="heroBannerImg">
       </div>
+    </div>
+
+    <!-- 🚀 资料快捷入口（资料中心 / 明日资料包 / 独立错题卡） -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;">
+      <a href="资料中心.html" style="display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;text-decoration:none;background:linear-gradient(135deg,#ede9fe,#f5f3ff);border:1px solid #ddd6fe;color:#5b21b6;transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(91,33,182,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-size:24px;">📂</span>
+        <span style="display:flex;flex-direction:column;"><b style="font-size:14px;">资料中心</b><span style="font-size:11px;opacity:.75;">全部备考文档直达</span></span>
+      </a>
+      <a href="明日资料包_2026-11-23_手机版.html" style="display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;text-decoration:none;background:linear-gradient(135deg,#dbeafe,#eff6ff);border:1px solid #bfdbfe;color:#1e40af;transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(30,64,175,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-size:24px;">📦</span>
+        <span style="display:flex;flex-direction:column;"><b style="font-size:14px;">明日资料包</b><span style="font-size:11px;opacity:.75;">11/23 周一 · 手机可做</span></span>
+      </a>
+      <a href="错题卡.html" style="display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;text-decoration:none;background:linear-gradient(135deg,#dcfce7,#f0fdf4);border:1px solid #bbf7d0;color:#166534;transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px rgba(22,101,52,.15)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <span style="font-size:24px;">❌</span>
+        <span style="display:flex;flex-direction:column;"><b style="font-size:14px;">独立错题卡</b><span style="font-size:11px;opacity:.75;">随时记录错题</span></span>
+      </a>
     </div>
 
     <div class="dash-grid"><div class="dash-main">
@@ -2017,6 +2035,7 @@
       <div class="card-header">
         <span class="card-title" id="dashPlanTitle">📅 今日日程</span>
         <span style="display:flex;gap:12px;align-items:center;">
+          <span onclick="loadNewPresetToToday()" title="用 11/23 新版时间档填入今天/明天，已有计划会先确认" style="font-size:11px;color:#fff;background:var(--accent);padding:3px 8px;border-radius:6px;cursor:pointer;user-select:none;">🚀 载入新版</span>
           <span id="dashPlanToggle" onclick="toggleDashPlan()" style="font-size:12px;color:var(--accent);cursor:pointer;user-select:none;">▾ 展开全部</span>
           <span onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;">✏️ 编辑计划</span>
         </span>
@@ -3261,41 +3280,40 @@
     </div>
   </div>
   <div class="page" id="page-plan">
-    <div class="main-header"><div class="main-title">📋 每日计划</div><div class="main-subtitle">🌙 每晚提前写<b>明天</b>的计划 · 7:00-23:00 · 早2h背诵/上午医学1.5h+晚间医学1.5h=3h刷题300道/下午行测3h · 舞蹈2h日(13+19点)/1h日(19点) · 23点无氧半小时</div></div>
+    <div class="main-header"><div class="main-title">📋 每日计划</div><div class="main-subtitle">🌙 每晚提前写<b>明天</b>的计划 · 11/23起执行新版：RPSGT 4h(08:20+13:00+记忆档) / E类 3.5h(10:30+14:45+错题档) / 雅思 2h(07:00+16:30+20:00) · 周二至六19点舞蹈 · 23点肩背训练</div></div>
 
     <!-- 通用复习规则 -->
     <div class="rule-card">
-      <b>📋 通用复习规则</b>
+      <b>📋 每日硬指标（11/23 起执行）</b>
       <div style="margin-top:6px;">
-        <div>① <b>作息</b>：早2h背诵 → 下午医学1.5h+晚间医学1.5h = <b>合计3h刷题（≈300道）</b> → 晚1h复盘</div>
-        <div>② <b>复习打卡节点</b>：①当日晚复盘 → ②第4天回顾 → ③第7天大复盘</div>
-        <div>③ <b>难度区分</b>：<span style="color:#dc2626">高难</span>(生理/生化/病理/药理/免疫/微生物)4节点(+15天) · <span style="color:#f59e0b">中难</span>(临床全部)3节点 · <span style="color:#10b981">简单</span>(心理/伦理/法规/预防/中医)仅当日+7天</div>
+        <div>① <b>RPSGT 4h</b>：08:20-10:20（教材精读）+ 13:00-14:30（章节题）+ 07:00 记忆档 0.5h · 目标 2 月考，考位待锁</div>
+        <div>② <b>E类 3.5h</b>：10:30-12:00（职测六模块）+ 14:45-16:15（医学综合 90+60）+ 18:30-19:00（错题）· 岗位西医临床52</div>
+        <div>③ <b>雅思 2h</b>：07:00 记忆 0.5h + 16:30 专项 1h + 20:00 专项 0.5h · 目标 7.5（2027-11 前）</div>
+        <div>④ <b>复盘节点</b>：当日晚复盘 → 第4天回顾 → 第7天大复盘 · 高难4节点 / 中难3节点 / 简单当日+7天</div>
       </div>
     </div>
 
     <!-- 今日时间表 -->
     <div class="card">
       <div class="card-header"><span class="card-title">📅 今日时间表（7:00-23:00）</span><span class="card-badge purple">距E类89天</span></div>
-      <div class="timeline-hint">🧠 黄金时段（8-10点/19-21点）= 大脑巅峰，优先做高耗能任务 · ⚙️ 其余为机械时间 · 左右滑动查看全天</div>
+      <div class="timeline-hint">🎯 11/23起新版：RPSGT 4h（蓝）/ E类 3.5h（绿）/ 雅思 2h（橙）· 周二至六19点舞蹈，周一补漏，周日休息 · 左右滑动查看全天</div>
       <div class="timeline-wrap">
         <button class="timeline-arrow prev" onclick="scrollTimeline(-1)">‹</button>
         <div class="timeline-scroll" id="todayTimeline">
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">7:00-7:30</div><div class="ts-icon">☀️</div><div class="ts-label">起床+早餐</div><div class="ts-desc">控制在350kcal</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">7:30-9:30</div><div class="ts-icon">📖</div><div class="ts-label">早2h背诵</div><div class="ts-desc">医学·临床/基础轮换（昭昭）</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">9:30-10:00</div><div class="ts-icon">📊</div><div class="ts-label">资料分析2篇 🔒固定</div><div class="ts-desc">每天2篇，约30min（超格）</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-fixed gold-time"><div class="ts-time">10:00-10:30</div><div class="ts-icon">🧮</div><div class="ts-label">分数默写+速算 🔒固定</div><div class="ts-desc">每天必做，约30min</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">🩺</div><div class="ts-label">临床医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:00-12:30</div><div class="ts-icon">🍱</div><div class="ts-label">午餐</div><div class="ts-desc">控制在450kcal</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:30-13:00</div><div class="ts-icon">📖</div><div class="ts-label">言语/常识·碎片积累</div><div class="ts-desc">超格·日常推进 + 回顾上午背诵</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-dance mechanical-time"><div class="ts-time">13:00-14:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第1节</div><div class="ts-desc">仅2h日，1h日/体能日休息</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">13:40-14:30</div><div class="ts-icon">😴</div><div class="ts-label">午睡约50min</div><div class="ts-desc">养足精神</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-course mechanical-time"><div class="ts-time">14:30-17:30</div><div class="ts-icon">🎓</div><div class="ts-label">行测课程3h</div><div class="ts-desc">超格·当日科目视频课</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-note mechanical-time"><div class="ts-time">17:30-18:30</div><div class="ts-icon">📝</div><div class="ts-label">整理行测笔记1h</div><div class="ts-desc">当天课程内容梳理+思维导图</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">🥗</div><div class="ts-label">晚餐</div><div class="ts-desc">控制在400kcal</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈第2节/💪体能</div><div class="ts-desc">2h日+1h日均跳，体能日运动</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-med gold-time"><div class="ts-time">20:00-21:30</div><div class="ts-icon">📝</div><div class="ts-label">医学刷题1.5h</div><div class="ts-desc">约150道（E类真题/模拟）</div></div>
-          <div draggable="true" class="time-slot drag-item highlight-review mechanical-time"><div class="ts-time">🔄 21:30-23:00</div><div class="ts-icon">🔄</div><div class="ts-label">艾宾浩斯复习 1.5h</div><div class="ts-desc" id="ebbinghausToday">🌙 自动计算今日需复习的节点</div></div>
-          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min(绷带+哑铃)+帕梅拉HIIT10min·隔日加欧阳春晓斜方肌消除</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-review gold-time"><div class="ts-time">07:00-08:00</div><div class="ts-icon">🧠</div><div class="ts-label">黄金记忆</div><div class="ts-desc">RPSGT术语/数值卡30-40张 + 雅思词40-50个</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">08:00-08:20</div><div class="ts-icon">☀️</div><div class="ts-label">早餐活动</div><div class="ts-desc">离开书桌、晒太阳</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-course gold-time"><div class="ts-time">08:20-10:20</div><div class="ts-icon">🛌</div><div class="ts-label">RPSGT主攻① · 2h</div><div class="ts-desc">教材一章精读/板块新知+当场章节题</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">10:30-12:00</div><div class="ts-icon">📋</div><div class="ts-label">E类主攻① · 1.5h</div><div class="ts-desc">职测六模块轮换，限时小套+错因归档</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">12:00-13:00</div><div class="ts-icon">🍱</div><div class="ts-label">午饭+午休 · 1h</div><div class="ts-desc">吃完休息20-30分钟</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-course mechanical-time"><div class="ts-time">13:00-14:30</div><div class="ts-icon">🛌</div><div class="ts-label">RPSGT主攻② · 1.5h</div><div class="ts-desc">章节题40-60道/数值表默写/错题回填</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">14:45-16:15</div><div class="ts-icon">🩺</div><div class="ts-label">E类主攻② · 1.5h</div><div class="ts-desc">医学综合：基础四科/多选保分/岗位案例实务</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-note gold-time"><div class="ts-time">16:30-17:30</div><div class="ts-icon">🌍</div><div class="ts-label">雅思专项① · 1h</div><div class="ts-desc">听力/阅读/写作/口语按周几轮换</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">17:30-18:30</div><div class="ts-icon">🥗</div><div class="ts-label">晚饭休息</div><div class="ts-desc">缓一缓</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-med mechanical-time"><div class="ts-time">18:30-19:00</div><div class="ts-icon">❌</div><div class="ts-label">E类错题档 · 0.5h</div><div class="ts-desc">当天错题重做</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-dance gold-time"><div class="ts-time">19:00-20:00</div><div class="ts-icon">💃</div><div class="ts-label">舞蹈/机动</div><div class="ts-desc">周二至六舞蹈；周一补漏；周日休息</div></div>
+          <div draggable="true" class="time-slot drag-item highlight-note gold-time"><div class="ts-time">20:00-20:30</div><div class="ts-icon">🌍</div><div class="ts-label">雅思专项② · 0.5h</div><div class="ts-desc">同义替换/口语录音/写作改写</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">20:30-21:00</div><div class="ts-icon">🔄</div><div class="ts-label">轮换+收尾</div><div class="ts-desc">周二四省考常识；其余错题回填+明日清单</div></div>
+          <div draggable="true" class="time-slot drag-item mechanical-time"><div class="ts-time">23:00-23:40</div><div class="ts-icon">💪</div><div class="ts-label">晚间肩背训练+HIIT</div><div class="ts-desc">肩背20min + 帕梅拉HIIT10min</div></div>
         </div>
         <button class="timeline-arrow next" onclick="scrollTimeline(1)">›</button>
       </div>
@@ -3346,7 +3364,7 @@
       </table>
     </div>
 
-    <div class="highlight-box" style="margin-top:12px;">💡 <b>双考试策略</b>：7.30-10.27 全力E类（医学60%+行测40%），10.28-12月初 转国考冲刺（行测50%+申论50%）。🔒每天固定：资料分析2篇(9:30-10:00)+分数默写+速算(10:00-10:30)。行测下午3h视频课(14:30-17:30)+1h笔记(17:30-18:30)。艾宾浩斯复习自动计算，每晚21:30-23:00（至少1.5h）自动显示今日需复习科目。</div>
+    <div class="highlight-box" style="margin-top:12px;">💡 <b>当前阶段</b>：11/23-11/29 诊断补做周（先把四项基准分建起来）→ 11/30 起 RPSGT 三轮冲刺至 2 月考 → 2/23 起 E 类冲刺 5-6h/天（预计 3/29 笔试）。🔒每天三科硬指标：RPSGT 4h / E类 3.5h / 雅思 2h，午休 12:00-13:00 共 1 小时，19:00 舞蹈（周二至六）。具体每天学什么看首页「📂 资料中心 → 每日学习内容轮换表」或「📦 明日资料包」。</div>
 
     <!-- ✏️ 自由计划编辑区 -->
     <div class="card" style="border-left:4px solid var(--accent);">
@@ -3368,53 +3386,47 @@
           <button class="btn btn-primary" onclick="fillTimeSlots()" style="font-size:12px;padding:5px 14px;">📋 填入模板</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#f0fdf4;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="7:00-7:30" data-label="☀️ 起床+早餐" data-note="控制在350kcal" checked> ☀️ 7:00-7:30 起床早餐
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#ede9fe;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="07:00-08:00" data-label="🧠 黄金记忆：RPSGT术语/数值卡+雅思词汇" data-note="术语30-40张+雅思词40-50个" checked> 🧠 07:00 黄金记忆（RPSGT+雅思）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#f0fdf4;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="7:30-9:30" data-label="📖 早2h背诵" data-note="医学临床/基础轮换" checked> 📖 7:30-9:30 早2h背诵
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#f0fdf4;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="08:00-08:20" data-label="☀️ 早餐活动" data-note="离开书桌、晒太阳" checked> ☀️ 08:00 早餐活动
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fff3cd;border-radius:6px;border:2px solid #ffc107;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="9:30-10:00" data-label="📊 资料分析2篇 🔒固定" data-note="每天2篇，约30min" checked> 📊 🔒 9:30-10:00 资料分析2篇
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#e8f0fe;border-radius:6px;border:2px solid #3b82f6;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="08:20-10:20" data-label="🛌 RPSGT主攻①" data-note="教材一章精读/板块新知+当场章节题" checked> 🛌 08:20 RPSGT①（2h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fff3cd;border-radius:6px;border:2px solid #ffc107;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="10:00-10:30" data-label="🧮 分数默写+速算 🔒固定" data-note="每天必做，约30min" checked> 🧮 🔒 10:00-10:30 默写+速算
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#dcfce7;border-radius:6px;border:2px solid #10b981;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="10:30-12:00" data-label="📋 E类主攻①·职测六模块" data-note="限时小套+错因归档" checked> 📋 10:30 E类①（1.5h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#dcfce7;border-radius:6px;border:2px solid #10b981;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="10:30-12:00" data-label="🩺 临床刷题1.5h" data-note="约150道（上午·E类真题/模拟）" checked> 🩺 10:30-12:00 临床刷题（上午）
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fef3c7;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="12:00-13:00" data-label="🍱 午饭+午休" data-note="吃完休息20-30分钟" checked> 🍱 12:00 午饭+午休（1h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fef3c7;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="12:00-12:30" data-label="🍱 午餐" data-note="控制在450kcal" checked> 🍱 12:00-12:30 午餐
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#e8f0fe;border-radius:6px;border:2px solid #3b82f6;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="13:00-14:30" data-label="🛌 RPSGT主攻②" data-note="章节题40-60道/数值表默写/错题回填" checked> 🛌 13:00 RPSGT②（1.5h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#faf9fc;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="12:30-13:00" data-label="📖 言语/常识·碎片积累" data-note="超格日常推进+回顾上午背诵"> 📖 12:30-13:00 言语/常识
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#dcfce7;border-radius:6px;border:2px solid #10b981;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="14:45-16:15" data-label="🩺 E类主攻②·医学综合" data-note="基础四科/多选保分/岗位案例实务" checked> 🩺 14:45 E类②（1.5h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="13:00-14:00" data-label="💃 舞蹈第1节" data-note="（仅2h日，1h日/体能日休息）"> 💃 13:00-14:00 舞蹈第1节
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fff7ed;border-radius:6px;border:2px solid #f97316;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="16:30-17:30" data-label="🌍 雅思专项①" data-note="听力/阅读/写作/口语按周几轮换" checked> 🌍 16:30 雅思①（1h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fef3c7;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="13:40-14:30" data-label="😴 午睡" data-note="约50min" checked> 😴 13:40-14:30 午睡
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fef3c7;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="17:30-18:30" data-label="🥗 晚饭休息" data-note="缓一缓" checked> 🥗 17:30 晚饭休息
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#e8f0fe;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="14:30-17:30" data-label="🎓 行测课程3h" data-note="超格·当日科目视频课" checked> 🎓 14:30-17:30 行测课程3h
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#dcfce7;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="18:30-19:00" data-label="❌ E类错题档" data-note="当天错题重做" checked> ❌ 18:30 E类错题档（0.5h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#e8f0fe;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="17:30-18:30" data-label="📝 整理行测笔记1h" data-note="课程内容梳理+思维导图" checked> 📝 17:30-18:30 整理笔记
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="19:00-20:00" data-label="💃 舞蹈/机动" data-note="周二至六舞蹈；周一补漏；周日休息" checked> 💃 19:00 舞蹈/机动
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fef3c7;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="18:30-19:00" data-label="🥗 晚餐" data-note="控制在400kcal" checked> 🥗 18:30-19:00 晚餐
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fff7ed;border-radius:6px;border:2px solid #f97316;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="20:00-20:30" data-label="🌍 雅思专项②" data-note="同义替换/口语录音/写作改写" checked> 🌍 20:00 雅思②（0.5h）
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="19:00-20:00" data-label="💃 舞蹈第2节/💪体能" data-note="2h日+1h日均跳，体能日运动"> 💃 19:00-20:00 舞蹈第2节
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#faf9fc;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="20:30-21:00" data-label="🔄 轮换+收尾" data-note="周二四省考常识；其余错题回填+明日清单" checked> 🔄 20:30 轮换+收尾
           </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#dcfce7;border-radius:6px;border:2px solid #10b981;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="20:00-21:30" data-label="📝 医学刷题1.5h" data-note="约150道（晚间·E类真题/模拟）" checked> 📝 20:00-21:30 医学刷题（晚间）
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#ede9fe;border-radius:6px;border:2px solid #a78bfa;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="21:30-23:00" data-label="🔄 艾宾浩斯复习1.5h" data-note="自动计算今日需复习节点·点击标签标记完成" checked> 🔄 21:30-23:00 艾宾浩斯复习1.5h
-          </label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
-            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min(哑铃+8字拉力器带)+帕梅拉HIIT10min(隔日加欧阳春晓)" checked> 💪 23:00 晚间肩背训练+HIIT（哑铃+8字拉力器带）
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 8px;background:#fdf2f8;border-radius:6px;cursor:pointer;">
+            <input type="checkbox" class="ts-check" data-time="23:00-23:40" data-label="💪 晚间肩背训练+HIIT" data-note="肩背20min+帕梅拉HIIT10min" checked> 💪 23:00 肩背训练+HIIT
           </label>
         </div>
       </div>
@@ -4972,28 +4984,66 @@
     setPlanRows([]);
   }
 
+  // 11/23 诊断补做周起的固定时间档（RPSGT 4h / E类 3.5h / 雅思 2h）
+  // 注意：周二至周六 19:00 舞蹈；周一不跳改机动补漏；周日休息
+  var NEW_PRESET_ROWS = [
+    { start:'07:00', end:'08:00', task:'黄金记忆：RPSGT术语/数值卡+RPSGT/雅思词汇', note:'术语30-40张 + 雅思词40-50个', cat:'study' },
+    { start:'08:00', end:'08:20', task:'早餐活动', note:'离开书桌、晒太阳', cat:'food' },
+    { start:'08:20', end:'10:20', task:'RPSGT主攻①', note:'教材一章精读/板块新知+当场章节题', cat:'study' },
+    { start:'10:30', end:'12:00', task:'E类主攻① · 职测六模块', note:'限时小套 + 错因归档', cat:'study' },
+    { start:'12:00', end:'13:00', task:'午饭+午休', note:'吃完休息20-30分钟', cat:'life' },
+    { start:'13:00', end:'14:30', task:'RPSGT主攻②', note:'章节题40-60道/数值表默写/错题回填', cat:'study' },
+    { start:'14:45', end:'16:15', task:'E类主攻② · 医学综合', note:'基础四科/多选保分/岗位案例实务', cat:'study' },
+    { start:'16:30', end:'17:30', task:'雅思专项①', note:'听力/阅读/写作/口语按周几轮换', cat:'study' },
+    { start:'17:30', end:'18:30', task:'晚饭休息', note:'缓一缓', cat:'food' },
+    { start:'18:30', end:'19:00', task:'E类错题档', note:'当天错题重做', cat:'study' },
+    { start:'19:00', end:'20:00', task:'舞蹈/机动', note:'周二至六舞蹈；周一补漏；周日休息', cat:'sport' },
+    { start:'20:00', end:'20:30', task:'雅思专项②', note:'同义替换/口语录音/写作改写', cat:'study' },
+    { start:'20:30', end:'21:00', task:'轮换+收尾', note:'周二四省考常识；其余错题回填+明日清单', cat:'study' },
+    { start:'23:00', end:'23:40', task:'晚间肩背训练+HIIT', note:'肩背20min + 帕梅拉HIIT10min', cat:'sport' }
+  ];
+
+  // 把新版时间档转成文本框计划的文本行
+  function newPresetText(dateLabel) {
+    var lines = ['📅 ' + (dateLabel || '11/23 诊断补做周') + ' · RPSGT 4h / E类 3.5h / 雅思 2h', ''];
+    NEW_PRESET_ROWS.forEach(function(p) {
+      lines.push(p.start + '-' + p.end + '  ' + p.task + (p.note ? '（' + p.note + '）' : ''));
+    });
+    return lines.join('\n');
+  }
+
+  // 首页一键载入新版计划：只写空白日期，已有计划需确认，绝不偷偷覆盖
+  function loadNewPresetToToday() {
+    var now = new Date();
+    var date = localDateStr(now);
+    if (now.getHours() >= 20) { var t = new Date(now); t.setDate(t.getDate() + 1); date = localDateStr(t); }
+    var key = 'jasmine_plan_' + date;
+    var existing = localStorage.getItem(key);
+    if (existing && existing.trim()) {
+      if (!confirm(date + ' 已经有计划了。\n确定要用「11/23 新版时间档」覆盖它吗？\n（点取消则保留原计划）')) return;
+    }
+    var d = new Date(date + 'T00:00');
+    var label = d.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'});
+    var ta = document.getElementById('planTextarea');
+    var text = newPresetText(label + ' · 新版');
+    localStorage.setItem(key, text);
+    var pd = document.getElementById('planDate'); if (pd) pd.value = date;
+    var prd = document.getElementById('planRowDate'); if (prd) prd.value = date;
+    var rowsDateKey = 'jasmine_plan_rows_' + date;
+    safeSetJSON(rowsDateKey, NEW_PRESET_ROWS);
+    if (ta) ta.value = text;
+    syncPlanToTodos(date, text);
+    renderDashPlan();
+    var lr = document.getElementById('planRowList');
+    if (lr) { lr.innerHTML = ''; NEW_PRESET_ROWS.forEach(function(p) { addPlanRow(p); }); }
+    alert('✅ 已载入 11/23 新版时间档到 ' + date + '\nRPSGT 4h · E类 3.5h · 雅思 2h\n有计划的日期会先问你，不会偷偷覆盖。');
+    switchPage('plan', document.querySelector('[data-page=plan]'));
+  }
+
   function loadPresetToRows() {
-    var presets = [
-      { start:'07:00', end:'07:30', task:'起床+早餐', note:'控制在350kcal', cat:'food' },
-      { start:'07:30', end:'09:30', task:'早2h背诵', note:'医学临床/基础轮换', cat:'study' },
-      { start:'09:30', end:'10:00', task:'资料分析2篇', note:'每天2篇', cat:'study' },
-      { start:'10:00', end:'10:30', task:'分数默写+速算', note:'每天必做', cat:'study' },
-      { start:'10:30', end:'12:00', task:'临床刷题1.5h', note:'约150道', cat:'study' },
-      { start:'12:00', end:'12:30', task:'午餐', note:'控制在450kcal', cat:'food' },
-      { start:'12:30', end:'13:00', task:'言语/常识碎片积累', note:'', cat:'study' },
-      { start:'13:00', end:'14:00', task:'舞蹈第1节', note:'仅2h日', cat:'sport' },
-      { start:'13:40', end:'14:30', task:'午睡', note:'约50min', cat:'life' },
-      { start:'14:30', end:'17:30', task:'行测课程3h', note:'当日科目视频课', cat:'study' },
-      { start:'17:30', end:'18:30', task:'整理行测笔记1h', note:'思维导图', cat:'study' },
-      { start:'18:30', end:'19:00', task:'晚餐', note:'控制在400kcal', cat:'food' },
-      { start:'19:00', end:'20:00', task:'舞蹈第2节/体能', note:'2h日+1h日均跳', cat:'sport' },
-      { start:'20:00', end:'21:30', task:'医学刷题1.5h', note:'约150道', cat:'study' },
-      { start:'21:30', end:'23:00', task:'艾宾浩斯复习1.5h', note:'自动计算复习节点', cat:'study' },
-      { start:'23:00', end:'23:40', task:'晚间肩背训练+HIIT', note:'哑铃+拉力器', cat:'sport' }
-    ];
     var list = document.getElementById('planRowList');
-    if (list) list.innerHTML = '';
-    presets.forEach(function(p) { addPlanRow(p); });
+    if (!list) list.innerHTML = '';
+    NEW_PRESET_ROWS.forEach(function(p) { addPlanRow(p); });
   }
 
   // ====== /自由排课 ======
