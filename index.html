@@ -1557,7 +1557,7 @@
     <div class="ei-row"><span class="ei-label">📝 行测</span><span class="ei-val">超格教育</span></div>
     <div class="ei-countdown" id="sidebarCountdown">
       <div class="ei-days" id="sidebarDays">--</div>
-      <div>距E类联考</div>
+      <div>距RPSGT笔试</div>
     </div>
   </div>
   <nav class="sidebar-nav">
@@ -1615,7 +1615,6 @@
       <div class="nav-item" data-page="calendar" onclick="switchPage('calendar',this)"><span class="nav-icon">📅</span> 打卡日历</div>
       <div class="nav-item" data-page="time_stat" onclick="switchPage('time_stat',this)"><span class="nav-icon">⏱️</span> 时长统计</div>
       <div class="nav-item" data-page="analysis" onclick="switchPage('analysis',this)"><span class="nav-icon">📈</span> 分析</div>
-      <div class="nav-item" data-page="nap_timer" onclick="switchPage('nap_timer',this)"><span class="nav-icon">😴</span> 午休计时器</div>
       <div class="nav-item" data-page="exam_checkin" onclick="switchPage('exam_checkin',this)"><span class="nav-icon">📝</span> 行测申论打卡</div>
       <div class="nav-item" data-page="mock_plan" onclick="switchPage('mock_plan',this)"><span class="nav-icon">🎯</span> 模考规划</div>
       <div class="nav-item" onclick="window.open('资料中心.html','_blank')"><span class="nav-icon">📂</span> 资料中心 <span style="font-size:9px;opacity:.6;">↗</span></div>
@@ -1695,12 +1694,12 @@
           </svg>
           <div class="ec-ring-text">
             <div class="ec-tag">🔴 第一场</div>
-            <div class="ec-days" id="exam1Days">89<span>天</span></div>
-            <div class="ec-name">云南E类联考</div>
-            <div class="ec-date">10.27 · 昭昭+中公</div>
+            <div class="ec-days" id="exam1Days">--<span>天</span></div>
+            <div class="ec-name">RPSGT 睡眠技师</div>
+            <div class="ec-date">2.22 暂锚 · 仅笔试</div>
           </div>
         </div>
-        <div class="ec-ring-box ec-secondary" onclick="switchPage('shenlun', document.querySelector('[data-page=shenlun]'))" title="点击查看国考申论备考">
+        <div class="ec-ring-box ec-secondary" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击查看每日计划">
           <svg class="ec-ring-svg" viewBox="0 0 120 120">
             <circle class="ec-ring-bg" cx="60" cy="60" r="52"/>
             <circle class="ec-ring-progress" id="exam2Ring" cx="60" cy="60" r="52"
@@ -1708,9 +1707,9 @@
           </svg>
           <div class="ec-ring-text">
             <div class="ec-tag">🔵 第二场</div>
-            <div class="ec-days" id="exam2Days">124<span>天</span></div>
-            <div class="ec-name">国家公务员考试</div>
-            <div class="ec-date">12月初 · 超格行测</div>
+            <div class="ec-days" id="exam2Days">--<span>天</span></div>
+            <div class="ec-name">事业单位E类</div>
+            <div class="ec-date">预计 3.29 · 西医临床52</div>
           </div>
         </div>
       </div>
@@ -1732,110 +1731,30 @@
       </button>
     </div>
 
-    <!-- 🎯 明日最重要一件事 -->
-    <div class="card" id="dashTopTask" data-mode="study" style="margin-top:20px;border-left:4px solid var(--accent);">
+    <!-- 📋 每日计划（原「明日最重要一件事」位置） -->
+    <div class="card" id="dashTopTask" data-mode="study" style="margin-top:20px;border-left:4px solid var(--accent);" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击进入每日计划">
       <div class="card-header">
-        <span class="card-title">🎯 明日最重要一件事</span>
-        <span style="font-size:11px;color:var(--text-light);">每晚睡前写，次日打开即见</span>
+        <span class="card-title">📋 每日计划</span>
+        <span style="font-size:11px;color:var(--accent);cursor:pointer;">打开完整计划 →</span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;padding:8px 4px 4px;">
-        <input type="text" id="tomorrowTopTask" class="form-input" placeholder="写下明天最重要的一件事..." style="flex:1;font-size:14px;"
-          onkeydown="if(event.key==='Enter')saveTomorrowTopTask()" onblur="saveTomorrowTopTask()">
-        <button class="btn btn-primary" onclick="saveTomorrowTopTask()" style="padding:6px 14px;font-size:12px;">💾 保存</button>
-      </div>
-      <div id="tomorrowTopTaskSaved" style="font-size:11px;color:#10b981;margin-top:4px;display:none;">✅ 已保存</div>
-    </div>
-
-    <!-- 学习计时钟 -->
-    <div class="card" id="dashStudyTimerCard" data-mode="study" style="margin-top:20px;">
-      <div class="card-header">
-        <span class="card-title">⏱️ 学习计时</span>
-        <span style="font-size:12px;color:var(--text-light);">选科目开始 → 结束时自动计入今日总时长</span>
-      </div>
-      <div class="st-clock-wrap">
-        <div class="st-clock-ring">
-          <svg viewBox="0 0 200 200" class="st-clock-svg">
-            <circle cx="100" cy="100" r="92" class="st-clock-face"/>
-            <g id="stClockTicks"></g>
-            <path id="stClockSector" class="st-clock-sector" d=""/>
-          </svg>
-          <div class="st-clock-center" id="timerDisplay">00:00</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 4px;">
+        <div style="background:#e8f0fe;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;">🛌</div>
+          <div style="font-size:12px;font-weight:700;color:#1e40af;">RPSGT 4h</div>
+          <div style="font-size:10px;color:#64748b;">教材+章节题</div>
         </div>
-        <div class="st-clock-side">
-          <select id="timerSubject" class="st-select"></select>
-          <div class="st-total" id="stTotalToday">今日 0m</div>
-          <div class="st-total-label">学习时长</div>
-          <div class="st-btns">
-            <button id="btnTimerStart" class="st-btn st-start" onclick="timerStart()">▶ 开始</button>
-            <button id="btnTimerPause" class="st-btn st-pause" onclick="timerPause()" disabled>⏸ 暂停</button>
-            <button id="btnTimerStop" class="st-btn st-stop" onclick="timerStop()" disabled>⏹ 结束</button>
-          </div>
+        <div style="background:#dcfce7;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;">🩺</div>
+          <div style="font-size:12px;font-weight:700;color:#166534;">E类 3.5h</div>
+          <div style="font-size:10px;color:#64748b;">职测+医学综合</div>
+        </div>
+        <div style="background:#fff7ed;border-radius:10px;padding:10px;text-align:center;">
+          <div style="font-size:18px;">🌍</div>
+          <div style="font-size:12px;font-weight:700;color:#c2410c;">雅思 2h</div>
+          <div style="font-size:10px;color:#64748b;">听说读写</div>
         </div>
       </div>
-    </div>
-
-    <!-- 🕳️ 每日一坑：昨日最难错题 + 记忆口诀 -->
-    <div class="card" id="dashDailyPit" data-mode="study" style="margin-top:20px;border-left:4px solid #ef4444;">
-      <div class="card-header">
-        <span class="card-title">🕳️ 每日一坑</span>
-        <span style="font-size:12px;color:#ef4444;font-weight:600;">昨日最难1道 · 必不再错</span>
-        <span style="margin-left:auto;display:flex;gap:10px;">
-          <span style="font-size:11px;color:var(--accent);cursor:pointer;text-decoration:underline;" onclick="showFullKnowledge()">📖 全文库</span>
-          <span style="font-size:11px;color:#f59e0b;cursor:pointer;text-decoration:underline;" onclick="showWeakSubjects()">⚠️ 薄弱科目</span>
-        </span>
-      </div>
-      <div id="dashDailyPitContent" style="padding:0 4px;">
-        <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">
-          📝 去「错题本」添加昨日错题，首页将自动提取最难1道+记忆口诀
-        </div>
-      </div>
-    </div>
-
-    <!-- 薄弱科目提醒（精简为一行可点击） -->
-    <div class="weak-banner clickable-card" data-mode="study" onclick="showWeakSubjects()" title="点击查看薄弱科目详情">
-      <span style="font-size:18px">⚠️</span>
-      <span>薄弱科目：<b>基础医学 · 中医 · 资料分析 · 常识判断</b> — 点击查看详情</span>
-    </div>
-
-    <!-- 核心任务区（≤3项，按脑力排序） -->
-    <div class="card" id="dashCoreTasks" data-mode="study" style="margin-top:20px;">
-      <div class="card-header">
-        <span class="card-title">🎯 今日核心任务</span>
-        <span style="font-size:12px;color:var(--text-light);">🔴高耗能优先完成</span>
-      </div>
-      <div id="dashCoreTasksList" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="padding:16px;text-align:center;color:var(--text-light);font-size:13px;">
-          📝 去「待办清单」添加今日任务，首页将自动按脑力排序显示
-        </div>
-      </div>
-    </div>
-
-    <!-- 😴 午休计时器（学习Buddy专属）- 精简预览 -->
-    <div class="nap-timer-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
-      <div class="card-header">
-        <span class="card-title">😴 午休计时器</span>
-        <span class="preview-hint"></span>
-      </div>
-      <div class="card-preview">
-        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-light);">
-          <span style="font-size:24px;">⏰</span>
-          <span>科学午休25分钟 · 恢复下午精力 · <b style="color:var(--accent);">点击展开计时器</b></span>
-        </div>
-      </div>
-      <div class="card-detail" onclick="event.stopPropagation()">
-        <div class="nap-timer-display" id="napTimerDisplay">25:00</div>
-        <div class="nap-timer-presets">
-          <button class="nap-preset" onclick="setNapPreset(15, this)">15分钟</button>
-          <button class="nap-preset active" onclick="setNapPreset(25, this)">25分钟</button>
-          <button class="nap-preset" onclick="setNapPreset(30, this)">30分钟</button>
-          <button class="nap-preset" onclick="setNapPreset(45, this)">45分钟</button>
-        </div>
-        <div class="nap-controls">
-          <button class="nap-btn nap-btn-start" id="napStartBtn" onclick="napTimerStart()">▶ 开始午休</button>
-          <button class="nap-btn nap-btn-stop" id="napStopBtn" onclick="napTimerStop()" disabled>⏹ 结束</button>
-        </div>
-        <div class="nap-status" id="napStatus">选择时长，开始你的午休充电</div>
-      </div>
+      <div id="dashTopTaskNote" style="font-size:11px;color:var(--text-light);margin-top:6px;">点击卡片进入每日计划 · 详细任务见资料中心「每日学习内容轮换表」</div>
     </div>
 
     <!-- 📝 行测申论打卡（学习Buddy专属）- 精简预览 -->
@@ -2022,8 +1941,8 @@
     <!-- ☀️ 今日知识点卡片已在上方计时器下方 -->
 
     <!-- 🔄 艾宾浩斯复习面板 -->
-    <div class="ebbinghaus-panel clickable-card" id="ebbinghausPanel" data-mode="study" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面打卡艾宾浩斯复习">
-      <div class="eb-title">🔄 今晚艾宾浩斯复习 · 21:30-23:00</div>
+    <div class="ebbinghaus-panel clickable-card" id="ebbinghausPanel" data-mode="study" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击去每日计划页面登记今日新背诵">
+      <div class="eb-title">🔄 今日复习节点 · 07:00记忆档 + 18:30错题档</div>
       <div class="eb-subtitle" id="ebSubtitle">根据复习规则自动计算今日需复习的节点</div>
       <div class="eb-review-list" id="ebReviewList">
         <div class="eb-empty">📝 还没有开始复习打卡～去「每日计划」页面提交初次背诵后，系统会自动计算复习节点</div>
@@ -2678,45 +2597,6 @@
     </div>
   </div>
 
-  <!-- ========== 午休计时器 ========== -->
-  <div class="page" id="page-nap_timer">
-    <div class="main-header">
-      <div class="main-title">😴 午休计时器</div>
-      <div class="main-subtitle">科学午休20-30分钟 · 恢复下午精力 · 避免进入深度睡眠</div>
-    </div>
-    <div class="nap-timer-card" style="margin-bottom:20px;">
-      <div class="card-header"><span class="card-title">⏰ 午休倒计时</span></div>
-      <div class="nap-timer-display" id="napTimerDisplayFull">25:00</div>
-      <div class="nap-timer-presets">
-        <button class="nap-preset" onclick="setNapPresetFull(15, this)">15分钟</button>
-        <button class="nap-preset active" onclick="setNapPresetFull(25, this)">25分钟</button>
-        <button class="nap-preset" onclick="setNapPresetFull(30, this)">30分钟</button>
-        <button class="nap-preset" onclick="setNapPresetFull(45, this)">45分钟</button>
-      </div>
-      <div class="nap-controls">
-        <button class="nap-btn nap-btn-start" id="napStartBtnFull" onclick="napTimerStartFull()">▶ 开始午休</button>
-        <button class="nap-btn nap-btn-stop" id="napStopBtnFull" onclick="napTimerStopFull()" disabled>⏹ 结束</button>
-      </div>
-      <div class="nap-status" id="napStatusFull">选择时长，开始你的午休充电</div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">📋 午休记录</span></div>
-      <div id="napHistoryList" style="max-height:300px;overflow-y:auto;">
-        <div style="text-align:center;padding:12px;color:var(--text-light);">还没有午休记录</div>
-      </div>
-    </div>
-    <div class="card" style="background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #a5b4fc;">
-      <div class="card-header"><span class="card-title">💡 午休科学建议</span></div>
-      <div style="font-size:13px;line-height:1.8;color:#3730a3;">
-        · <b>15-25分钟</b>：最理想午休时长，避免进入深度睡眠，醒后神清气爽<br>
-        · <b>30分钟以上</b>：可能进入深度睡眠，醒后反而困倦（睡眠惯性）<br>
-        · <b>90分钟</b>：完整睡眠周期，适合周末深度休息<br>
-        · 午休前喝杯咖啡，醒来时咖啡因刚好开始发挥作用<br>
-        · 固定时间午休（13:00-14:00）效果最佳
-      </div>
-    </div>
-  </div>
-
   <!-- ========== 行测申论打卡 ========== -->
   <div class="page" id="page-exam_checkin">
     <div class="main-header">
@@ -3162,7 +3042,7 @@
   <!-- ========== 申论(国考) ========== -->
   <div class="page" id="page-shenlun">
     <div class="main-header"><div class="main-title">✍️ 申论(国考) <span style="font-size:14px;color:#3b82f6">🔵 国考专属</span></div><div class="main-subtitle">归纳概括 · 综合分析 · 对策建议 · 应用文写作 · 大作文 · 📖 教材：超格教育</div></div>
-    <div class="weak-banner" style="background:linear-gradient(90deg,#dbeafe,#bfdbfe);border-left-color:#3b82f6;color:#1e40af;"><span style="font-size:18px">📝</span><span>国考申论和E类综合应用能力题型不同，但<b>行测部分完全重叠</b>。10月27日前主攻E类，11月起转申论冲刺，12月国考前练 5-8 套真题。</span></div>
+    <div class="weak-banner" style="background:linear-gradient(90deg,#dbeafe,#bfdbfe);border-left-color:#3b82f6;color:#1e40af;"><span style="font-size:18px">📝</span><span>当前主线：RPSGT 2月考 + E类 3/29。省考时间待公告，申论作为机动储备，公告出来后再集中冲刺。</span></div>
     <div class="card"><div class="card-header"><span class="card-title">🗺️ 考点框架（国考·申论）</span></div>
       <div class="kb-grid">
         <div class="kb-card"><div class="kb-title"><span class="kb-tag must">必考</span> 归纳概括</div><div class="kb-body"><b>要求</b>：全面、准确、有条理<br><b>方法</b>：锁定材料范围 → 标注关键词 → 分类合并 → 分条作答<br><b>字数</b>：150-300字，通常3-5条<br><b>易错</b>：遗漏要点 / 照抄原文 / 条理不清</div></div>
@@ -3178,7 +3058,7 @@
         <p>🔹 <b>大作文</b>：标题(主题词) → 开头(引出+亮明观点) → 分论点1+论据 → 分论点2+论据 → 分论点3+论据 → 结尾(升华回扣)</p>
       </div>
     </div>
-    <div class="highlight-box">💡 <b>备考节奏</b>：10月27日E类联考后，11月起每周写2篇大作文+3篇小题。超格教育申论专项+历年真题（2020-2025国考副省/市地）为主。</div>
+    <div class="highlight-box">💡 <b>省考/申论定位</b>：省考时间待公告，现阶段只在每周二/四 20:30 轮换档做 30min 常识时政，不单独排申论。公告出来后再启动每周 2 篇大作文 + 3 篇小题。</div>
     </div>
   <div class="page" id="page-wrong">
     <div class="main-header"><div class="main-title">❌ 错题记录</div><div class="main-subtitle">粘贴豆包分析 → 自动整理 → 按科目检索 · 艾宾浩斯复习提醒</div></div>
@@ -3295,7 +3175,7 @@
 
     <!-- 今日时间表 -->
     <div class="card">
-      <div class="card-header"><span class="card-title">📅 今日时间表（7:00-23:00）</span><span class="card-badge purple">距E类89天</span></div>
+      <div class="card-header"><span class="card-title">📅 今日时间表（7:00-23:00）</span><span class="card-badge purple">11/23起新版 · RPSGT4h/E类3.5h/雅思2h</span></div>
       <div class="timeline-hint">🎯 11/23起新版：RPSGT 4h（蓝）/ E类 3.5h（绿）/ 雅思 2h（橙）· 周二至六19点舞蹈，周一补漏，周日休息 · 左右滑动查看全天</div>
       <div class="timeline-wrap">
         <button class="timeline-arrow prev" onclick="scrollTimeline(-1)">‹</button>
@@ -3543,39 +3423,43 @@
       </div>
     </div>
 
-    <!-- 🔄 标记今日背诵科目（触发艾宾浩斯节点） -->
+    <!-- 🔄 标记今日新背诵科目（按 11/23 新计划重排） -->
     <div class="card" style="margin-top:16px;border-left:4px solid #7c3aed;">
       <div class="card-header">
         <span class="card-title">🔄 标记今日新背诵</span>
-        <span style="font-size:12px;color:var(--text-light);">选择今天首次背诵的科目，自动计算后续复习节点</span>
+        <span style="font-size:12px;color:var(--text-light);">点标签登记今天首次背的内容，自动排后续复习节点</span>
       </div>
       <div class="kb-subject-tags" id="ebSubmitTags">
-        <span class="kb-tag" data-subj="呼吸系统" onclick="markSubjectStudied('呼吸系统');this.style.background='#d1fae5';this.textContent='✅ 呼吸系统';">🫁 呼吸系统</span>
-        <span class="kb-tag" data-subj="心血管系统" onclick="markSubjectStudied('心血管系统');this.style.background='#d1fae5';this.textContent='✅ 心血管系统';">❤️ 心血管</span>
-        <span class="kb-tag" data-subj="消化系统" onclick="markSubjectStudied('消化系统');this.style.background='#d1fae5';this.textContent='✅ 消化系统';">🍽️ 消化</span>
-        <span class="kb-tag" data-subj="血液系统" onclick="markSubjectStudied('血液系统');this.style.background='#d1fae5';this.textContent='✅ 血液系统';">🩸 血液</span>
-        <span class="kb-tag" data-subj="内分泌系统" onclick="markSubjectStudied('内分泌系统');this.style.background='#d1fae5';this.textContent='✅ 内分泌';">🧪 内分泌</span>
-        <span class="kb-tag" data-subj="神经系统" onclick="markSubjectStudied('神经系统');this.style.background='#d1fae5';this.textContent='✅ 神经系统';">🧠 神经</span>
-        <span class="kb-tag" data-subj="精神疾病" onclick="markSubjectStudied('精神疾病');this.style.background='#d1fae5';this.textContent='✅ 精神';">😌 精神</span>
-        <span class="kb-tag" data-subj="运动风湿" onclick="markSubjectStudied('运动风湿');this.style.background='#d1fae5';this.textContent='✅ 运动风湿';">🦴 运动风湿</span>
-        <span class="kb-tag" data-subj="传染病" onclick="markSubjectStudied('传染病');this.style.background='#d1fae5';this.textContent='✅ 传染病';">🦠 传染病</span>
-        <span class="kb-tag" data-subj="儿科" onclick="markSubjectStudied('儿科');this.style.background='#d1fae5';this.textContent='✅ 儿科';">👶 儿科</span>
-        <span class="kb-tag" data-subj="妇产科" onclick="markSubjectStudied('妇产科');this.style.background='#d1fae5';this.textContent='✅ 妇产科';">🤰 妇产科</span>
-        <span class="kb-tag weak" data-subj="生理学" onclick="markSubjectStudied('生理学');this.style.background='#d1fae5';this.textContent='✅ 生理学';">🔬 生理</span>
-        <span class="kb-tag weak" data-subj="生物化学" onclick="markSubjectStudied('生物化学');this.style.background='#d1fae5';this.textContent='✅ 生化';">🧬 生化</span>
-        <span class="kb-tag weak" data-subj="病理学" onclick="markSubjectStudied('病理学');this.style.background='#d1fae5';this.textContent='✅ 病理';">🔍 病理</span>
-        <span class="kb-tag weak" data-subj="药理学" onclick="markSubjectStudied('药理学');this.style.background='#d1fae5';this.textContent='✅ 药理';">💊 药理</span>
-        <span class="kb-tag weak" data-subj="微生物学" onclick="markSubjectStudied('微生物学');this.style.background='#d1fae5';this.textContent='✅ 微生物';">🧫 微生物</span>
-        <span class="kb-tag weak" data-subj="免疫学" onclick="markSubjectStudied('免疫学');this.style.background='#d1fae5';this.textContent='✅ 免疫';">🛡️ 免疫</span>
-        <span class="kb-tag" data-subj="医学人文" onclick="markSubjectStudied('医学人文');this.style.background='#d1fae5';this.textContent='✅ 人文';">⚖️ 人文</span>
-        <span class="kb-tag" data-subj="预防医学" onclick="markSubjectStudied('预防医学');this.style.background='#d1fae5';this.textContent='✅ 预防';">🌿 预防</span>
-        <span class="kb-tag" data-subj="中医学" onclick="markSubjectStudied('中医学');this.style.background='#d1fae5';this.textContent='✅ 中医';">🏮 中医</span>
+        <span class="kb-tag weak" data-subj="RPSGT板块1·临床概述" onclick="markSubjectStudied(this)">🛌 RPSGT板块1</span>
+        <span class="kb-tag weak" data-subj="RPSGT板块2·准备与表现" onclick="markSubjectStudied(this)">🛌 RPSGT板块2</span>
+        <span class="kb-tag weak" data-subj="RPSGT板块3·评分报告" onclick="markSubjectStudied(this)">🛌 RPSGT板块3</span>
+        <span class="kb-tag weak" data-subj="RPSGT板块4·治疗干预" onclick="markSubjectStudied(this)">🛌 RPSGT板块4</span>
+        <span class="kb-tag weak" data-subj="RPSGT一页纸速记表" onclick="markSubjectStudied(this)">📋 RPSGT速记表</span>
+        <span class="kb-tag" data-subj="职测·资料分析" onclick="markSubjectStudied(this)">📊 资料分析</span>
+        <span class="kb-tag" data-subj="职测·判断推理" onclick="markSubjectStudied(this)">🧩 判断推理</span>
+        <span class="kb-tag" data-subj="职测·言语理解" onclick="markSubjectStudied(this)">📖 言语理解</span>
+        <span class="kb-tag" data-subj="职测·数量关系" onclick="markSubjectStudied(this)">🔢 数量关系</span>
+        <span class="kb-tag" data-subj="职测·政治理论" onclick="markSubjectStudied(this)">📰 政治理论</span>
+        <span class="kb-tag" data-subj="职测·常识判断" onclick="markSubjectStudied(this)">💡 常识判断</span>
+        <span class="kb-tag" data-subj="医基·解剖" onclick="markSubjectStudied(this)">🦴 解剖</span>
+        <span class="kb-tag weak" data-subj="医基·生理" onclick="markSubjectStudied(this)">🔬 生理</span>
+        <span class="kb-tag weak" data-subj="医基·病理" onclick="markSubjectStudied(this)">🔍 病理</span>
+        <span class="kb-tag weak" data-subj="医基·药理" onclick="markSubjectStudied(this)">💊 药理</span>
+        <span class="kb-tag" data-subj="医基·多选保分" onclick="markSubjectStudied(this)">☑️ 多选保分</span>
+        <span class="kb-tag weak" data-subj="岗位·案例三段式" onclick="markSubjectStudied(this)">🩺 案例三段式</span>
+        <span class="kb-tag weak" data-subj="岗位·实务流程" onclick="markSubjectStudied(this)">🩺 实务流程</span>
+        <span class="kb-tag weak" data-subj="岗位·心律失常" onclick="markSubjectStudied(this)">💓 心律失常</span>
+        <span class="kb-tag" data-subj="雅思·核心词汇" onclick="markSubjectStudied(this)">🌍 雅思词汇</span>
+        <span class="kb-tag" data-subj="雅思·同义替换" onclick="markSubjectStudied(this)">🌍 同义替换</span>
+        <span class="kb-tag" data-subj="雅思·听力场景" onclick="markSubjectStudied(this)">🎧 听力场景</span>
+        <span class="kb-tag" data-subj="雅思·写作句型" onclick="markSubjectStudied(this)">✍️ 写作句型</span>
+        <span class="kb-tag" data-subj="省考·常识时政" onclick="markSubjectStudied(this)">📰 省考常识</span>
       </div>
       <div style="font-size:12px;color:var(--text-light);margin-top:8px;">
-        📌 点击科目标签后，系统自动计算复习节点：<br>
-        <span style="color:#f59e0b;">临床15科</span>：当日 → 第4天 → 第7天 &nbsp;|&nbsp;
-        <span style="color:#dc2626;">基础6科</span>：+第15天二轮 &nbsp;|&nbsp;
-        <span style="color:#10b981;">人文/预防/中医</span>：当日 → 第7天（跳过第4天）
+        📌 按 11/23 新计划自动排节点：<br>
+        <span style="color:#dc2626;">高难（RPSGT板块/速记表/医基生埋药/岗位模板）</span>：当日 → 4天 → 7天 → 15天 &nbsp;|&nbsp;
+        <span style="color:#f59e0b;">中难（职测六模块/解剖/多选）</span>：当日 → 4天 → 7天 &nbsp;|&nbsp;
+        <span style="color:#10b981;">简单（雅思/省考常识）</span>：当日 → 7天
       </div>
     </div>
 
@@ -4476,7 +4360,7 @@
       } else if (h >= 14 && h < 17 && !todayCheckin.questions) {
         showSceneTip('📊 下午刷题时间到！目标250道，资料分析薄弱记得优先练～');
       } else if (h >= 21 && h < 23 && !todayCheckin.review) {
-        showSceneTip('🔄 21:30了！艾宾浩斯复习时间（1.5h），今晚该复习的节点已准备好');
+        showSceneTip('🔄 今天到期复习节点已准备好：07:00 记忆档过一遍 + 18:30 错题档重做');
       } else if (h >= 23) {
         showSceneTip('🌙 23:00了！该做肩背训练然后休息了，明天继续加油～');
       }
@@ -8123,35 +8007,39 @@
   // ====== 🔄 艾宾浩斯复习自动计算系统 ======
   const EBBINGHAUS_KEY = 'jasmine_review_schedule';
 
-  // 所有科目及其复习规则
+  // ===== 11/23 新计划复习科目（按三科硬指标 + 岗位方向重排）=====
+  // 规则：数值/模板/机制类=高难4节点[0,4,7,15]；题型方法类=中难3节点[0,4,7]；语感技能类=简单2节点[0,7]
   const EBBINGHAUS_CONFIG = {
-    // 临床15科 - 中难度3节点: 当日, +4天, +7天
-    '呼吸系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '心血管系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '消化系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '泌尿系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '血液系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '内分泌系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '神经系统': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '精神疾病': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '运动风湿': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '传染病': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '儿科': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '妇产科': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '外科其他': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '病理生理': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    '诊断学': { diff:'medium', nodes:[0,4,7], cat:'临床' },
-    // 基础6科 - 高难度4节点: 当日, +4天, +7天, +15天
-    '生理学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    '生物化学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    '病理学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    '药理学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    '微生物学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    '免疫学': { diff:'hard', nodes:[0,4,7,15], cat:'基础' },
-    // 人文/预防/中医 - 简单2节点: 当日, +7天（跳过第4天）
-    '医学人文': { diff:'easy', nodes:[0,7], cat:'人文' },
-    '预防医学': { diff:'easy', nodes:[0,7], cat:'其他' },
-    '中医学': { diff:'easy', nodes:[0,7], cat:'其他' }
+    // RPSGT 四大板块（数值/英文术语密集，高难）
+    'RPSGT板块1·临床概述': { diff:'hard', nodes:[0,4,7,15], cat:'RPSGT' },
+    'RPSGT板块2·准备与表现': { diff:'hard', nodes:[0,4,7,15], cat:'RPSGT' },
+    'RPSGT板块3·评分报告': { diff:'hard', nodes:[0,4,7,15], cat:'RPSGT' },
+    'RPSGT板块4·治疗干预': { diff:'hard', nodes:[0,4,7,15], cat:'RPSGT' },
+    'RPSGT一页纸速记表': { diff:'hard', nodes:[0,4,7,15], cat:'RPSGT' },
+    // E类 职测六模块（题型方法，中难）
+    '职测·资料分析': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    '职测·判断推理': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    '职测·言语理解': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    '职测·数量关系': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    '职测·政治理论': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    '职测·常识判断': { diff:'medium', nodes:[0,4,7], cat:'职测' },
+    // E类 医学综合 90 分 · 基础四科（机制，高难）
+    '医基·解剖': { diff:'medium', nodes:[0,4,7], cat:'医学基础' },
+    '医基·生理': { diff:'hard', nodes:[0,4,7,15], cat:'医学基础' },
+    '医基·病理': { diff:'hard', nodes:[0,4,7,15], cat:'医学基础' },
+    '医基·药理': { diff:'hard', nodes:[0,4,7,15], cat:'医学基础' },
+    '医基·多选保分': { diff:'medium', nodes:[0,4,7], cat:'医学基础' },
+    // E类 岗位专业 60 分 · 西医临床 52（模板，高难）
+    '岗位·案例三段式': { diff:'hard', nodes:[0,4,7,15], cat:'岗位' },
+    '岗位·实务流程': { diff:'hard', nodes:[0,4,7,15], cat:'岗位' },
+    '岗位·心律失常': { diff:'hard', nodes:[0,4,7,15], cat:'岗位' },
+    // 雅思四技能（语感技能，简单）
+    '雅思·核心词汇': { diff:'easy', nodes:[0,7], cat:'雅思' },
+    '雅思·同义替换': { diff:'easy', nodes:[0,7], cat:'雅思' },
+    '雅思·听力场景': { diff:'easy', nodes:[0,7], cat:'雅思' },
+    '雅思·写作句型': { diff:'easy', nodes:[0,7], cat:'雅思' },
+    // 省考常识（碎片积累）
+    '省考·常识时政': { diff:'easy', nodes:[0,7], cat:'省考' }
   };
 
   function getEbbinghausData() {
@@ -8163,35 +8051,42 @@
     updateDataHealth();
   }
 
-  // 标记某科目今天已完成初次背诵
-  function markSubjectStudied(subjectName) {
+  // 标记某科目今天已完成初次背诵（支持传科目名或标签元素）
+  function markSubjectStudied(arg) {
+    const isEl = arg && typeof arg === 'object' && arg.dataset && arg.dataset.subj;
+    const subjectName = isEl ? arg.dataset.subj : arg;
+    if (!subjectName) return;
+    if (!EBBINGHAUS_CONFIG[subjectName]) { alert('未知科目：' + subjectName); return; }
     const data = getEbbinghausData();
     const today = localDateStr();
-    data[subjectName] = { firstStudy: today, lastReview: today, reviewCount: (data[subjectName]?.reviewCount||0)+1 };
+    data[subjectName] = { firstStudy: today, lastReview: today, reviewCount: (data[subjectName]?.reviewCount||0)+1, [subjectName+'_node0']: true };
     saveEbbinghausData(data);
+    if (isEl) { arg.style.background = '#d1fae5'; arg.textContent = '✅ ' + subjectName.replace(/^[^·]+·/, ''); }
     loadEbbinghaus();
   }
 
-  // 🗓️ 预填7月20-30日已背诵的历史记录（呼吸/心血管/消化/泌尿）
+  // 🗓️ 11/22 启动日已建资料/词本 → 作为新计划复习起点；11/23 起正式节点
+  // 旧科目的历史记录不再预填，避免首页一堆过期逾期节点干扰新计划
   function initPastReviews() {
     const data = getEbbinghausData();
-    const pastRecords = {
-      '呼吸系统':   { firstStudy: '2026-07-20', lastReview: '2026-07-24', reviewCount: 2, '呼吸系统_node0': true, '呼吸系统_node4': true },
-      '心血管系统': { firstStudy: '2026-07-23', lastReview: '2026-07-27', reviewCount: 2, '心血管系统_node0': true, '心血管系统_node4': true },
-      '消化系统':   { firstStudy: '2026-07-26', lastReview: '2026-07-30', reviewCount: 2, '消化系统_node0': true, '消化系统_node4': true },
-      '泌尿系统':   { firstStudy: '2026-07-29', lastReview: '2026-07-29', reviewCount: 1, '泌尿系统_node0': true }
+    const startRecords = {
+      '雅思·核心词汇': { firstStudy: '2026-11-22', lastReview: '2026-11-22', reviewCount: 1, '雅思·核心词汇_node0': true },
+      'RPSGT一页纸速记表': { firstStudy: '2026-11-22', lastReview: '2026-11-22', reviewCount: 1, 'RPSGT一页纸速记表_node0': true }
     };
-
     let changed = false;
-    for (const [subject, record] of Object.entries(pastRecords)) {
-      if (!data[subject]) data[subject] = {};
-      // 强制合并所有节点状态，确保已完成节点不会丢失
+    for (const [subject, record] of Object.entries(startRecords)) {
+      if (!data[subject]) { data[subject] = {}; changed = true; }
       for (const [key, value] of Object.entries(record)) {
         if (data[subject][key] === undefined || data[subject][key] !== value) {
           data[subject][key] = value;
           changed = true;
         }
       }
+    }
+    // 清理已被新计划淘汰的旧科目，避免过时节点继续显示
+    const valid = new Set(Object.keys(EBBINGHAUS_CONFIG));
+    for (const k of Object.keys(data)) {
+      if (!valid.has(k)) { delete data[k]; changed = true; }
     }
     if (changed) saveEbbinghausData(data);
   }
@@ -9876,11 +9771,11 @@
       if (hs) hs.textContent = q.sub;
     }
 
-    // 双考试倒计时
+    // 双考试倒计时：RPSGT 2/22（暂锚） + 事业单位E类 3/29（预计）
     const today = new Date();
     today.setHours(0,0,0,0);
-    const exam1Date = new Date(2026, 9, 27); // 10月27日
-    const exam2Date = new Date(2026, 11, 6);  // 12月6日（国考通常12月初）
+    const exam1Date = new Date(2027, 1, 22); // 2027-02-22 RPSGT（暂锚，约到考位后校准）
+    const exam2Date = new Date(2027, 2, 29);  // 2027-03-29 事业单位E类（预计）
     const days1 = Math.ceil((exam1Date - today) / 86400000);
     const days2 = Math.ceil((exam2Date - today) / 86400000);
 
@@ -9930,8 +9825,8 @@
     renderDashMeals();
     renderDashCheckin();
     initPunchCards();
-    timerInit();
-    renderDashStudyTime();
+    // 学习计时 / 午休计时器已移除
+
     renderWeightChart();
     renderWeightList();
     renderDashWeight();
@@ -9940,9 +9835,8 @@
     renderDance30d();
 
     // v4.28 新增初始化
-    try { renderCoreTasks(); } catch(e) { console.error('renderCoreTasks:', e); }
-    try { renderDailyPit(); } catch(e) { console.error('renderDailyPit:', e); }
-    try { loadTomorrowTopTask(); } catch(e) { console.error('loadTomorrowTopTask:', e); }
+    // 今日核心任务 / 每日一坑已移除
+    // 「明日最重要一件事」已改为「每日计划」入口卡片，不再需要旧初始化
     try { updateKcalReward(); } catch(e) { console.error('updateKcalReward:', e); }
     try { checkSlackerPenalty(); } catch(e) { console.error('checkSlackerPenalty:', e); }
     try { updateDataHealth(); } catch(e) { console.error('updateDataHealth:', e); }
@@ -9957,7 +9851,7 @@
     try { renderDashCycle(); } catch(e) { console.error('renderDashCycle:', e); }
     try { renderDashClassNotes(); } catch(e) { console.error('renderDashClassNotes:', e); }
     try { renderDashFatLoss(); } catch(e) { console.error('renderDashFatLoss:', e); }
-    try { renderDashNap(); } catch(e) { console.error('renderDashNap:', e); }
+    // 午休计时器已移除
 
     // 任务顺延检查
     try { checkTaskCarryover(); } catch(e) { console.error('carryover error:', e); }
@@ -9992,8 +9886,8 @@
 
       // 重新计算倒计时
       var today0 = new Date(); today0.setHours(0,0,0,0);
-      var exam1Date = new Date(2026, 9, 27);
-      var exam2Date = new Date(2026, 11, 6);
+      var exam1Date = new Date(2027, 1, 22);
+      var exam2Date = new Date(2027, 2, 29);
       var d1 = Math.ceil((exam1Date - today0) / 86400000);
       var d2 = Math.ceil((exam2Date - today0) / 86400000);
       var e1 = document.getElementById('exam1Days');
