@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>错题卡 · jasmine 专属</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f3f4f6; color: #1f2937; font-size: 15px; line-height: 1.6; padding-bottom: 80px; }
+  .hd { background: linear-gradient(135deg, #7c3aed, #db2777); color: #fff; padding: 16px 16px 14px; }
+  .hd h1 { font-size: 19px; }
+  .hd p { font-size: 12px; opacity: .9; }
+  .hd .stat { display: flex; gap: 8px; margin-top: 10px; }
+  .hd .stat div { background: rgba(255,255,255,.16); border-radius: 8px; padding: 5px 10px; font-size: 12px; }
+  .hd .stat b { font-size: 15px; }
+  nav { display: flex; overflow-x: auto; background: #fff; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 9; }
+  nav a { flex: 0 0 auto; padding: 10px 14px; font-size: 13px; color: #6b21a8; text-decoration: none; font-weight: 600; }
+  section { background: #fff; margin: 10px; border-radius: 12px; padding: 14px; }
+  h2 { font-size: 16px; margin-bottom: 10px; padding-left: 10px; border-left: 4px solid #7c3aed; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip { padding: 4px 12px; border-radius: 999px; font-size: 12.5px; border: 1px solid #e5e7eb; background: #f9fafb; cursor: pointer; }
+  .chip.on { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+  .wi { border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px; margin: 8px 0; position: relative; }
+  .wi.sel { border-color: #7c3aed; background: #faf5ff; }
+  .wi .pick { position: absolute; top: 8px; right: 10px; font-size: 18px; cursor: pointer; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 5px; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; }
+  .q { font-weight: 600; font-size: 13.5px; line-height: 1.5; margin: 4px 24px 4px 0; }
+  .ans { font-size: 12.5px; color: #059669; }
+  .ans .w { color: #ef4444; }
+  .note { font-size: 12px; color: #6b7280; background: #f9fafb; border-radius: 8px; padding: 8px; margin-top: 6px; white-space: pre-wrap; }
+  .btn { display: inline-block; border: none; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; background: #7c3aed; color: #fff; margin: 4px 6px 4px 0; }
+  .btn.gray { background: #6b7280; }
+  .btn.green { background: #059669; }
+  .btn.orange { background: linear-gradient(135deg,#f97316,#ec4899); }
+  .btn.sm { font-size: 12px; padding: 5px 10px; border-radius: 8px; }
+  input, select, textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 10px; font-size: 14px; font-family: inherit; margin: 4px 0 10px; }
+  textarea { min-height: 90px; resize: vertical; }
+  label { font-size: 12.5px; color: #6b7280; font-weight: 600; }
+  .row2 { display: flex; gap: 10px; } .row2 > div { flex: 1; }
+  .reqItem { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; margin: 5px 0; }
+  .reqItem input { width: auto; margin: 3px 0 0; }
+  .out { background: #fdf4ff; border: 1px dashed #c026d3; border-radius: 10px; padding: 10px; font-size: 12.5px; max-height: 260px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+  .plat { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .plat a { font-size: 12.5px; text-decoration: none; background: #eef2ff; color: #4338ca; padding: 6px 12px; border-radius: 999px; }
+  .msg { font-size: 12.5px; margin-top: 6px; }
+  .empty { color: #9ca3af; text-align: center; padding: 20px; font-size: 13px; }
+  details summary { cursor: pointer; color: #7c3aed; font-weight: 700; font-size: 14px; padding: 6px 0; }
+  footer { text-align: center; font-size: 11px; color: #9ca3af; padding: 14px; }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>📌 错题卡 · jasmine</h1>
+  <p>独立错题本 ｜ 数据与工作台互通（jasmine_wrong_book）</p>
+  <div class="stat">
+    <div>总错题 <b id="stTotal">0</b></div>
+    <div>今日 <b id="stToday">0</b></div>
+    <div>已勾选 <b id="stSel">0</b></div>
+    <div>AI 分析 <b id="stAi">0</b> 次</div>
+  </div>
+</div>
+
+<nav>
+  <a href="#s1">📋 错题列表</a>
+  <a href="#s2">➕ 添加错题</a>
+  <a href="#s3">🤖 AI 分析</a>
+  <a href="#s4">📥 导入结果</a>
+  <a href="#s5">💾 备份</a>
+</nav>
+
+<!-- ① 错题列表 -->
+<section id="s1">
+  <h2>📋 错题列表</h2>
+  <div class="chips" id="subChips"></div>
+  <div class="chips" id="reasonChips"></div>
+  <div id="wrongList"></div>
+  <div style="margin-top:8px;">
+    <button class="btn sm gray" onclick="clearSelection()">取消全部勾选</button>
+    <button class="btn sm gray" onclick="markMasteredSel()">勾选项标记已掌握</button>
+  </div>
+</section>
+
+<!-- ② 添加错题 -->
+<section id="s2">
+  <h2>➕ 手动添加错题</h2>
+  <label>题干（粘贴题目即可）</label>
+  <textarea id="fQ" placeholder="粘贴题目或手写描述…"></textarea>
+  <div class="row2">
+    <div><label>正确答案</label><input id="fAns" placeholder="如 B"></div>
+    <div><label>我选了</label><input id="fWrong" placeholder="如 C"></div>
+  </div>
+  <div class="row2">
+    <div><label>科目</label><select id="fSub">
+      <option>自动推断</option><option>临床-循环</option><option>临床-呼吸</option><option>临床-消化</option><option>临床-泌尿</option><option>临床-血液</option><option>临床-内分泌</option><option>临床-神经</option><option>基础医学-药理</option><option>基础医学-生理</option><option>基础医学-病理</option><option>基础医学-解剖</option><option>基础医学-生化</option><option>预防</option><option>中医</option><option>人文</option><option>行测-言语</option><option>行测-判断推理</option><option>行测-数量</option><option>行测-资料分析</option><option>行测-常识</option><option>申论</option><option>RPSGT</option><option>雅思</option>
+    </select></div>
+    <div><label>错因</label><select id="fReason">
+      <option>概念不清/混淆</option><option>知识点遗忘</option><option>审题错误</option><option>计算错误</option><option>时间不够</option><option>粗心</option><option>选项看错</option><option>知识点盲区</option><option>方法不会</option><option>其他</option>
+    </select></div>
+  </div>
+  <label>知识点（可留空自动提取）</label>
+  <input id="fKp" placeholder="如 CPAP 滴定升压规则">
+  <button class="btn green" onclick="addWrong()">保存错题</button>
+  <div class="msg" id="addMsg"></div>
+</section>
+
+<!-- ③ AI 分析 -->
+<section id="s3">
+  <h2>🤖 送 AI 分析（豆包 / Kimi / DeepSeek / 任意）</h2>
+  <p style="font-size:12.5px;color:#6b7280;margin-bottom:8px;">范围：<b id="rangeLabel">已勾选错题</b>（去列表勾选，或选下面）</p>
+  <div class="chips">
+    <span class="chip on" data-range="sel" onclick="setRange(this)">✅ 已勾选</span>
+    <span class="chip" data-range="today" onclick="setRange(this)">📅 今天的</span>
+    <span class="chip" data-range="weak" onclick="setRange(this)">🎯 复习≤2次的</span>
+    <span class="chip" data-range="all" onclick="setRange(this)">📚 全部</span>
+  </div>
+  <label>我的分析要求（勾选 = 写进指令，会记住）</label>
+  <div id="reqBox"></div>
+  <label>补充要求（可选）</label>
+  <textarea id="fCustom" style="min-height:50px;" placeholder="例：把数值类考点做成一张对比表；只分析临床科目…"></textarea>
+  <button class="btn orange" onclick="genPrompt()">⚙️ 生成分析指令</button>
+  <button class="btn" onclick="copyPrompt()">📋 复制指令</button>
+  <div class="out" id="promptOut" style="display:none;"></div>
+  <div class="plat" id="platLinks">
+    <a href="https://www.doubao.com/chat/" target="_blank">豆包 ↗</a>
+    <a href="https://kimi.moonshot.cn/" target="_blank">Kimi ↗</a>
+    <a href="https://chat.deepseek.com/" target="_blank">DeepSeek ↗</a>
+    <a href="https://www.qianwen.com/" target="_blank">通义 ↗</a>
+    <a href="https://chatgpt.com/" target="_blank">ChatGPT ↗</a>
+  </div>
+  <div class="msg">流程：生成 → 复制 → 打开任意 AI 粘贴发送 → 把回复全文粘到「④ 导入结果」。也可以直接把指令发给 WorkBuddy，我来分析。</div>
+</section>
+
+<!-- ④ 导入分析结果 -->
+<section id="s4">
+  <h2>📥 导入 AI 分析结果</h2>
+  <label>粘贴 AI 回复全文</label>
+  <textarea id="aiPaste" style="min-height:120px;" placeholder="把豆包/Kimi 的回复整段粘贴到这里…"></textarea>
+  <button class="btn green" onclick="importAnalysis()">保存分析</button>
+  <div class="msg" id="importMsg"></div>
+  <details id="aiHistWrap"><summary>🗂️ 历史分析记录</summary><div id="aiHist"></div></details>
+</section>
+
+<!-- ⑤ 备份 -->
+<section id="s5">
+  <h2>💾 备份 / 搬家</h2>
+  <button class="btn sm" onclick="exportJSON()">📤 导出全部数据</button>
+  <button class="btn sm gray" onclick="document.getElementById('impFile').click()">📥 导入备份</button>
+  <input type="file" id="impFile" accept=".json" style="display:none" onchange="importJSON(this)">
+  <div class="msg" style="color:#6b7280;font-size:12px;">
+    ① 工作台（jasmine工作台.html）加的错题这里自动能看到——前提是两个文件在同一浏览器同一来源打开（都部署在 jasmine-yn.github.io 上必然互通；本地 file:// 打开一般也互通）。<br>
+    ② 换设备/换浏览器：旧设备导出 JSON → 新设备导入。
+  </div>
+</section>
+
+<footer>错题卡 v1 · 数据存在本机浏览器 localStorage（jasmine_wrong_book / jasmine_wrong_ai）</footer>
+
+<script>
+const WRONG_KEY = 'jasmine_wrong_book';
+const AI_KEY = 'jasmine_wrong_ai';        // {history:[], prefs:{}}
+let book = [], ai = {history:[], prefs:{}};
+let sel = new Set();
+let filterSub = 'all', filterReason = 'all', range = 'sel';
+
+const SUBJECTS = ['临床-循环','临床-呼吸','临床-消化','临床-泌尿','临床-血液','临床-内分泌','临床-神经','基础医学-药理','基础医学-生理','基础医学-病理','基础医学-解剖','基础医学-生化','预防','中医','人文','行测-言语','行测-判断推理','行测-数量','行测-资料分析','行测-常识','申论','RPSGT','雅思','未分类'];
+const REASONS = ['概念不清/混淆','知识点遗忘','审题错误','计算错误','时间不够','粗心','选项看错','知识点盲区','方法不会','其他'];
+const RCOLOR = {'概念不清/混淆':'#f59e0b','知识点遗忘':'#8b5cf6','审题错误':'#ef4444','计算错误':'#f97316','时间不够':'#64748b','粗心':'#06b6d4','选项看错':'#ec4899','知识点盲区':'#dc2626','方法不会':'#2563eb','其他':'#6b7280'};
+const DEFAULT_REQS = [
+  ['逐知识点诊断：概念混淆还是数值记反，我到底哪没懂', true],
+  ['每个知识点配一个好记的口诀/联想记忆', true],
+  ['数值类考点整理成对比表（数值+适用场景+易混点）', true],
+  ['按知识点聚合，给出 TOP10 高频弱点排序', true],
+  ['每题预测下次最可能掉坑的选项/陷阱', false],
+  ['按我错的题目风格，每个知识点出 2 道变式题让我重做', false],
+  ['生成 Anki 式问答卡（正面问题/背面答案）方便背诵', false],
+  ['结合 AASM 第3版口径和官方四大板块配比分析（RPSGT 题用）', true]
+];
+
+function esc(s){ return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function load(){ try{ book = JSON.parse(localStorage.getItem(WRONG_KEY)||'[]'); }catch(e){ book=[]; }
+  try{ ai = JSON.parse(localStorage.getItem(AI_KEY)||'null')||{history:[],prefs:{}}; }catch(e){ ai={history:[],prefs:{}}; }
+  if(!ai.history) ai.history=[]; if(!ai.prefs) ai.prefs={}; }
+function saveBook(){ localStorage.setItem(WRONG_KEY, JSON.stringify(book)); }
+function saveAI(){ localStorage.setItem(AI_KEY, JSON.stringify(ai)); }
+
+/* ---------- 列表 ---------- */
+function guessSubject(text){
+  const hints=[[['肾','泌尿','膀胱','前列腺','尿'],'临床-泌尿'],[['心','循环','血压','心律','心衰','心梗'],'临床-循环'],[['呼吸','肺','支气管','哮喘','COPD','肺炎'],'临床-呼吸'],[['消化','胃','肠','肝','胆','胰','肝硬'],'临床-消化'],[['血液','贫血','白血','淋巴'],'临床-血液'],[['内分泌','甲状腺','糖尿病','激素','甲亢'],'临床-内分泌'],[['神经','脑','脊髓','癫痫','脑血管'],'临床-神经'],[['药理','药物','受体','抗生素','降压'],'基础医学-药理'],[['生理','电位','离子','细胞'],'基础医学-生理'],[['病理','炎症','肿瘤','坏死'],'基础医学-病理'],[['解剖','骨骼','肌肉','导联','电极'],'基础医学-解剖'],[['生化','酶','代谢','三羧酸'],'基础医学-生化'],[['预防','流行病','疫苗','传染'],'预防'],[['中医','经络','方剂','中药','气血'],'中医'],[['伦理','法律','医患','法规'],'人文'],[['言语','逻辑填空','排序','选词'],'行测-言语'],[['图形推理','定义判断','类比','削弱','加强'],'行测-判断推理'],[['数量','概率','方程','行程','工程'],'行测-数量'],[['增长率','基期','比重','速算','同比'],'行测-资料分析'],[['时政','常识','历史','地理'],'行测-常识'],[['CPAP','AHI','REI','MSLT','睡眠','PSG','滴定','SOREMP','低通气','暂停',' hypocretin','下丘脑分泌素'],'RPSGT'],[['雅思','听力','阅读','写作','口语','Task'],'雅思']];
+  text=(text||'').toLowerCase();
+  for(const [ks,s] of hints){ if(ks.some(k=>text.includes(k.toLowerCase()))) return s; }
+  return '未分类';
+}
+function guessKP(text){
+  const m=(text||'').match(/(?:核心考点|考点|关键点|易错点)[:：]\s*(.+?)(?:\n|$)/);
+  if(m) return m[1].trim().slice(0,50);
+  return (text||'').slice(0,30).replace(/[。，,\n]/g,'').trim();
+}
+function renderStats(){
+  const t=today();
+  document.getElementById('stTotal').textContent=book.filter(w=>!w.mastered).length;
+  document.getElementById('stToday').textContent=book.filter(w=>w.date===t).length;
+  document.getElementById('stSel').textContent=sel.size;
+  document.getElementById('stAi').textContent=ai.history.length;
+}
+function renderChips(){
+  const subs=['all'].concat(SUBJECTS.filter(s=>book.some(w=>(w.subject||'未分类')===s)));
+  document.getElementById('subChips').innerHTML=subs.map(s=>`<span class="chip ${filterSub===s?'on':''}" onclick="filterSub='${s}';renderAll()">${s==='all'?'全部科目':s}</span>`).join('');
+  const rs=['all'].concat(REASONS.filter(r=>book.some(w=>(w.reason||'其他')===r)));
+  document.getElementById('reasonChips').innerHTML=rs.map(r=>`<span class="chip ${filterReason===r?'on':''}" onclick="filterReason='${r}';renderAll()">${r==='all'?'全部错因':r}</span>`).join('');
+}
+function renderList(){
+  let list=book.map((w,i)=>({w,i}));
+  if(filterSub!=='all') list=list.filter(x=>(x.w.subject||'未分类')===filterSub);
+  if(filterReason!=='all') list=list.filter(x=>(x.w.reason||'其他')===filterReason);
+  list.sort((a,b)=>(b.w.date||'').localeCompare(a.w.date||''));
+  const el=document.getElementById('wrongList');
+  if(!list.length){ el.innerHTML='<div class="empty">还没有错题。去工作台记错题，或在「➕ 添加错题」里手动加一条～</div>'; return; }
+  el.innerHTML=list.map(({w,i})=>`
+    <div class="wi ${sel.has(i)?'sel':''}">
+      <span class="pick" onclick="toggleSel(${i})">${sel.has(i)?'☑️':'⬜'}</span>
+      <div class="tags">
+        <span class="tag" style="background:#ede9fe;color:#6d28d9;">${esc(w.subject||'未分类')}</span>
+        ${w.knowledgePoint?`<span class="tag" style="background:#fef3c7;color:#92400e;">🎯 ${esc(w.knowledgePoint)}</span>`:''}
+        <span class="tag" style="background:${(RCOLOR[w.reason]||'#6b7280')}22;color:${RCOLOR[w.reason]||'#6b7280'};border:1px solid ${(RCOLOR[w.reason]||'#6b7280')}44;">${esc(w.reason||'未标记')}</span>
+        <span class="tag" style="background:#f3f4f6;color:#6b7280;">复习 ${w.count||0} 次 · ${esc(w.date||'')}</span>
+        ${w.mastered?'<span class="tag" style="background:#d1fae5;color:#065f46;">已掌握</span>':''}
+      </div>
+      <div class="q">📝 ${esc(w.question||'(无题目)')}</div>
+      <div class="ans">✅ ${esc(w.answer||'?')}${w.wrongAnswer?` <span class="w">（我选 ${esc(w.wrongAnswer)}）</span>`:''}</div>
+      ${w.note?`<div class="note">${esc(String(w.note).slice(0,400))}</div>`:''}
+      <div style="margin-top:6px;">
+        <button class="btn sm gray" onclick="reviewPlus(${i})">📖 复习+1</button>
+        <button class="btn sm gray" onclick="delWrong(${i})">🗑 删除</button>
+      </div>
+    </div>`).join('');
+}
+function renderAll(){ renderStats(); renderChips(); renderList(); }
+function toggleSel(i){ sel.has(i)?sel.delete(i):sel.add(i); renderAll(); }
+function clearSelection(){ sel.clear(); renderAll(); }
+function reviewPlus(i){ book[i].count=(book[i].count||0)+1; book[i].lastReview=today(); saveBook(); renderAll(); }
+function delWrong(i){ if(confirm('删除这条错题？')){ book.splice(i,1); sel.delete(i); saveBook(); renderAll(); } }
+function markMasteredSel(){ if(!sel.size){alert('先在列表里勾选错题~');return;} sel.forEach(i=>{book[i].mastered=true;}); saveBook(); sel.clear(); renderAll(); }
+
+/* ---------- 添加 ---------- */
+function addWrong(){
+  const q=document.getElementById('fQ').value.trim();
+  if(!q){ document.getElementById('addMsg').innerHTML='<span style="color:#ef4444;">题干不能为空哦</span>'; return; }
+  const subSel=document.getElementById('fSub').value;
+  const kpIn=document.getElementById('fKp').value.trim();
+  book.push({ question:q.slice(0,350), subject:subSel==='自动推断'?guessSubject(q):subSel,
+    reason:document.getElementById('fReason').value,
+    answer:document.getElementById('fAns').value.trim().toUpperCase(),
+    wrongAnswer:document.getElementById('fWrong').value.trim().toUpperCase(),
+    count:0, date:today(), note:'', fullText:q, knowledgePoint:kpIn||guessKP(q) });
+  saveBook();
+  ['fQ','fAns','fWrong','fKp'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addMsg').innerHTML='<span style="color:#059669;">✅ 已保存（科目/知识点为自动推断，可再改）</span>';
+  renderAll();
+}
+
+/* ---------- AI 指令 ---------- */
+function renderReqs(){
+  const box=document.getElementById('reqBox');
+  box.innerHTML=DEFAULT_REQS.map((r,idx)=>`
+    <div class="reqItem"><input type="checkbox" id="req${idx}" ${ai.prefs['r'+idx]!==false&&r[1]!==false||(ai.prefs['r'+idx]===true)?'checked':''} onchange="ai.prefs['r${idx}']=this.checked;saveAI()">
+    <span>${r[0]}</span></div>`).join('');
+}
+function setRange(el){ range=el.dataset.range; document.querySelectorAll('[data-range]').forEach(c=>c.classList.toggle('on',c===el));
+  document.getElementById('rangeLabel').textContent={sel:'已勾选错题',today:'今天的错题',weak:'复习≤2次的弱项',all:'全部错题'}[range]; }
+function pickItems(){
+  const t=today();
+  let idxs=book.map((w,i)=>i);
+  if(range==='sel') idxs=[...sel];
+  if(range==='today') idxs=idxs.filter(i=>book[i].date===t);
+  if(range==='weak') idxs=idxs.filter(i=>(book[i].count||0)<=2&&!book[i].mastered);
+  return idxs;
+}
+function genPrompt(){
+  const idxs=pickItems();
+  if(!idxs.length){ alert('这个范围里没有错题，先勾选或换个范围~'); return; }
+  const reqs=DEFAULT_REQS.filter((r,i)=>document.getElementById('req'+i)&&document.getElementById('req'+i).checked).map(r=>r[0]);
+  const custom=document.getElementById('fCustom').value.trim();
+  const bySub={};
+  idxs.forEach(i=>{ const s=book[i].subject||'未分类'; (bySub[s]=bySub[s]||[]).push(i); });
+  let p='我是一名考生（jasmine），备考：事业单位E类（医学基础+西医临床岗位）+ RPSGT睡眠技师认证（按 AASM 手册第3版、四大板块）+ 雅思。以下是我的错题，请按我的要求分析：\n\n';
+  p+=`📅 ${today()} ｜ 共 ${idxs.length} 题 ｜ 科目：${Object.keys(bySub).join('、')}\n`;
+  const reasonCnt={}; idxs.forEach(i=>{const r=book[i].reason||'其他'; reasonCnt[r]=(reasonCnt[r]||0)+1;});
+  const topR=Object.entries(reasonCnt).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  if(topR.length) p+='⚠️ 高频错因：'+topR.map(([r,c])=>r+'('+c+')').join(' · ')+'\n';
+  p+='\n═══ 错题清单 ═══\n';
+  for(const s in bySub){
+    p+=`\n—— ${s}（${bySub[s].length}题）——\n`;
+    bySub[s].forEach((i,n)=>{ const w=book[i];
+      p+=`【${n+1}】${(w.question||'').replace(/\n+/g,' ').slice(0,300)}\n`;
+      p+=`   ✅${w.answer||'?'} ❌我选${w.wrongAnswer||'?'}［错因：${w.reason||'?'}］\n`;
+      if(w.knowledgePoint) p+=`   🎯知识点：${w.knowledgePoint}\n`;
+      if(w.note) p+=`   📝我的笔记：${String(w.note).replace(/\n+/g,' ').slice(0,120)}\n`;
+    });
+  }
+  p+='\n═══ 请按这些要求分析 ═══\n';
+  reqs.forEach((r,n)=>p+=`${n+1}. ${r}\n`);
+  if(custom) p+='补充：'+custom+'\n';
+  p+='\n输出格式要求：每个知识点一段，第一行写「核心考点：xxx」，下面跟分析和口诀——我要导入回错题卡。\n（直接开始分析，不用开场白，叫我jasmine就行）';
+  document.getElementById('promptOut').style.display='block';
+  document.getElementById('promptOut').textContent=p;
+  ai.lastPrompt={date:today(),range,count:idxs.length}; saveAI();
+}
+function copyPrompt(){
+  const out=document.getElementById('promptOut');
+  if(out.style.display==='none'){ genPrompt(); }
+  const text=out.textContent;
+  (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(
+    ()=>flashMsg('✅ 指令已复制，去粘贴给 AI 吧'),
+    ()=>{ const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); flashMsg('✅ 已复制（兼容模式）'); });
+  if(navigator.share && /Mobi|Android/i.test(navigator.userAgent)){ navigator.share({text}).catch(()=>{}); }
+}
+function flashMsg(t){ const el=document.getElementById('importMsg'); el.innerHTML=`<span style="color:#059669;">${t}</span>`; setTimeout(()=>el.innerHTML='',4000); }
+
+/* ---------- 导入分析 ---------- */
+function importAnalysis(){
+  const raw=document.getElementById('aiPaste').value.trim();
+  if(!raw){ document.getElementById('importMsg').innerHTML='<span style="color:#ef4444;">先粘贴 AI 回复哦</span>'; return; }
+  ai.history.unshift({date:today(),text:raw,range,count:(ai.lastPrompt&&ai.lastPrompt.count)||0});
+  if(ai.history.length>50) ai.history.length=50;
+  // 识别「核心考点：」行 → 回填到范围内错题的知识点
+  let updated=0;
+  const kps=[...raw.matchAll(/核心考点[:：]\s*(.+)/g)].map(m=>m[1].trim().slice(0,50));
+  if(kps.length){
+    const idxs=pickItems(); const cand=idxs.length?idxs:book.map((w,i)=>i);
+    cand.forEach((i,n)=>{ if(kps[n%kps.length]&&book[i]){ book[i].knowledgePoint=book[i].knowledgePoint||kps[n%kps.length]; updated++; } });
+    saveBook();
+  }
+  saveAI(); renderAll(); renderHist();
+  document.getElementById('aiPaste').value='';
+  document.getElementById('importMsg').innerHTML=`<span style="color:#059669;">✅ 已保存第 ${ai.history.length} 条分析${updated?`，回填 ${updated} 条错题的知识点`:''}。可在「错题列表」看🎯标签。</span>`;
+}
+function renderHist(){
+  const el=document.getElementById('aiHist');
+  el.innerHTML=ai.history.length?ai.history.map((h,i)=>`
+    <div class="wi"><div class="tags"><span class="tag" style="background:#ede9fe;color:#6d28d9;">${esc(h.date)}</span><span class="tag" style="background:#f3f4f6;color:#6b7280;">${esc(h.range)} · ${h.count}题</span></div>
+    <div class="note">${esc(h.text.slice(0,600))}${h.text.length>600?'…（完整内容见导出）':''}</div>
+    <button class="btn sm gray" onclick="delHist(${i})">🗑 删除</button></div>`).join(''):'<div class="empty">还没有分析记录</div>';
+}
+function delHist(i){ ai.history.splice(i,1); saveAI(); renderHist(); renderStats(); }
+
+/* ---------- 备份 ---------- */
+function exportJSON(){
+  const data={exportedAt:new Date().toISOString(),wrongBook:book,ai};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='错题卡备份_'+today()+'.json'; a.click();
+}
+function importJSON(input){
+  const f=input.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>{ try{ const d=JSON.parse(e.target.result);
+      if(d.wrongBook){ book=d.wrongBook; saveBook(); }
+      if(d.ai){ ai=d.ai; saveAI(); }
+      sel.clear(); renderAll(); renderReqs(); renderHist();
+      flashMsg('✅ 备份已导入：'+book.length+' 条错题');
+    }catch(err){ alert('文件格式不对：'+err.message); } };
+  r.readAsText(f); input.value='';
+}
+
+load(); renderReqs(); renderAll(); renderHist();
+</script>
+</body>
+</html>
