@@ -94,7 +94,7 @@
     <div class="pack">
       <div class="t">${p.title}${i===0?'<span class="new">最新</span>':''}</div>
       <div class="d">📅 ${p.date} ｜ ${p.note||''}</div>
-      <a href="${p.url}">📱 手机打开</a>
+      <a href="${p.url}">📱 手机打开</a>${p.docUrl ? ' <a href="' + p.docUrl + '" target="_blank" style="background:#fff;color:#7c3aed;border:1px solid #e9d5ff;margin-left:6px;">📄 资料库正文</a>' : ''}
     </div>`).join('');
 })();
 </script>
