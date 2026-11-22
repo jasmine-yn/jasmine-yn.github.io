@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>资料中心 · jasmine 备考平台</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f3f4f6; color: #1f2937; font-size: 15px; line-height: 1.6; padding-bottom: 60px; }
+  .hd { background: linear-gradient(135deg, #4f46e5, #7c3aed, #db2777); color: #fff; padding: 20px 16px 16px; }
+  .hd h1 { font-size: 20px; }
+  .hd p { font-size: 12px; opacity: .9; margin-top: 3px; }
+  .quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 10px 0; }
+  .quick a { display: block; background: #fff; border-radius: 12px; padding: 12px 14px; text-decoration: none; color: #1f2937; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .quick a b { font-size: 15px; display: block; }
+  .quick a span { font-size: 11.5px; color: #6b7280; }
+  section { background: #fff; margin: 12px 10px; border-radius: 12px; padding: 14px; }
+  h2 { font-size: 16px; margin-bottom: 10px; padding-left: 10px; border-left: 4px solid #7c3aed; }
+  h3 { font-size: 13.5px; color: #6b21a8; margin: 10px 0 6px; }
+  .item { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 9px 4px; border-bottom: 1px solid #f3f4f6; }
+  .item:last-child { border-bottom: none; }
+  .item .t { font-size: 13.5px; font-weight: 600; }
+  .item .d { font-size: 11.5px; color: #6b7280; }
+  .item a { flex: 0 0 auto; font-size: 12.5px; color: #7c3aed; text-decoration: none; font-weight: 700; white-space: nowrap; }
+  .pack { border: 1px solid #e9d5ff; background: #faf5ff; border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+  .pack .t { font-weight: 700; font-size: 14px; color: #6b21a8; }
+  .pack .d { font-size: 12px; color: #6b7280; margin: 2px 0 6px; }
+  .pack a { display: inline-block; background: #7c3aed; color: #fff; font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 999px; text-decoration: none; }
+  .new { display: inline-block; background: #f97316; color: #fff; font-size: 10.5px; border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: middle; }
+  .note { font-size: 11.5px; color: #9ca3af; padding: 0 14px; }
+  footer { text-align: center; font-size: 11px; color: #9ca3af; padding: 16px; }
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>📚 资料中心</h1>
+  <p>jasmine 备考平台 ｜ 资料库文档直达 + 每日资料包发布</p>
+</div>
+
+<div class="quick">
+  <a href="index.html"><b>🏠 jasmine工作台</b><span>每日计划 / 打卡 / 计时</span></a>
+  <a href="错题卡.html"><b>📌 错题卡</b><span>错题管理 + AI 分析</span></a>
+  <a href="#packs"><b>📦 最新资料包</b><span>每天自动更新 ↓</span></a>
+  <a href="https://www.workbuddy.cn/space/pLtySyFc32LBfuzUpzhWJ1" target="_blank"><b>🗂 备考知识库</b><span>WorkBuddy 资料库总目录</span></a>
+</div>
+
+<section id="packs">
+  <h2>📦 每日资料包（自动发布）</h2>
+  <div id="packList"></div>
+</section>
+
+<section>
+  <h2>📚 备考资料库 · 在线文档直达</h2>
+  <p class="note" style="padding:0 0 6px;">点标题直接打开 WorkBuddy 资料库文档（需登录 WorkBuddy 账号，手机浏览器也可以看）</p>
+
+  <h3>05 · 计划与打卡</h3>
+  <div class="item"><div><div class="t">每日学习内容轮换表（执行主表）</div><div class="d">11/23–2/22 每天学什么、用哪份资料</div></div><a href="https://www.workbuddy.cn/space/d/xi1Ze91olhdvMEFRn4iHu4" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">备考打卡记录</div><div class="d">基准分 / 六模块正确率 / 今日任务 / 打卡表</div></div><a href="https://www.workbuddy.cn/space/d/C1KZTwfZpEl8sRfmXn6zRZ" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">备考作战计划</div><div class="d">三个月冲刺节点与权重</div></div><a href="https://www.workbuddy.cn/space/d/MY8aLBdhqkBKQa6M0jfjai" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">备考资料整理清单 / 知识库使用说明</div><div class="d">资料归档总览</div></div><a href="https://www.workbuddy.cn/space/d/QFhCQVCz5mnkwsOp45Etqd" target="_blank">打开 ↗</a></div>
+
+  <h3>02 · RPSGT 睡眠技师</h3>
+  <div class="item"><div><div class="t">睡眠7份专业资料 · 考点提炼（含一页纸速记表）</div><div class="d">全部数值考点，摸底/滴定/电极都在这</div></div><a href="https://www.workbuddy.cn/space/d/ZpIT9mYfawjPDf6PRvQAof" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">RPSGT 培训课件截图 · 考纲细则与样题</div><div class="d">四板块精确题量 + 7 道官方样题</div></div><a href="https://www.workbuddy.cn/space/d/0eD1CbQqhxBODE4Jn6Gbbu" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">RPSGT 备考总览 + 官方考情与资料指南</div><div class="d">报考流程 / 费用 / 资格路径</div></div><a href="https://www.workbuddy.cn/space/d/8SkcBaJvSgYcxJBA1FSNFy" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">睡眠核心教材使用指南（重点章导航）</div><div class="d">主教材精读顺序表</div></div><a href="https://www.workbuddy.cn/space/d/qXiW8LKzTkKeGYbdwZnDd6" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">睡眠医学基础（中文版 · 主教材）</div><div class="d">PDF 原文在线读</div></div><a href="https://www.workbuddy.cn/space/d/lgpM8GmpSYNtMsfUmPvmR6" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">Kryger 英文原著 / Fundamentals 2nd Ed</div><div class="d">工具书选查 / 补充读物</div></div><a href="https://www.workbuddy.cn/space/d/4x8x7yhrY252u2dzP6rNxT" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">7 份专业指南与共识 PDF（AAST/AASM/NPPV/HSAT/发作性睡病等）</div><div class="d">子目录按板块归类</div></div><a href="https://www.workbuddy.cn/space/d/q6vFgAMFGHRdfWo7Bk571q" target="_blank">打开 ↗</a></div>
+
+  <h3>01 · 事业单位 E 类</h3>
+  <div class="item"><div><div class="t">E类岗位专业 · 西医临床专项模板</div><div class="d">案例三段式 + 实务操作流程模板</div></div><a href="https://www.workbuddy.cn/space/d/n9KOxOTbgsBd7uJw8ownq7" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">E类考情拆解与提分框架</div><div class="d">150 分构成与保分策略</div></div><a href="https://www.workbuddy.cn/space/d/ylScxJ05gqNJB6dNcC84HI" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">心律失常笔记 · 考点提纲（E类+RPSGT双用）</div><div class="d">10 类问答，房颤/室速急救高频</div></div><a href="https://www.workbuddy.cn/space/d/QcL1MTKOuse37lXW3LqICK" target="_blank">打开 ↗</a></div>
+
+  <h3>03 · 雅思 ／ 04 · 省考</h3>
+  <div class="item"><div><div class="t">雅思备考总览</div><div class="d">7.5 目标与四科安排</div></div><a href="https://www.workbuddy.cn/space/d/qbSnP33Urlu1nPWQ9Aw8hM" target="_blank">打开 ↗</a></div>
+  <div class="item"><div><div class="t">省考资料索引</div><div class="d">行测时政材料位置（公告后启用）</div></div><a href="https://www.workbuddy.cn/space/d/6hoRbcmoS9PnmLPg29OHOO" target="_blank">打开 ↗</a></div>
+
+  <h3>🎧 网盘（听力音频等大文件）</h3>
+  <div class="item"><div><div class="t">剑19 听力音频（Test 1–4，30天有效）</div><div class="d">提取码 ie19 ｜ 过期了跟我说重新生成</div></div><a href="https://pan.baidu.com/netdisk/share?surl=xr0pIRf9Vcct1buuzueGtA" target="_blank">打开 ↗</a></div>
+</section>
+
+<footer>资料中心 v1 · 每日资料包由晚间简报自动生成并发布到这里</footer>
+
+<script src="资料清单.js"></script>
+<script>
+(function(){
+  const list=(window.DAILY_PACKS||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const el=document.getElementById('packList');
+  if(!list.length){ el.innerHTML='<div style="color:#9ca3af;font-size:13px;text-align:center;padding:12px;">还没有资料包</div>'; return; }
+  el.innerHTML=list.map((p,i)=>`
+    <div class="pack">
+      <div class="t">${p.title}${i===0?'<span class="new">最新</span>':''}</div>
+      <div class="d">📅 ${p.date} ｜ ${p.note||''}</div>
+      <a href="${p.url}">📱 手机打开</a>
+    </div>`).join('');
+})();
+</script>
+</body>
+</html>
