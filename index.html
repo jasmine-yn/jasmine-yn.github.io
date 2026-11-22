@@ -1615,8 +1615,6 @@
       <div class="nav-item" data-page="calendar" onclick="switchPage('calendar',this)"><span class="nav-icon">📅</span> 打卡日历</div>
       <div class="nav-item" data-page="time_stat" onclick="switchPage('time_stat',this)"><span class="nav-icon">⏱️</span> 时长统计</div>
       <div class="nav-item" data-page="analysis" onclick="switchPage('analysis',this)"><span class="nav-icon">📈</span> 分析</div>
-      <div class="nav-item" data-page="exam_checkin" onclick="switchPage('exam_checkin',this)"><span class="nav-icon">📝</span> 行测申论打卡</div>
-      <div class="nav-item" data-page="mock_plan" onclick="switchPage('mock_plan',this)"><span class="nav-icon">🎯</span> 模考规划</div>
       <div class="nav-item" onclick="window.open('资料中心.html','_blank')"><span class="nav-icon">📂</span> 资料中心 <span style="font-size:9px;opacity:.6;">↗</span></div>
       <div class="nav-item" onclick="window.open('明日资料包_2026-11-23_手机版.html','_blank')"><span class="nav-icon">📦</span> 明日资料包 <span style="font-size:9px;opacity:.6;">↗</span></div>
     </div>
@@ -1735,7 +1733,10 @@
     <div class="card" id="dashTopTask" data-mode="study" style="margin-top:20px;border-left:4px solid var(--accent);" onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" title="点击进入每日计划">
       <div class="card-header">
         <span class="card-title">📋 每日计划</span>
-        <span style="font-size:11px;color:var(--accent);cursor:pointer;">打开完整计划 →</span>
+        <span style="display:flex;gap:10px;align-items:center;">
+          <span onclick="event.stopPropagation();loadNewPresetToToday()" title="用 11/23 新版时间档填入今天/明天，已有计划会先确认" style="font-size:11px;color:#fff;background:var(--accent);padding:3px 8px;border-radius:6px;cursor:pointer;user-select:none;">🚀 载入新版</span>
+          <span style="font-size:11px;color:var(--accent);">打开完整计划 →</span>
+        </span>
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 4px 4px;">
         <div style="background:#e8f0fe;border-radius:10px;padding:10px;text-align:center;">
@@ -1755,60 +1756,6 @@
         </div>
       </div>
       <div id="dashTopTaskNote" style="font-size:11px;color:var(--text-light);margin-top:6px;">点击卡片进入每日计划 · 详细任务见资料中心「每日学习内容轮换表」</div>
-    </div>
-
-    <!-- 📝 行测申论打卡（学习Buddy专属）- 精简预览 -->
-    <div class="exam-checkin-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
-      <div class="card-header">
-        <span class="card-title">📝 行测申论每日打卡</span>
-        <span class="preview-hint"></span>
-      </div>
-      <div class="card-preview">
-        <div style="font-size:13px;color:var(--text-light);">言语理解 · 判断推理 · 资料分析 · 申论练习 — <b style="color:var(--accent);">点击展开打卡</b></div>
-      </div>
-      <div class="card-detail" onclick="event.stopPropagation()">
-        <div class="exam-checkin-grid" id="examCheckinGrid">
-          <div class="ec-checkin-item" onclick="toggleExamCheckin('verbal', this)">
-            <div class="eci-icon">📖</div>
-            <div class="eci-name">言语理解</div>
-            <div class="eci-status">未打卡</div>
-          </div>
-          <div class="ec-checkin-item" onclick="toggleExamCheckin('reasoning', this)">
-            <div class="eci-icon">🧩</div>
-            <div class="eci-name">判断推理</div>
-            <div class="eci-status">未打卡</div>
-          </div>
-          <div class="ec-checkin-item" onclick="toggleExamCheckin('data_analysis', this)">
-            <div class="eci-icon">📊</div>
-            <div class="eci-name">资料分析</div>
-            <div class="eci-status">未打卡</div>
-          </div>
-          <div class="ec-checkin-item" onclick="toggleExamCheckin('shenlun', this)">
-            <div class="eci-icon">✍️</div>
-            <div class="eci-name">申论练习</div>
-            <div class="eci-status">未打卡</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 🎯 模考规划（学习Buddy专属）- 精简预览 -->
-    <div class="mock-plan-card ws-component card-collapsible" data-mode="study" style="margin-top:20px;" onclick="toggleCardExpand(this, event)">
-      <div class="card-header">
-        <span class="card-title">🎯 模考规划</span>
-        <span class="preview-hint"></span>
-      </div>
-      <div class="card-preview">
-        <div style="font-size:13px;color:var(--text-light);">按周排布 · 考前冲刺 — <b style="color:var(--accent);">点击展开管理模考</b></div>
-      </div>
-      <div class="card-detail" onclick="event.stopPropagation()">
-        <div id="mockPlanList"></div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
-          <input type="text" id="mockPlanInput" class="form-input" placeholder="模考名称（如：行测全真模考五）" style="flex:1;font-size:13px;">
-          <input type="date" id="mockPlanDate" class="form-input" style="width:140px;font-size:13px;">
-          <button class="btn btn-primary" onclick="addMockPlan()" style="padding:8px 16px;font-size:12px;white-space:nowrap;">➕ 添加</button>
-        </div>
-      </div>
     </div>
 
     <!-- 小数据卡片（可折叠） -->
@@ -1949,63 +1896,6 @@
       </div>
     </div>
 
-    <!-- 今日日程（来自每日计划） -->
-    <div class="card" id="dashPlanCard">
-      <div class="card-header">
-        <span class="card-title" id="dashPlanTitle">📅 今日日程</span>
-        <span style="display:flex;gap:12px;align-items:center;">
-          <span onclick="loadNewPresetToToday()" title="用 11/23 新版时间档填入今天/明天，已有计划会先确认" style="font-size:11px;color:#fff;background:var(--accent);padding:3px 8px;border-radius:6px;cursor:pointer;user-select:none;">🚀 载入新版</span>
-          <span id="dashPlanToggle" onclick="toggleDashPlan()" style="font-size:12px;color:var(--accent);cursor:pointer;user-select:none;">▾ 展开全部</span>
-          <span onclick="switchPage('plan', document.querySelector('[data-page=plan]'))" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;">✏️ 编辑计划</span>
-        </span>
-      </div>
-      <div id="dashPlanContent">
-        <div class="plan-empty-state">📝 还没有写今日计划～<br>去「每日计划」页面写下你的安排吧</div>
-      </div>
-    </div>
-
-    <!-- 今日打卡 -->
-    <div class="card" id="dashCheckinCard">
-      <div class="card-header">
-        <span class="card-title">✅ 今日打卡</span>
-        <span style="font-size:12px;color:var(--text-light);">点击图标打卡</span>
-      </div>
-      <div id="dashCheckin" style="display:flex;gap:10px;flex-wrap:wrap;"></div>
-    </div>
-
-    <!-- 今日待办 + 最近模考 -->
-    <div class="card-row">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">✅ 今日待办</span>
-          <span onclick="switchPage('todo', document.querySelector('[data-page=todo]'))" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline;">+ 管理</span>
-        </div>
-        <div id="dashTodoList" style="display:flex;flex-direction:column;gap:6px;">
-          <div class="todo-empty" style="padding:20px 0;">📝 还没有待办事项～<br>去「待办清单」添加吧</div>
-        </div>
-        <div id="dashTodoStats" style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:right;"></div>
-      </div>
-
-      <div class="card card-collapsible" data-mode="study" onclick="toggleCardExpand(this, event)">
-        <div class="card-header"><span class="card-title">📊 最近模考</span><span style="display:flex;gap:8px;align-items:center;"><span class="card-badge purple">72/100</span><span class="preview-hint"></span></span></div>
-        <div class="card-preview">
-          <div style="font-size:13px;color:var(--text-light);line-height:1.6;">
-            📊 07-29 模考四 · 总分 <b style="color:var(--accent);">72/100</b>（72%）· 目标80%<br>
-            基础医学83% · 临床医学60% · 言语理解73% · 判断推理67%
-          </div>
-        </div>
-        <div class="card-detail" onclick="event.stopPropagation()">
-          <table>
-            <tr><th>学科</th><th>得分</th><th>得分率</th><th>目标</th></tr>
-            <tr><td>基础医学</td><td>25/30</td><td>83%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">90%</span></td></tr>
-            <tr><td>临床医学</td><td>18/30</td><td>60%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">85%</span></td></tr>
-            <tr><td>言语理解</td><td>22/30</td><td>73%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
-            <tr><td>判断推理</td><td>20/30</td><td>67%</td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;">80%</span></td></tr>
-            <tr style="font-weight:700;background:#faf9fc;"><td><b>总分</b></td><td><b>72/100</b></td><td><b>72%</b></td><td><span class="tag" style="background:#dbeafe;color:#1d4ed8;"><b>80%</b></span></td></tr>
-          </table>
-        </div>
-      </div>
-    </div>
     </div><!-- /dash-main -->
     <div class="dash-aside">
       <!-- 知识点卡片已移至计时器下方 -->
@@ -2594,68 +2484,6 @@
         </div>
         <button class="btn btn-primary" style="margin-top:12px;width:100%" onclick="saveDanceLog()">💾 保存练习</button>
       </div>
-    </div>
-  </div>
-
-  <!-- ========== 行测申论打卡 ========== -->
-  <div class="page" id="page-exam_checkin">
-    <div class="main-header">
-      <div class="main-title">📝 行测申论每日打卡</div>
-      <div class="main-subtitle">每日完成各模块练习 · 保持手感 · 考前不慌</div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">📅 今日打卡</span><span class="card-badge purple" id="examCheckinDate"></span></div>
-      <div class="exam-checkin-grid" id="examCheckinGridFull">
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('verbal', this)">
-          <div class="eci-icon">📖</div><div class="eci-name">言语理解</div><div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('reasoning', this)">
-          <div class="eci-icon">🧩</div><div class="eci-name">判断推理</div><div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('data_analysis', this)">
-          <div class="eci-icon">📊</div><div class="eci-name">资料分析</div><div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('shenlun', this)">
-          <div class="eci-icon">✍️</div><div class="eci-name">申论练习</div><div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('common_sense', this)">
-          <div class="eci-icon">💡</div><div class="eci-name">常识判断</div><div class="eci-status">未打卡</div>
-        </div>
-        <div class="ec-checkin-item" onclick="toggleExamCheckinFull('math', this)">
-          <div class="eci-icon">🔢</div><div class="eci-name">数量关系</div><div class="eci-status">未打卡</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">📊 连续打卡统计</span></div>
-      <div id="examCheckinStats" style="display:flex;gap:12px;flex-wrap:wrap;"></div>
-    </div>
-  </div>
-
-  <!-- ========== 模考规划 ========== -->
-  <div class="page" id="page-mock_plan">
-    <div class="main-header">
-      <div class="main-title">🎯 模考规划</div>
-      <div class="main-subtitle">按周排布 · 考前冲刺 · 查漏补缺</div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">➕ 添加模考计划</span></div>
-      <div class="form-grid">
-        <div class="form-group full"><label class="form-label">模考名称</label><input class="form-input" id="mockPlanInputFull" placeholder="如：行测全真模考五" style="font-size:14px;"></div>
-        <div class="form-group"><label class="form-label">日期</label><input class="form-input" type="date" id="mockPlanDateFull"></div>
-        <div class="form-group"><label class="form-label">类型</label>
-          <select class="form-select" id="mockPlanTypeFull">
-            <option>行测模考</option><option>申论模考</option><option>医学E类模考</option><option>全真模拟</option><option>专项模考</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">目标分</label><input class="form-input" type="number" id="mockPlanTargetFull" placeholder="80" style="font-size:14px;"></div>
-        <div class="form-group full"><label class="form-label">备注</label><input class="form-input" id="mockPlanNoteFull" placeholder="如：重点练资料分析+判断推理"></div>
-      </div>
-      <button class="btn btn-primary" onclick="addMockPlanFull()" style="margin-top:12px;">➕ 添加模考</button>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">📋 模考计划列表</span></div>
-      <div id="mockPlanListFull"></div>
     </div>
   </div>
 
@@ -4482,10 +4310,8 @@
     if (pageId === 'calendar') renderCalendarPage();
     if (pageId === 'time_stat') renderTimeStat();
     if (pageId === 'weight') { renderWeightChart(); renderWeightList(); }
-    if (pageId === 'dashboard') { renderDashTodos(); renderDashPlan(); renderDashMeals(); renderDashCheckin(); renderDashWeight(); renderDashDance(); renderEveningCard(); renderDashNap(); renderDashExamCheckin(); renderDashMockPlan(); renderDashFatLoss(); renderDashCycle(); renderDashClassNotes(); }
+    if (pageId === 'dashboard') { renderDashMeals(); renderDashWeight(); renderDashDance(); renderEveningCard(); renderDashFatLoss(); renderDashCycle(); renderDashClassNotes(); }
     if (pageId === 'nap_timer') renderNapHistory();
-    if (pageId === 'exam_checkin') { renderExamCheckinFull(); renderExamCheckinStats(); }
-    if (pageId === 'mock_plan') renderMockPlanFull();
     if (pageId === 'cycle_schedule') renderCycleScheduleFull();
     if (pageId === 'class_notes') renderClassNotesFull();
     if (pageId === 'fat_loss') renderFatLossFull();
@@ -4502,7 +4328,6 @@
     shenlun:'xingce', add_exam:'manage',
     wrong:'wrongbook', summary:'wrongbook',
     plan:'manage', todo:'manage', calendar:'manage', time_stat:'manage', analysis:'manage',
-    nap_timer:'manage', exam_checkin:'manage', mock_plan:'manage',
     weight:'life', meals:'life', exercise:'life', dance:'life',
     cycle_schedule:'life', class_notes:'life', fat_loss:'life'
   };
@@ -9818,12 +9643,9 @@
     initPastReviews();
     loadEbbinghaus();
 
-    // 首页渲染：待办 + 每日计划 + 摄入 + 问候语 + 打卡
+    // 首页渲染：摄入 + 问候语（日程/待办/打卡卡片已移除）
     updateGreeting();
-    renderDashTodos();
-    renderDashPlan();
     renderDashMeals();
-    renderDashCheckin();
     initPunchCards();
     // 学习计时 / 午休计时器已移除
 
@@ -9872,10 +9694,7 @@
       _lastDateStr = nowStr;
 
       // 跨天了，重新渲染所有日期相关内容
-      renderDashPlan();
-      renderDashTodos();
       renderDashMeals();
-      renderDashCheckin();
       renderDashStudyTime();
       renderDashWeight();
       renderDashDance();
